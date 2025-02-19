@@ -10,10 +10,10 @@ class CreateOptionsTable extends Migration
     {
         Schema::create('options', function (Blueprint $table) {
             $table->id();
-            $table->string('type')->nullable();
-            $table->string('value')->nullable();
+            $table->string('type');
+            $table->string('value');
             $table->timestamps();
-            $table->softDeletes();
+            $table->softDeletes(); // This line adds the deleted_at column
         });
     }
 
