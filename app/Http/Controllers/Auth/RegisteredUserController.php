@@ -4,47 +4,35 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules;
-use Illuminate\View\View;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rules\Password;
+use Illuminate\Support\Facades\Http;
 
 class RegisteredUserController extends Controller
 {
-    /**
-     * Display the registration view.
-     */
-    public function create(): View
+    public function store(Request $request)
     {
-        return view('auth.register');
+        $response = Http::post(config('app.url') . '/api/register', [
+            'user_name' => $request->user_name,
+            'email' => $request->email,
+            'password' => $request->password,
+            'phone' => $request->phone,
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'birthdate' => $request->birthdate,
+        ]);
+
+        if ($response->status() === 422) {
+            return back()->withErrors($response->json()['errors'])->withInput();
+        }
+
+        return redirect()->route('login')->with('status', 'Registration successful! Please log in.');
     }
 
-    /**
-     * Handle an incoming registration request.
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     */
-    public function store(Request $request): RedirectResponse
+    public function create()
     {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
-
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-
-        event(new Registered($user));
-
-        Auth::login($user);
-
-        return redirect(route('dashboard', absolute: false));
+        return view('auth.register');
     }
 }

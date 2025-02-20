@@ -8,6 +8,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Http;
+
 
 class AuthenticatedSessionController extends Controller
 {
@@ -18,7 +20,6 @@ class AuthenticatedSessionController extends Controller
     {
         return view('auth.login');
     }
-
     /**
      * Handle an incoming authentication request.
      */
@@ -28,6 +29,14 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        // Generate and store token for web sessions too
+        
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $token = $user->createToken('auth_token')->plainTextToken;
+        $user->remember_token = $token;
+        $user->save();
+
         return redirect()->intended(route('dashboard', absolute: false));
     }
 
@@ -36,10 +45,20 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        if ($user) {
+            // Clear remember_token
+            $user->remember_token = null;
+            $user->save();
+            
+            // Delete Sanctum tokens
+            $user->tokens()->delete();
+        }
+
         Auth::guard('web')->logout();
-
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
 
         return redirect('/');
