@@ -12,7 +12,7 @@ Route::middleware('api')->group(function () {
     Route::post('/login', [AuthenticatedSessionController::class, 'login']);
     
     // Protected Routes
-    Route::middleware('auth:sanctum')->group(function () {
+    Route::middleware('remember.token')->group(function () {
         Route::post('/logout', [AuthenticatedSessionController::class, 'logout']);
         
         // Options Routes

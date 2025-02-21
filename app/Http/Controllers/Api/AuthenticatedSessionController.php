@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-
+use Illuminate\Support\Facades\Cookie;
+use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -51,7 +53,7 @@ class AuthenticatedSessionController extends Controller
             ], 422);
         }
 
-        if (!Auth::attempt($request->only('email', 'password'))) {
+        if (!Auth::attempt($request->only('email', 'password'), false)) {
             return response()->json([
                 'message' => 'Invalid login credentials'
             ], 401);
@@ -60,18 +62,27 @@ class AuthenticatedSessionController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
         
-        // Generate new token
-        $token = $user->createToken('auth_token')->plainTextToken;
-        
-        // Store token in remember_token
+        // Generate new auth token and store in remember_token
+        $token = Str::random(60);
         $user->remember_token = $token;
         $user->save();
+
+        // Create HTTP-only cookie
+        $cookie = cookie(
+            'auth_token',
+            $token,
+            720, // 12 hours
+            '/',
+            null,
+            true,  // secure
+            true   // httpOnly
+        );
 
         return response()->json([
             'message' => 'Login successful',
             'user' => $user,
-            'token' => $token,
-        ]);
+            'token' => $token 
+        ])->withCookie($cookie);
     }
 
     /**
@@ -93,22 +104,22 @@ class AuthenticatedSessionController extends Controller
     public function logout(Request $request)
     {
         try {
-            $user = $request->user();
+            /** @var \App\Models\User $user */
+            $user = Auth::user();
             
-            // Clear remember_token
-            $user->remember_token = null;
-            $user->save();
-            
-            // Delete Sanctum tokens
-            $user->tokens()->delete();
+            if ($user) {
+                $user->remember_token = null;
+                $user->save();
+            }
+
+            Auth::logout();
+            $cookie = Cookie::forget('auth_token');
 
             return response()->json([
-                'message' => 'Logged out successfully',
-                'status' => true
-            ], 200);
+                'message' => 'Logged out successfully'
+            ])->withCookie($cookie);
         } catch (\Exception $e) {
             return response()->json([
-                'status' => false,
                 'message' => 'Failed to logout'
             ], 500);
         }
