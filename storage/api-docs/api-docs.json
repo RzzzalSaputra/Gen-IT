@@ -524,6 +524,208 @@
                     }
                 }
             }
+        },
+        "/api/vicons": {
+            "get": {
+                "tags": [
+                    "Vicons"
+                ],
+                "summary": "Get all vicons",
+                "operationId": "22465994ceb1ecebdf568afb37822cb0",
+                "responses": {
+                    "200": {
+                        "description": "List of vicons"
+                    },
+                    "403": {
+                        "description": "Unauthorized - Admin access required"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Vicons"
+                ],
+                "summary": "Create new vicon",
+                "operationId": "6d24fc5e0a8142b8f3e0d2a2d8ff0c75",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "desc",
+                                    "img",
+                                    "time",
+                                    "link"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string"
+                                    },
+                                    "desc": {
+                                        "type": "string"
+                                    },
+                                    "img": {
+                                        "type": "file"
+                                    },
+                                    "time": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                    },
+                                    "link": {
+                                        "type": "string"
+                                    },
+                                    "download": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Vicon created successfully"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/vicons/{id}": {
+            "get": {
+                "tags": [
+                    "Vicons"
+                ],
+                "summary": "Get vicon by ID",
+                "operationId": "17008783c8b929d75b4e1c922a243511",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Vicon details"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Vicons"
+                ],
+                "summary": "Update vicon",
+                "operationId": "9d44bc9b8cba9bd08f8112e0deb3b277",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "title": {
+                                        "type": "string"
+                                    },
+                                    "desc": {
+                                        "type": "string"
+                                    },
+                                    "img": {
+                                        "type": "file"
+                                    },
+                                    "time": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                    },
+                                    "link": {
+                                        "type": "string"
+                                    },
+                                    "download": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Vicon updated successfully"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Vicons"
+                ],
+                "summary": "Delete vicon",
+                "operationId": "f7768c0cb0b52b7abc015d9bcf125b6f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Vicon deleted successfully"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "name": "bearerAuth",
+                "in": "header",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
         }
     },
     "tags": [
@@ -534,6 +736,10 @@
         {
             "name": "Authentication",
             "description": "Authentication"
+        },
+        {
+            "name": "Vicons",
+            "description": "Vicons"
         }
     ]
 }

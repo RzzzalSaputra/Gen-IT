@@ -18,4 +18,8 @@ class Vicon extends Model
         'link',
         'download'
     ];
+
+    protected $casts = [
+        'time' => 'datetime',
+    ];
 }

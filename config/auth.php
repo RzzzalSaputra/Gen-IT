@@ -40,6 +40,13 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'api' => [
+            'driver' => 'token',
+            'provider' => 'users',
+            'hash' => false,
+            'input_key' => 'remember_token',
+            'storage_key' => 'remember_token'
+        ],
     ],
 
     /*
