@@ -103,13 +103,14 @@ class ViconController extends Controller
         try {
             $data = $request->all();
             
-            // Create Vicon first to get ID
+            // Create Vicon with creator info
             $vicon = Vicon::create([
                 'title' => $data['title'],
                 'desc' => $data['desc'],
                 'time' => $data['time'],
                 'link' => $data['link'],
-                'download' => $data['download'] ?? null
+                'download' => $data['download'] ?? null,
+                'created_by' => Auth::id() // Add creator's ID
             ]);
 
             // Handle image upload

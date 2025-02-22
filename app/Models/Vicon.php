@@ -16,10 +16,17 @@ class Vicon extends Model
         'img',
         'time',
         'link',
-        'download'
+        'download',
+        'created_by'
     ];
 
     protected $casts = [
         'time' => 'datetime',
     ];
+
+    // Define relationship with User model
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
 }
