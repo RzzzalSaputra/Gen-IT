@@ -5,9 +5,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\OptionController;
 use App\Http\Controllers\Api\RegisteredUserController;
 use App\Http\Controllers\Api\AuthenticatedSessionController;
+use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\ViconController;
 use App\Http\Middleware\ValidateRememberToken;
 use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\UserMiddleware;
+use App\Http\Middleware\AdminOrUserMiddleware;
 
 Route::middleware('api')->group(function () {
     // Public Routes
@@ -23,6 +26,30 @@ Route::middleware('api')->group(function () {
         Route::delete('/{vicon}', [ViconController::class, 'destroy']);
         Route::post('/{id}/restore', [ViconController::class, 'restore']);
     });
+
+    Route::prefix('contacts')->group(function () {
+        Route::get('/', [ContactController::class, 'index']);
+        Route::get('/{contact}', [ContactController::class, 'show']);
+        
+        // User Routes
+        Route::middleware([ValidateRememberToken::class, UserMiddleware::class])->group(function () {
+            Route::post('/', [ContactController::class, 'store']);
+        });
+        
+        // Admin Routes
+        Route::middleware([ValidateRememberToken::class, AdminMiddleware::class])->group(function () {
+            Route::put('/{id}/respond', [ContactController::class, 'updateResponse']);
+            Route::post('/{id}/restore', [ContactController::class, 'restore']);
+        });
+        
+        // Admin or User Routes
+        Route::middleware([ValidateRememberToken::class, AdminOrUserMiddleware::class])->group(function () {
+            Route::put('/{contact}', [ContactController::class, 'update']);
+            Route::delete('/{contact}', [ContactController::class, 'destroy']);
+        });
+    });
+
+
     // Options Routes
     Route::prefix('options')->group(function () {
         Route::get('/', [OptionController::class, 'index']);

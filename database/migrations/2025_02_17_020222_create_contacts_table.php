@@ -10,7 +10,7 @@ class CreateContactsTable extends Migration
     {
         Schema::create('contacts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('respond_by')->constrained('users');
+            $table->foreignId('respond_by')->nullable()->constrained('users');
             $table->foreignId('created_by')->constrained('users');
             $table->text('message');
             $table->text('respond_message')->nullable();
