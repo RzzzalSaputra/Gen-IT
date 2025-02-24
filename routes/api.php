@@ -8,17 +8,15 @@ use App\Http\Controllers\Api\AuthenticatedSessionController;
 use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\ViconController;
 use App\Http\Middleware\ValidateRememberToken;
-use App\Http\Middleware\AdminMiddleware;
-use App\Http\Middleware\UserMiddleware;
-use App\Http\Middleware\AdminOrUserMiddleware;
+use App\Http\Middleware\RoleMiddleware;
 
 Route::middleware('api')->group(function () {
     // Public Routes
     Route::post('/register', [RegisteredUserController::class, 'store']);
     Route::post('/login', [AuthenticatedSessionController::class, 'login']);
 
-    // Protected Vicon Routes
-    Route::prefix('vicons')->middleware([ValidateRememberToken::class, AdminMiddleware::class])->group(function () {
+    // Protected Vicon Routes - Admin Only
+    Route::prefix('vicons')->middleware([ValidateRememberToken::class, RoleMiddleware::class.':admin'])->group(function () {
         Route::get('/', [ViconController::class, 'index']);
         Route::post('/', [ViconController::class, 'store']);
         Route::get('/{vicon}', [ViconController::class, 'show']);
@@ -32,23 +30,22 @@ Route::middleware('api')->group(function () {
         Route::get('/{contact}', [ContactController::class, 'show']);
         
         // User Routes
-        Route::middleware([ValidateRememberToken::class, UserMiddleware::class])->group(function () {
+        Route::middleware([ValidateRememberToken::class, RoleMiddleware::class.':user'])->group(function () {
             Route::post('/', [ContactController::class, 'store']);
         });
         
         // Admin Routes
-        Route::middleware([ValidateRememberToken::class, AdminMiddleware::class])->group(function () {
+        Route::middleware([ValidateRememberToken::class, RoleMiddleware::class.':admin'])->group(function () {
             Route::put('/{id}/respond', [ContactController::class, 'updateResponse']);
             Route::post('/{id}/restore', [ContactController::class, 'restore']);
         });
         
         // Admin or User Routes
-        Route::middleware([ValidateRememberToken::class, AdminOrUserMiddleware::class])->group(function () {
+        Route::middleware([ValidateRememberToken::class])->group(function () {
             Route::put('/{contact}', [ContactController::class, 'update']);
             Route::delete('/{contact}', [ContactController::class, 'destroy']);
         });
     });
-
 
     // Options Routes
     Route::prefix('options')->group(function () {
