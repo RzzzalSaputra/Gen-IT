@@ -16,11 +16,18 @@ class Post extends Model
         'content',
         'file',
         'img',
-        'layout'
+        'layout',
+        'created_by',
+        'counter'
     ];
 
     public function option()
     {
         return $this->belongsTo(Option::class, 'layout');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

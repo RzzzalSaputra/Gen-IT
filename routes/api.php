@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\RegisteredUserController;
 use App\Http\Controllers\Api\AuthenticatedSessionController;
 use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\ViconController;
+use App\Http\Controllers\Api\PostController;
 use App\Http\Middleware\ValidateRememberToken;
 use App\Http\Middleware\RoleMiddleware;
 
@@ -56,5 +57,23 @@ Route::middleware('api')->group(function () {
         Route::put('/{option}', [OptionController::class, 'update']);
         Route::delete('/{option}', [OptionController::class, 'destroy']);
         Route::post('/{id}/restore', [OptionController::class, 'restore']);
+    });
+    
+    Route::prefix('posts')->group(function () {
+        Route::get('/', [PostController::class, 'index']);
+        Route::get('/active', [PostController::class, 'active']);
+        Route::get('/{id}', [PostController::class, 'show']);
+        Route::put('/{post}', [PostController::class, 'update']);
+        
+        // Admin Routes
+        Route::middleware([ValidateRememberToken::class, RoleMiddleware::class.':admin'])->group(function () {
+            Route::post('/{id}/restore', [PostController::class, 'restore']);
+        });
+
+        // Admin or User Routes
+        Route::middleware([ValidateRememberToken::class])->group(function () {
+            Route::post('/', [PostController::class, 'store']);
+            Route::delete('/{id}', [PostController::class, 'destroy']);
+        });
     });
 });

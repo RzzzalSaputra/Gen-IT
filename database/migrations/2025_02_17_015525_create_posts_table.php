@@ -13,13 +13,15 @@ class CreatePostsTable extends Migration
             $table->string('title');
             $table->string('slug');
             $table->text('content');
-            $table->binary('file');
-            $table->binary('img')->nullable();
+            $table->text('file')->nullable();
+            $table->text('img')->nullable();
             $table->foreignId('layout')->constrained('options');
-            $table->foreignId('create_by')->constrained('users');
+            $table->foreignId('created_by')->constrained('users');
+            $table->unsignedInteger('counter')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });
+
     }
 
     public function down()
