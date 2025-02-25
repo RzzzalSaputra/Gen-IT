@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Middleware;
 
 use Closure;
@@ -7,11 +8,20 @@ use Illuminate\Support\Facades\Auth;
 
 class RoleMiddleware
 {
-    public function handle(Request $request, Closure $next, $role)
+    public function handle(Request $request, Closure $next, $expectedRole)
     {
-        if (!Auth::check() || Auth::user()->role !== $role) {
+        if (!Auth::check()) {
             return response()->json([
-                'message' => "Unauthorized. {$role} access required."
+                'message' => 'Unauthorized. User not authenticated.'
+            ], 401);
+        }
+
+        $user = Auth::user();
+        $userRole = $user->roleOption->value ?? null; // Ambil role langsung dari relasi
+
+        if ($userRole !== $expectedRole) {
+            return response()->json([
+                'message' => "Unauthorized. Required role: {$expectedRole}."
             ], 403);
         }
 
