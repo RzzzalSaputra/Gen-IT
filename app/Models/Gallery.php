@@ -15,7 +15,8 @@ class Gallery extends Model
         'title',
         'option',
         'file',
-        'link'
+        'link',
+        'created_by'
     ];
 
     public function option()

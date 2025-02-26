@@ -80,10 +80,10 @@ class DatabaseSeeder extends Seeder
                 'first_name' => 'Itsuki',
                 'last_name' => 'Nakano',
                 'email' => 'itsuki@example.com',
-                'password' => Hash::make('password123'),
+                'password' => Hash::make('Password123!'),
                 'phone' => '081234567894',
                 'birthdate' => '2000-05-05',
-                'role' => $roleUser->id,
+                'role' => 3,
             ],
         ];
 

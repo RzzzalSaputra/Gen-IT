@@ -11,11 +11,11 @@ class CreateGalleriesTable extends Migration
         Schema::create('galleries', function (Blueprint $table) {
             $table->id();
             $table->integer('type');
-            $table->integer('title');
+            $table->string('title');
             $table->foreignId('option')->constrained('options');
-            $table->integer('file');
-            $table->integer('link');
-            $table->foreignId('create_by')->constrained('users');
+            $table->string('file')->nullable();
+            $table->string('link')->nullable();
+            $table->foreignId('created_by')->constrained('users');
             $table->timestamps();
             $table->softDeletes();
         });

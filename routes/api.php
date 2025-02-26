@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\AuthenticatedSessionController;
 use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\ViconController;
 use App\Http\Controllers\Api\PostController;
+use App\Http\Controllers\Api\GalleryController;
 use App\Http\Middleware\ValidateRememberToken;
 use App\Http\Middleware\RoleMiddleware;
 
@@ -26,12 +27,25 @@ Route::middleware('api')->group(function () {
         Route::post('/{id}/restore', [ViconController::class, 'restore']);
     });
 
+    Route::prefix('gallery')->group(function () {
+        // Public Routes
+        Route::get('/', [GalleryController::class, 'index']);
+        Route::get('/{gallery}', [GalleryController::class, 'show']);
+
+        // Admin Routes
+        Route::middleware([ValidateRememberToken::class], RoleMiddleware::class.':admin')->group(function () {
+            Route::post('/', [GalleryController::class, 'store']);
+            Route::put('/{gallery}', [GalleryController::class, 'update']);
+            Route::delete('/{gallery}', [GalleryController::class, 'destroy']);
+        });
+    });
+
     Route::prefix('contacts')->group(function () {
         Route::get('/', [ContactController::class, 'index']);
         Route::get('/{contact}', [ContactController::class, 'show']);
         
         // User Routes
-        Route::middleware([ValidateRememberToken::class, RoleMiddleware::class.':user'])->group(function () {
+        Route::middleware([ValidateRememberToken::class])->group(function () {
             Route::post('/', [ContactController::class, 'store']);
         });
         
