@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Option;
 
 class RoleMiddleware
 {
@@ -17,9 +18,9 @@ class RoleMiddleware
         }
 
         $user = Auth::user();
-        $userRole = $user->roleOption->value ?? null; // Ambil role langsung dari relasi
-
-        if ($userRole !== $expectedRole) {
+        
+        // Langsung bandingkan string role
+        if ($user->role !== $expectedRole) {
             return response()->json([
                 'message' => "Unauthorized. Required role: {$expectedRole}."
             ], 403);

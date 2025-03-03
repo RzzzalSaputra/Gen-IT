@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\ViconController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\GalleryController;
+use App\Http\Controllers\Api\ArticleController;
 use App\Http\Middleware\ValidateRememberToken;
 use App\Http\Middleware\RoleMiddleware;
 
@@ -34,7 +35,7 @@ Route::middleware('api')->group(function () {
         Route::post('/{gallery}', [GalleryController::class, 'update']);
 
         // Admin Routes
-        Route::middleware([ValidateRememberToken::class], RoleMiddleware::class.':admin')->group(function () {
+        Route::middleware([ValidateRememberToken::class, RoleMiddleware::class.':admin'])->group(function () {
             Route::post('/', [GalleryController::class, 'store']);
             Route::delete('/{gallery}', [GalleryController::class, 'destroy']);
         });
@@ -45,7 +46,7 @@ Route::middleware('api')->group(function () {
         Route::get('/{contact}', [ContactController::class, 'show']);
         
         // User Routes
-        Route::middleware([ValidateRememberToken::class])->group(function () {
+        Route::middleware([ValidateRememberToken::class, RoleMiddleware::class.':admin'])->group(function () {
             Route::post('/', [ContactController::class, 'store']);
         });
         
@@ -85,9 +86,24 @@ Route::middleware('api')->group(function () {
         });
 
         // Admin or User Routes
-        Route::middleware([ValidateRememberToken::class])->group(function () {
+        Route::middleware([ValidateRememberToken::class])->group(callback: function () {
             Route::post('/', [PostController::class, 'store']);
             Route::delete('/{id}', [PostController::class, 'destroy']);
+        });
+    });
+    
+    // Article Routes
+    Route::prefix('articles')->group(function () {
+        Route::get('/', [ArticleController::class, 'index']);
+        Route::get('/active', [ArticleController::class, 'active']);
+        Route::get('/{id}', [ArticleController::class, 'show']);
+        
+        // Admin Routes
+        Route::middleware([ValidateRememberToken::class])->group(callback: function () {
+            Route::post('/{id}/restore', [ArticleController::class, 'restore']);
+            Route::post('/', [ArticleController::class, 'store']);
+            Route::put('/{id}', [ArticleController::class, 'update']);
+            Route::delete('/{id}', [ArticleController::class, 'destroy']);
         });
     });
 });
