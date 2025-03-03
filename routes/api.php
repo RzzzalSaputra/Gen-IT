@@ -77,7 +77,7 @@ Route::middleware('api')->group(function () {
         Route::get('/', [PostController::class, 'index']);
         Route::get('/active', [PostController::class, 'active']);
         Route::get('/{id}', [PostController::class, 'show']);
-        Route::put('/{post}', [PostController::class, 'update']);
+        Route::post('/{post}', [PostController::class, 'update']);
         
         // Admin Routes
         Route::middleware([ValidateRememberToken::class, RoleMiddleware::class.':admin'])->group(function () {

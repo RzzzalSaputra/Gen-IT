@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 
 
@@ -210,11 +211,11 @@ class PostController extends Controller
     }
 
     /**
-     * @OA\Put(
+     * @OA\Post(
      *     path="/api/posts/{id}",
      *     tags={"Posts"},
-     *     summary="Fully update a post",
-     *     description="Update all fields of an existing post. Supports optional file and image uploads.",
+     *     summary="Update an existing post",
+     *     description="Update a post with optional file and image uploads.",
      *     security={{ "bearerAuth": {} }},
      *     @OA\Parameter(
      *         name="id",
@@ -224,64 +225,34 @@ class PostController extends Controller
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\RequestBody(
-     *         required=true,
+     *         required=false,
      *         @OA\MediaType(
      *             mediaType="multipart/form-data",
      *             @OA\Schema(
-     *                 required={"title", "slug", "content", "layout"},
-     *                 @OA\Property(property="title", type="string", example="Updated Title"),
-     *                 @OA\Property(property="slug", type="string", example="updated-title"),
-     *                 @OA\Property(property="content", type="string", example="Updated full content"),
+     *                 @OA\Property(property="title", type="string", nullable=true),
+     *                 @OA\Property(property="slug", type="string", nullable=true),
+     *                 @OA\Property(property="content", type="string", nullable=true),
      *                 @OA\Property(property="file", type="string", format="binary", nullable=true),
      *                 @OA\Property(property="img", type="string", format="binary", nullable=true),
-     *                 @OA\Property(property="layout", type="integer", example=2)
+     *                 @OA\Property(property="layout", type="integer", nullable=true)
      *             )
      *         )
      *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Post updated successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Post updated successfully"),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="id", type="integer", example=5),
-     *                 @OA\Property(property="title", type="string", example="Updated Title"),
-     *                 @OA\Property(property="slug", type="string", example="updated-title"),
-     *                 @OA\Property(property="content", type="string", example="Updated full content"),
-     *                 @OA\Property(property="file", type="string", nullable=true, example="/storage/posts/files/file_5.pdf"),
-     *                 @OA\Property(property="img", type="string", nullable=true, example="/storage/posts/images/img_5.jpg"),
-     *                 @OA\Property(property="layout", type="integer", example=2),
-     *                 @OA\Property(property="updated_at", type="string", format="date-time", example="2025-02-24T08:00:00Z")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=422,
-     *         description="Validation error",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="errors", type="object")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=500,
-     *         description="Internal server error",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Error updating post"),
-     *             @OA\Property(property="error", type="string", example="Exception message")
-     *         )
-     *     )
+     *     @OA\Response(response=200, description="Post updated successfully"),
+     *     @OA\Response(response=404, description="Post not found"),
+     *     @OA\Response(response=422, description="Validation errors"),
+     *     @OA\Response(response=500, description="Server error")
      * )
      */
-
-    public function update(Request $request, Post $post): JsonResponse
+    public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'title' => 'string|max:255',
-            'slug' => 'string|max:255|unique:posts,slug,' . $post->id,
-            'content' => 'string',
+            'title'   => 'nullable|string|max:255',
+            'slug'    => 'nullable|string|max:255|unique:posts,slug,' . $id,
+            'content' => 'nullable|string',
             'file' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
-            'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'layout' => 'exists:options,id',
+            'img'     => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'layout'  => 'nullable|exists:options,id',
         ]);
 
         if ($validator->fails()) {
@@ -289,41 +260,57 @@ class PostController extends Controller
         }
 
         DB::beginTransaction();
-
         try {
-            $data = $request->except(['file', 'img']);
-            $post->update($data);
+            // Cari data post berdasarkan ID
+            $post = Post::find($id);
+            if (!$post) {
+                return response()->json(['message' => 'Post not found'], 404);
+            }
 
+            // Update data post
+            $post->update([
+                'title'   => $request->title ?? $post->title,
+                'slug'    => $request->slug ?? $post->slug,
+                'content' => $request->content ?? $post->content,
+                'layout'  => $request->layout ?? $post->layout,
+            ]);
+
+            // Handle file upload jika ada
             if ($request->hasFile('file')) {
-                if ($post->file) {
-                    Storage::disk('public')->delete(str_replace('/storage/', '', $post->file));
+                if (!empty($post->file)) {
+                    $path = storage_path('app/public/' . str_replace('/storage/', '', $post->file));
+                    if (file_exists($path)) {
+                        unlink($path);
+                    }
                 }
+
                 $file = $request->file('file');
-                $fileName = 'file_' . $post->id . '.' . $file->getClientOriginalExtension();
-                $filePath = $file->storeAs('posts/files', $fileName, 'public');
-                $data['file'] = '/storage/' . $filePath;
+                $timestamp = Carbon::now()->format('Y-m-d_His');
+                $filename = $post->id . '_' . $timestamp . '.' . $file->getClientOriginalExtension();
+                $path = $file->storeAs('posts/files', $filename, 'public');
+                $post->update(['file' => '/storage/posts/files/' . $filename]);
             }
 
+            // Handle image upload jika ada
             if ($request->hasFile('img')) {
-                if ($post->img) {
-                    Storage::disk('public')->delete(str_replace('/storage/', '', $post->img));
+                if (!empty($post->img)) {
+                    $path = storage_path('app/public/' . str_replace('/storage/', '', $post->img));
+                    if (file_exists($path)) {
+                        unlink($path);
+                    }
                 }
-                $image = $request->file('img');
-                $imageName = 'img_' . $post->id . '.' . $image->getClientOriginalExtension();
-                $imagePath = $image->storeAs('posts/images', $imageName, 'public');
-                $data['img'] = '/storage/' . $imagePath;
-            }
 
-            if (isset($data['file']) || isset($data['img'])) {
-                $post->update($data);
+                $image = $request->file('img');
+                $timestamp = Carbon::now()->format('Y-m-d_His');
+                $imageName = $post->id . '_' . $timestamp . '.' . $image->getClientOriginalExtension();
+                $imagePath = $image->storeAs('posts/images', $imageName, 'public');
+                $post->update(['img' => '/storage/posts/images/' . $imageName]);
             }
 
             DB::commit();
-            $post->refresh();
-
             return response()->json(['message' => 'Post updated successfully', 'data' => $post], 200);
         } catch (\Exception $e) {
-            DB::rollBack();
+            DB::rollback();
             return response()->json(['message' => 'Error updating post', 'error' => $e->getMessage()], 500);
         }
     }
