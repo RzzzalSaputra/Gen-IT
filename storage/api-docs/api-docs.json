@@ -423,17 +423,13 @@
                             "schema": {
                                 "required": [
                                     "title",
-                                    "type",
-                                    "option"
+                                    "type"
                                 ],
                                 "properties": {
                                     "title": {
                                         "type": "string"
                                     },
                                     "type": {
-                                        "type": "integer"
-                                    },
-                                    "option": {
                                         "type": "integer"
                                     },
                                     "file": {
@@ -528,11 +524,6 @@
                                     "type": {
                                         "type": "integer",
                                         "example": 1,
-                                        "nullable": true
-                                    },
-                                    "option": {
-                                        "type": "integer",
-                                        "example": 2,
                                         "nullable": true
                                     },
                                     "link": {
@@ -1597,28 +1588,28 @@
     },
     "tags": [
         {
-            "name": "Options",
-            "description": "API Endpoints for Options management"
+            "name": "Authentication",
+            "description": "User authentication endpoints"
         },
         {
             "name": "Posts",
             "description": "API Endpoints for Posts management"
         },
         {
-            "name": "Authentication",
-            "description": "Authentication"
+            "name": "Gallery",
+            "description": "Gallery management endpoints"
         },
         {
             "name": "Contacts",
-            "description": "Contacts"
-        },
-        {
-            "name": "Gallery",
-            "description": "Gallery"
+            "description": "Contact management endpoints"
         },
         {
             "name": "Vicons",
-            "description": "Vicons"
+            "description": "Video conference management endpoints"
+        },
+        {
+            "name": "Options",
+            "description": "API Endpoints for Options management"
         }
     ]
 }

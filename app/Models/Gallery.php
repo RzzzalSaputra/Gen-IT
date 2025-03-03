@@ -13,7 +13,6 @@ class Gallery extends Model
     protected $fillable = [
         'type',
         'title',
-        'option',
         'file',
         'link',
         'created_by'

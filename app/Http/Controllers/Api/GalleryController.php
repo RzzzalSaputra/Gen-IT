@@ -47,10 +47,9 @@ class GalleryController extends Controller
      *         @OA\MediaType(
      *             mediaType="multipart/form-data",
      *             @OA\Schema(
-     *                 required={"title","type","option"},
+     *                 required={"title","type"},
      *                 @OA\Property(property="title", type="string"),
      *                 @OA\Property(property="type", type="integer"),
-     *                 @OA\Property(property="option", type="integer"),
      *                 @OA\Property(property="file", type="file"),
      *                 @OA\Property(property="link", type="string")
      *             )
@@ -66,7 +65,6 @@ class GalleryController extends Controller
         $validator = Validator::make($request->all(), [
             'title'   => 'required|string|max:255',
             'type'    => 'required|integer',
-            'option'  => 'required|integer',
             'file'    => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // File tidak wajib
             'link'    => 'nullable|url',
         ]);
@@ -81,7 +79,6 @@ class GalleryController extends Controller
             $gallery = Gallery::create([
                 'title'      => $request->title,
                 'type'       => $request->type,
-                'option'     => $request->option,
                 'link'       => $request->link ?? null,
                 'created_by'  => Auth::id(),
                 'file'       => $request->file ?? null,
@@ -151,7 +148,6 @@ class GalleryController extends Controller
      *             @OA\Schema(
      *                 @OA\Property(property="title", type="string", nullable=true, example="Gambar Baru"),
      *                 @OA\Property(property="type", type="integer", nullable=true, example=1),
-     *                 @OA\Property(property="option", type="integer", nullable=true, example=2),
      *                 @OA\Property(property="link", type="string", nullable=true, format="url", example="https://example.com"),
      *                 @OA\Property(property="file", type="string", format="binary", nullable=true, description="File gambar yang akan diupload")
      *             )
@@ -168,7 +164,6 @@ class GalleryController extends Controller
         $validator = Validator::make($request->all(), [
             'title'   => 'nullable|string|max:255',
             'type'    => 'nullable|integer',
-            'option'  => 'nullable|integer',
             'file'    => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'link'    => 'nullable|url',
         ]);
@@ -189,7 +184,6 @@ class GalleryController extends Controller
             $gallery->update([
                 'title'  => $request->title ?? $gallery->title,
                 'type'   => $request->type ?? $gallery->type,
-                'option' => $request->option ?? $gallery->option,
                 'link'   => $request->link ?? $gallery->link,
             ]);
 
@@ -224,10 +218,6 @@ class GalleryController extends Controller
             return response()->json(['message' => 'Error updating gallery item', 'error' => $e->getMessage()], 500);
         }
     }
-
-
-
-
 
     /**
      * @OA\Delete(

@@ -15,12 +15,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 
 
-/**
- * @OA\Tag(
- *     name="Posts",
- *     description="API Endpoints for Posts management"
- * )
- */
+
 class PostController extends Controller
 {
     /**

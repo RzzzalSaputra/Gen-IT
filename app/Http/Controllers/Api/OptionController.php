@@ -8,12 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Log;
 
-/**
- * @OA\Tag(
- *     name="Options",
- *     description="API Endpoints for Options management"
- * )
- */
+
 class OptionController extends Controller
 {
     /**

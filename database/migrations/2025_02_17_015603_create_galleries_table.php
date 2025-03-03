@@ -10,9 +10,8 @@ class CreateGalleriesTable extends Migration
     {
         Schema::create('galleries', function (Blueprint $table) {
             $table->id();
-            $table->integer('type');
+            $table->foreignId('type')->constrained('options');
             $table->string('title');
-            $table->foreignId('option')->constrained('options');
             $table->string('file')->nullable();
             $table->string('link')->nullable();
             $table->foreignId('created_by')->constrained('users');
