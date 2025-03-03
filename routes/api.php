@@ -31,11 +31,11 @@ Route::middleware('api')->group(function () {
         // Public Routes
         Route::get('/', [GalleryController::class, 'index']);
         Route::get('/{gallery}', [GalleryController::class, 'show']);
+        Route::post('/{gallery}', [GalleryController::class, 'update']);
 
         // Admin Routes
         Route::middleware([ValidateRememberToken::class], RoleMiddleware::class.':admin')->group(function () {
             Route::post('/', [GalleryController::class, 'store']);
-            Route::put('/{gallery}', [GalleryController::class, 'update']);
             Route::delete('/{gallery}', [GalleryController::class, 'destroy']);
         });
     });

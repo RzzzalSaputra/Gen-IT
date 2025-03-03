@@ -34,7 +34,7 @@
                                     "email": {
                                         "type": "string",
                                         "format": "email",
-                                        "example": "john@example.com"
+                                        "example": "itsuki@example.com"
                                     },
                                     "password": {
                                         "type": "string",
@@ -497,16 +497,17 @@
                     }
                 ]
             },
-            "put": {
+            "post": {
                 "tags": [
                     "Gallery"
                 ],
                 "summary": "Update gallery item",
-                "operationId": "045fe0111e6e9439b0626fdecf596392",
+                "operationId": "600a6602a1df987d94cc1bf660119d1a",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
+                        "description": "ID dari gallery yang akan diperbarui",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -514,35 +515,34 @@
                     }
                 ],
                 "requestBody": {
-                    "required": false,
+                    "required": true,
                     "content": {
-                        "application/json": {
+                        "multipart/form-data": {
                             "schema": {
                                 "properties": {
                                     "title": {
                                         "type": "string",
+                                        "example": "Gambar Baru",
                                         "nullable": true
                                     },
                                     "type": {
                                         "type": "integer",
+                                        "example": 1,
                                         "nullable": true
                                     },
                                     "option": {
                                         "type": "integer",
+                                        "example": 2,
                                         "nullable": true
                                     },
                                     "link": {
                                         "type": "string",
+                                        "format": "url",
+                                        "example": "https://example.com",
                                         "nullable": true
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        },
-                        "multipart/form-data": {
-                            "schema": {
-                                "properties": {
+                                    },
                                     "file": {
+                                        "description": "File gambar yang akan diupload",
                                         "type": "string",
                                         "format": "binary",
                                         "nullable": true
@@ -559,6 +559,9 @@
                     },
                     "404": {
                         "description": "Gallery item not found"
+                    },
+                    "422": {
+                        "description": "Validation errors"
                     },
                     "500": {
                         "description": "Server error"

@@ -132,32 +132,34 @@ class GalleryController extends Controller
     }
 
     /**
-     * @OA\Put(
+     * @OA\Post(
      *     path="/api/gallery/{id}",
      *     summary="Update gallery item",
      *     tags={"Gallery"},
      *     security={{ "bearerAuth": {} }},
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID dari gallery yang akan diperbarui",
+     *         @OA\Schema(type="integer")
+     *     ),
      *     @OA\RequestBody(
-     *         required=false,
-     *         @OA\MediaType(
-     *             mediaType="application/json",
-     *             @OA\Schema(
-     *                 @OA\Property(property="title", type="string", nullable=true),
-     *                 @OA\Property(property="type", type="integer", nullable=true),
-     *                 @OA\Property(property="option", type="integer", nullable=true),
-     *                 @OA\Property(property="link", type="string", nullable=true)
-     *             )
-     *         ),
+     *         required=true,
      *         @OA\MediaType(
      *             mediaType="multipart/form-data",
      *             @OA\Schema(
-     *                 @OA\Property(property="file", type="string", format="binary", nullable=true)
+     *                 @OA\Property(property="title", type="string", nullable=true, example="Gambar Baru"),
+     *                 @OA\Property(property="type", type="integer", nullable=true, example=1),
+     *                 @OA\Property(property="option", type="integer", nullable=true, example=2),
+     *                 @OA\Property(property="link", type="string", nullable=true, format="url", example="https://example.com"),
+     *                 @OA\Property(property="file", type="string", format="binary", nullable=true, description="File gambar yang akan diupload")
      *             )
      *         )
      *     ),
      *     @OA\Response(response=200, description="Gallery item updated successfully"),
      *     @OA\Response(response=404, description="Gallery item not found"),
+     *     @OA\Response(response=422, description="Validation errors"),
      *     @OA\Response(response=500, description="Server error")
      * )
      */
@@ -177,21 +179,29 @@ class GalleryController extends Controller
 
         DB::beginTransaction();
         try {
-            $gallery = Gallery::findOrFail($id);
-
-            // Update hanya jika ada input yang diberikan
-            $updateData = array_filter($request->only(['title', 'type', 'option', 'link']));
-            if (!empty($updateData)) {
-                $gallery->update($updateData);
+            // Cari data gallery berdasarkan ID
+            $gallery = Gallery::find($id);
+            if (!$gallery) {
+                return response()->json(['message' => 'Gallery item not found'], 404);
             }
 
-            // Handle file upload jika ada file baru
+            // Update data gallery
+            $gallery->update([
+                'title'  => $request->title ?? $gallery->title,
+                'type'   => $request->type ?? $gallery->type,
+                'option' => $request->option ?? $gallery->option,
+                'link'   => $request->link ?? $gallery->link,
+            ]);
+
+            // Handle file upload jika ada
             if ($request->hasFile('file')) {
-                // Hapus file lama jika ada
-                if ($gallery->file) {
-                    $oldPath = str_replace('/storage/', 'public/', $gallery->file);
-                    if (Storage::exists($oldPath)) {
-                        Storage::delete($oldPath);
+                
+                // Hapus file jika ada
+                if (!empty($gallery->file)) {
+                    $path = storage_path('app/public/' . str_replace('/storage/', '', $gallery->file));
+
+                    if (file_exists($path)) {
+                        unlink($path); // Hapus file dengan PHP langsung
                     }
                 }
 
@@ -199,7 +209,7 @@ class GalleryController extends Controller
                 $timestamp = Carbon::now()->format('Y-m-d_His');
                 $filename = $gallery->id . '_' . $timestamp . '.' . $file->getClientOriginalExtension();
 
-                // Simpan file baru
+                // Simpan file ke storage/app/public/gallery
                 $path = $file->storeAs('gallery', $filename, 'public');
 
                 // Update path file di database
@@ -214,6 +224,9 @@ class GalleryController extends Controller
             return response()->json(['message' => 'Error updating gallery item', 'error' => $e->getMessage()], 500);
         }
     }
+
+
+
 
 
     /**
