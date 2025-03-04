@@ -16,6 +16,22 @@ class Material extends Model
         'content',
         'file',
         'link',
-        'img'
+        'img',
+        'layout',
+        'type',
+        'read_counter',
+        'download_counter',
+        'created_by'
     ];
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    // Relasi ke tabel options untuk layout
+    public function layoutOption()
+    {
+        return $this->belongsTo(Option::class, 'layout');
+    }
 }

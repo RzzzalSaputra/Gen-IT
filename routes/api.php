@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\ViconController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\GalleryController;
 use App\Http\Controllers\Api\ArticleController;
+use App\Http\Controllers\Api\MaterialController;
 use App\Http\Controllers\Api\SchoolController;
 use App\Http\Controllers\Api\StudyController;
 use App\Http\Middleware\ValidateRememberToken;
@@ -107,6 +108,25 @@ Route::middleware('api')->group(function () {
             Route::post('/', [ArticleController::class, 'store']);
             Route::put('/{id}', [ArticleController::class, 'update']);
             Route::delete('/{id}', [ArticleController::class, 'destroy']);
+        });
+    });
+
+    Route::prefix('materials')->group(function () {
+        // Public routes
+        Route::get('/', [MaterialController::class, 'index']);
+        Route::get('/active', [MaterialController::class, 'active']);
+        Route::get('/{id}', [MaterialController::class, 'show']);
+
+        // Protected routes
+        Route::middleware([ValidateRememberToken::class])->group(function () {
+            Route::post('/', [MaterialController::class, 'store']);
+            Route::post('/{material}', [MaterialController::class, 'update']);
+            Route::delete('/{id}', [MaterialController::class, 'destroy']);
+        });
+
+        // Admin only routes
+        Route::middleware([ValidateRememberToken::class, RoleMiddleware::class . ':Admin'])->group(function () {
+            Route::post('/{id}/restore', [MaterialController::class, 'restore']);
         });
     });
 
