@@ -10,17 +10,17 @@ class CreateMaterialsTable extends Migration
     {
         Schema::create('materials', function (Blueprint $table) {
             $table->id();
-            $table->string('slug');
+            $table->string('slug')->unique();
             $table->string('title');
             $table->text('content');
-            $table->binary('file')->nullable();
+            $table->string('file')->nullable();
+            $table->string('img')->nullable();
             $table->text('link')->nullable();
-            $table->binary('img')->nullable();
             $table->foreignId('layout')->constrained('options');
-            $table->string('type');
-            $table->integer('read_counter');
-            $table->integer('download_counter');
-            $table->foreignId('create_by')->constrained('users');
+            $table->foreignId('type')->constrained('options');
+            $table->integer('read_counter')->default(0);
+            $table->integer('download_counter')->default(0);
+            $table->foreignId('created_by')->constrained('users');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -30,4 +30,4 @@ class CreateMaterialsTable extends Migration
     {
         Schema::dropIfExists('materials');
     }
-};
+}
