@@ -10,6 +10,8 @@ use App\Http\Controllers\Api\ViconController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\GalleryController;
 use App\Http\Controllers\Api\ArticleController;
+use App\Http\Controllers\Api\SchoolController;
+use App\Http\Controllers\Api\StudyController;
 use App\Http\Middleware\ValidateRememberToken;
 use App\Http\Middleware\RoleMiddleware;
 
@@ -99,11 +101,46 @@ Route::middleware('api')->group(function () {
         Route::get('/{id}', [ArticleController::class, 'show']);
         
         // Admin Routes
-        Route::middleware([ValidateRememberToken::class])->group(callback: function () {
+        
+        Route::middleware([ValidateRememberToken::class, RoleMiddleware::class.':admin'])->group(function () {
             Route::post('/{id}/restore', [ArticleController::class, 'restore']);
             Route::post('/', [ArticleController::class, 'store']);
             Route::put('/{id}', [ArticleController::class, 'update']);
             Route::delete('/{id}', [ArticleController::class, 'destroy']);
+        });
+    });
+
+    // School Routes
+    Route::prefix('schools')->group(function () {
+        Route::get('/', [SchoolController::class, 'index']);
+        Route::get('/active', [SchoolController::class, 'active']);
+        Route::get('/{id}', [SchoolController::class, 'show']);
+
+     // Admin Routes
+        Route::middleware([ValidateRememberToken::class, RoleMiddleware::class.':admin'])->group(function () {
+            Route::post('/{id}/restore', [SchoolController::class, 'restore']);
+            Route::post('/{id}', [SchoolController::class, 'update']);
+            Route::post('/', [SchoolController::class, 'store']);
+            Route::delete('/{id}', [SchoolController::class, 'destroy']);
+        });
+        
+        // Get studies by school
+        Route::get('/{schoolId}/studies', [StudyController::class, 'getStudiesBySchool']);
+    });
+    
+    // Study Routes
+    Route::prefix('studies')->group(function () {
+        // Public Routes
+        Route::get('/', [StudyController::class, 'index']);
+        Route::get('/active', [StudyController::class, 'active']);
+        Route::get('/{id}', [StudyController::class, 'show']);
+
+        // Admin Routes
+        Route::middleware([ValidateRememberToken::class, RoleMiddleware::class.':admin'])->group(function () {
+            Route::post('/{id}/restore', [StudyController::class, 'restore']);
+            Route::post('/{id}', [StudyController::class, 'update']);
+            Route::post('/', [StudyController::class, 'store']);
+            Route::delete('/{id}', [StudyController::class, 'destroy']);
         });
     });
 });

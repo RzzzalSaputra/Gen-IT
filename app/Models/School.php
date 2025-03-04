@@ -13,13 +13,21 @@ class School extends Model
     protected $fillable = [
         'name',
         'description',
-        'file',
         'link',
         'img',
-        'type'
+        'type',
+        'gmap',
+        'province',
+        'city',
+        'address',
+        'website',
+        'instagram',
+        'facebook',
+        'x',
+        'read_counter',
     ];
 
-    public function option()
+    public function typeOption()
     {
         return $this->belongsTo(Option::class, 'type');
     }

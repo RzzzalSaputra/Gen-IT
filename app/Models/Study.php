@@ -15,12 +15,25 @@ class Study extends Model
         'name',
         'description',
         'duration',
-        'file',
-        'link'
+        'link',
+        'img',
+        'level',
+        'read_counter',
     ];
 
+    /**
+     * Get the school that owns this study program.
+     */
     public function school()
     {
         return $this->belongsTo(School::class);
+    }
+
+    /**
+     * Get the option that represents the level of this study.
+     */
+    public function levelOption()
+    {
+        return $this->belongsTo(Option::class, 'level');
     }
 }

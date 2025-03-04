@@ -6,6 +6,11 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateStudiesTable extends Migration
 {
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
     public function up()
     {
         Schema::create('studies', function (Blueprint $table) {
@@ -14,18 +19,22 @@ class CreateStudiesTable extends Migration
             $table->text('name');
             $table->text('description');
             $table->string('duration');
-            $table->binary('file');
-            $table->text('link');
-            $table->binary('img');
-            $table->string('level');
-            $table->integer('read_counter');
+            $table->text('link')->nullable();
+            $table->text('img')->nullable();
+            $table->foreignId('level')->constrained('options');
+            $table->integer('read_counter')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });
     }
 
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
     public function down()
     {
         Schema::dropIfExists('studies');
     }
-};
+}
