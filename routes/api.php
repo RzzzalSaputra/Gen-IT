@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\ArticleController;
 use App\Http\Controllers\Api\MaterialController;
 use App\Http\Controllers\Api\SchoolController;
 use App\Http\Controllers\Api\StudyController;
+use App\Http\Controllers\Api\SubmissionController;
 use App\Http\Middleware\ValidateRememberToken;
 use App\Http\Middleware\RoleMiddleware;
 
@@ -161,6 +162,25 @@ Route::middleware('api')->group(function () {
             Route::post('/{id}', [StudyController::class, 'update']);
             Route::post('/', [StudyController::class, 'store']);
             Route::delete('/{id}', [StudyController::class, 'destroy']);
+        });
+    });
+
+    Route::prefix('submissions')->group(function () {
+        // Public routes
+        Route::get('/', [SubmissionController::class, 'index']);
+        Route::get('/{id}', [SubmissionController::class, 'show']);
+
+        // Protected routes
+        Route::middleware([ValidateRememberToken::class])->group(function () {
+            Route::post('/', [SubmissionController::class, 'store']);
+            Route::post('/{submission}', [SubmissionController::class, 'update']);
+            Route::delete('/{id}', [SubmissionController::class, 'destroy']);
+            Route::patch('/{id}/approve', [SubmissionController::class, 'updateApproval']);
+        });
+
+        // Admin only routes
+        Route::middleware([ValidateRememberToken::class, RoleMiddleware::class . ':Admin'])->group(function () {
+            Route::post('/{id}/restore', [SubmissionController::class, 'restore']);
         });
     });
 });

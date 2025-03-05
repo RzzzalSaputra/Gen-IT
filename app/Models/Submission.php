@@ -16,11 +16,36 @@ class Submission extends Model
         'file',
         'link',
         'img',
-        'type'
+        'type',
+        'status',
+        'read_counter',
+        'download_counter',
+        'approve_at',
+        'approve_by',
+        'created_by'
     ];
 
-    public function option()
+    // Relasi ke tabel Option (type)
+    public function typeOption()
     {
         return $this->belongsTo(Option::class, 'type');
+    }
+
+    // Relasi ke tabel Option (status)
+    public function statusOption()
+    {
+        return $this->belongsTo(Option::class, 'status');
+    }
+
+    // Relasi ke tabel User (yang menyetujui)
+    public function approvedBy()
+    {
+        return $this->belongsTo(User::class, 'approve_by');
+    }
+
+    // Relasi ke tabel User (yang membuat)
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }
