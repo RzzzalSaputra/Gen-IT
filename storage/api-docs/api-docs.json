@@ -378,6 +378,421 @@
                 ]
             }
         },
+        "/api/companies": {
+            "get": {
+                "tags": [
+                    "Companies"
+                ],
+                "summary": "Get all companies including soft deleted ones",
+                "description": "Returns list of all companies including soft deleted records",
+                "operationId": "a261a49d113a2af2a5ccb5798c6aae7e",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Companies"
+                ],
+                "summary": "Create a new company",
+                "operationId": "4ba2fab8115d4cb8d481328838cb4bba",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "description",
+                                    "province",
+                                    "city",
+                                    "address"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "description": "Company name - must be unique",
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "description": "Company description",
+                                        "type": "string"
+                                    },
+                                    "img": {
+                                        "description": "Company image",
+                                        "type": "string",
+                                        "format": "binary",
+                                        "nullable": true
+                                    },
+                                    "gmap": {
+                                        "description": "Google Maps embed code or URL",
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "province": {
+                                        "description": "Province/state location",
+                                        "type": "string"
+                                    },
+                                    "city": {
+                                        "description": "City location",
+                                        "type": "string"
+                                    },
+                                    "address": {
+                                        "description": "Full address",
+                                        "type": "string"
+                                    },
+                                    "website": {
+                                        "description": "Company website URL",
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "instagram": {
+                                        "description": "Instagram profile URL/handle",
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "facebook": {
+                                        "description": "Facebook page URL",
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "x": {
+                                        "description": "X/Twitter profile URL/handle",
+                                        "type": "string",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Company created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Company created successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer"
+                                                },
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "description": {
+                                                    "type": "string"
+                                                },
+                                                "img": {
+                                                    "type": "string",
+                                                    "example": "/storage/companies/images/img_1.jpg",
+                                                    "nullable": true
+                                                },
+                                                "gmap": {
+                                                    "type": "string",
+                                                    "nullable": true
+                                                },
+                                                "province": {
+                                                    "type": "string"
+                                                },
+                                                "city": {
+                                                    "type": "string"
+                                                },
+                                                "address": {
+                                                    "type": "string"
+                                                },
+                                                "website": {
+                                                    "type": "string",
+                                                    "nullable": true
+                                                },
+                                                "instagram": {
+                                                    "type": "string",
+                                                    "nullable": true
+                                                },
+                                                "facebook": {
+                                                    "type": "string",
+                                                    "nullable": true
+                                                },
+                                                "x": {
+                                                    "type": "string",
+                                                    "nullable": true
+                                                },
+                                                "read_counter": {
+                                                    "type": "integer"
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/companies/active": {
+            "get": {
+                "tags": [
+                    "Companies"
+                ],
+                "summary": "Get all active companies",
+                "description": "Returns list of active (not soft deleted) companies",
+                "operationId": "31ac160d828b2a01d2974b38d01c7db0",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                }
+            }
+        },
+        "/api/companies/{id}": {
+            "get": {
+                "tags": [
+                    "Companies"
+                ],
+                "summary": "Get specific company by ID",
+                "operationId": "50805cb17562834cb99c0477437c5221",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Company ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Company not found"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Companies"
+                ],
+                "summary": "Update an existing company",
+                "description": "Update a company with optional image upload.",
+                "operationId": "3efeefb221b16a5186943b654d6e1f31",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Company ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "img": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "nullable": true
+                                    },
+                                    "gmap": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "province": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "city": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "address": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "website": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "instagram": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "facebook": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "x": {
+                                        "type": "string",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Company updated successfully"
+                    },
+                    "404": {
+                        "description": "Company not found"
+                    },
+                    "422": {
+                        "description": "Validation errors"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Companies"
+                ],
+                "summary": "Soft delete a company",
+                "operationId": "1ac24859e93bfa251a6d0c57ef1ca184",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Company ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Company deleted successfully"
+                    },
+                    "404": {
+                        "description": "Company not found"
+                    }
+                }
+            }
+        },
+        "/api/companies/{id}/restore": {
+            "post": {
+                "tags": [
+                    "Companies"
+                ],
+                "summary": "Restore a soft-deleted company",
+                "operationId": "3663ac6ce47801fd5b72a84179667777",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Company ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Company restored successfully"
+                    },
+                    "404": {
+                        "description": "Company not found"
+                    }
+                }
+            }
+        },
         "/api/contacts": {
             "get": {
                 "tags": [
@@ -892,6 +1307,398 @@
                         "bearerAuth": []
                     }
                 ]
+            }
+        },
+        "/api/jobs": {
+            "get": {
+                "tags": [
+                    "Jobs"
+                ],
+                "summary": "Get all job listings including soft deleted ones",
+                "description": "Returns list of all jobs including soft deleted records",
+                "operationId": "63963513839a812f56fe5eddf9fe529a",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Jobs"
+                ],
+                "summary": "Create a new job listing",
+                "operationId": "c964c62023b02e106a37b155aeee84cc",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "company_id",
+                                    "title",
+                                    "description",
+                                    "requirment",
+                                    "salary_range",
+                                    "register_link",
+                                    "type",
+                                    "experience"
+                                ],
+                                "properties": {
+                                    "company_id": {
+                                        "type": "integer"
+                                    },
+                                    "title": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "requirment": {
+                                        "type": "string"
+                                    },
+                                    "salary_range": {
+                                        "type": "integer"
+                                    },
+                                    "register_link": {
+                                        "description": "URL or other text information for registration",
+                                        "type": "string"
+                                    },
+                                    "type": {
+                                        "description": "ID of the option representing job type",
+                                        "type": "integer"
+                                    },
+                                    "experience": {
+                                        "description": "ID of the option representing required experience",
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Job created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Job created successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer"
+                                                },
+                                                "company_id": {
+                                                    "type": "integer"
+                                                },
+                                                "title": {
+                                                    "type": "string"
+                                                },
+                                                "description": {
+                                                    "type": "string"
+                                                },
+                                                "requirment": {
+                                                    "type": "string"
+                                                },
+                                                "salary_range": {
+                                                    "type": "integer"
+                                                },
+                                                "register_link": {
+                                                    "type": "string"
+                                                },
+                                                "type": {
+                                                    "type": "integer"
+                                                },
+                                                "experience": {
+                                                    "type": "integer"
+                                                },
+                                                "read_counter": {
+                                                    "type": "integer"
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/jobs/active": {
+            "get": {
+                "tags": [
+                    "Jobs"
+                ],
+                "summary": "Get all active job listings",
+                "description": "Returns list of active (not soft deleted) jobs",
+                "operationId": "49343d43b9e18a270336fee3778cf14f",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                }
+            }
+        },
+        "/api/jobs/{id}": {
+            "get": {
+                "tags": [
+                    "Jobs"
+                ],
+                "summary": "Get specific job by ID",
+                "operationId": "46795332805e4a49b36760cdb06df2b0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Job ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Job not found"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Jobs"
+                ],
+                "summary": "Update an existing job listing",
+                "operationId": "af60016ed3e562c1585eae632034913c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Job ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "company_id": {
+                                        "type": "integer",
+                                        "nullable": true
+                                    },
+                                    "title": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "requirment": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "salary_range": {
+                                        "type": "integer",
+                                        "nullable": true
+                                    },
+                                    "register_link": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "type": {
+                                        "type": "integer",
+                                        "nullable": true
+                                    },
+                                    "experience": {
+                                        "type": "integer",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Job updated successfully"
+                    },
+                    "404": {
+                        "description": "Job not found"
+                    },
+                    "422": {
+                        "description": "Validation errors"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Jobs"
+                ],
+                "summary": "Soft delete a job listing",
+                "operationId": "a47d17b6394b4a069ad7b05aad432a92",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Job ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Job deleted successfully"
+                    },
+                    "404": {
+                        "description": "Job not found"
+                    }
+                }
+            }
+        },
+        "/api/jobs/{id}/restore": {
+            "post": {
+                "tags": [
+                    "Jobs"
+                ],
+                "summary": "Restore a soft-deleted job",
+                "operationId": "cebda759f6f02b1831a92d3a1b16f848",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Job ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Job restored successfully"
+                    },
+                    "404": {
+                        "description": "Job not found"
+                    }
+                }
+            }
+        },
+        "/api/companies/{companyId}/jobs": {
+            "get": {
+                "tags": [
+                    "Jobs"
+                ],
+                "summary": "Get all jobs for a specific company",
+                "operationId": "173af0da1bd6e8c4473c3d1b024e9989",
+                "parameters": [
+                    {
+                        "name": "companyId",
+                        "in": "path",
+                        "description": "Company ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Company not found"
+                    }
+                }
             }
         },
         "/api/materials": {
@@ -2960,6 +3767,14 @@
         {
             "name": "Articles",
             "description": "Articles"
+        },
+        {
+            "name": "Companies",
+            "description": "Companies"
+        },
+        {
+            "name": "Jobs",
+            "description": "Jobs"
         },
         {
             "name": "Materials",

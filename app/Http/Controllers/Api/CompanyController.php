@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\School;
+use App\Models\Company;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,14 +14,14 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 
-class SchoolController extends Controller
+class CompanyController extends Controller
 {
     /**
      * @OA\Get(
-     *     path="/api/schools",
-     *     tags={"Schools"},
-     *     summary="Get all schools including soft deleted ones",
-     *     description="Returns list of all schools including soft deleted records",
+     *     path="/api/companies",
+     *     tags={"Companies"},
+     *     summary="Get all companies including soft deleted ones",
+     *     description="Returns list of all companies including soft deleted records",
      *     @OA\Response(
      *         response=200,
      *         description="Successful operation"
@@ -30,15 +30,15 @@ class SchoolController extends Controller
      */
     public function index(): JsonResponse
     {
-        return response()->json(School::withTrashed()->get(), Response::HTTP_OK);
+        return response()->json(Company::withTrashed()->get(), Response::HTTP_OK);
     }
 
     /**
      * @OA\Get(
-     *     path="/api/schools/active",
-     *     tags={"Schools"},
-     *     summary="Get all active schools",
-     *     description="Returns list of active (not soft deleted) schools",
+     *     path="/api/companies/active",
+     *     tags={"Companies"},
+     *     summary="Get all active companies",
+     *     description="Returns list of active (not soft deleted) companies",
      *     @OA\Response(
      *         response=200,
      *         description="Successful operation"
@@ -47,49 +47,45 @@ class SchoolController extends Controller
      */
     public function active(): JsonResponse
     {
-        return response()->json(School::all(), Response::HTTP_OK);
+        return response()->json(Company::all(), Response::HTTP_OK);
     }
 
     /**
      * @OA\Post(
-     *     path="/api/schools",
-     *     summary="Create a new school",
-     *     tags={"Schools"},
+     *     path="/api/companies",
+     *     summary="Create a new company",
+     *     tags={"Companies"},
      *     security={{ "bearerAuth": {} }},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\MediaType(
      *             mediaType="multipart/form-data",
      *             @OA\Schema(
-     *                 required={"name", "description", "type", "province", "city", "address"},
-     *                 @OA\Property(property="name", type="string"),
-     *                 @OA\Property(property="description", type="string"),
-     *                 @OA\Property(property="link", type="string", nullable=true),
-     *                 @OA\Property(property="img", type="string", format="binary", nullable=true),
-     *                 @OA\Property(property="type", type="integer"),
-     *                 @OA\Property(property="gmap", type="string", nullable=true),
-     *                 @OA\Property(property="province", type="string"),
-     *                 @OA\Property(property="city", type="string"),
-     *                 @OA\Property(property="address", type="string"),
-     *                 @OA\Property(property="website", type="string", nullable=true),
-     *                 @OA\Property(property="instagram", type="string", nullable=true),
-     *                 @OA\Property(property="facebook", type="string", nullable=true),
-     *                 @OA\Property(property="x", type="string", nullable=true)
+     *                 required={"name", "description", "province", "city", "address"},
+     *                 @OA\Property(property="name", type="string", description="Company name - must be unique"),
+     *                 @OA\Property(property="description", type="string", description="Company description"),
+     *                 @OA\Property(property="img", type="string", format="binary", nullable=true, description="Company image"),
+     *                 @OA\Property(property="gmap", type="string", nullable=true, description="Google Maps embed code or URL"),
+     *                 @OA\Property(property="province", type="string", description="Province/state location"),
+     *                 @OA\Property(property="city", type="string", description="City location"),
+     *                 @OA\Property(property="address", type="string", description="Full address"),
+     *                 @OA\Property(property="website", type="string", nullable=true, description="Company website URL"),
+     *                 @OA\Property(property="instagram", type="string", nullable=true, description="Instagram profile URL/handle"),
+     *                 @OA\Property(property="facebook", type="string", nullable=true, description="Facebook page URL"),
+     *                 @OA\Property(property="x", type="string", nullable=true, description="X/Twitter profile URL/handle")
      *             )
      *         )
      *     ),
      *     @OA\Response(
      *         response=201,
-     *         description="School created successfully",
+     *         description="Company created successfully",
      *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="School created successfully"),
+     *             @OA\Property(property="message", type="string", example="Company created successfully"),
      *             @OA\Property(property="data", type="object",
      *                 @OA\Property(property="id", type="integer"),
      *                 @OA\Property(property="name", type="string"),
      *                 @OA\Property(property="description", type="string"),
-     *                 @OA\Property(property="link", type="string", nullable=true),
-     *                 @OA\Property(property="img", type="string", nullable=true, example="/storage/schools/images/img_1.jpg"),
-     *                 @OA\Property(property="type", type="integer"),
+     *                 @OA\Property(property="img", type="string", nullable=true, example="/storage/companies/images/img_1.jpg"),
      *                 @OA\Property(property="gmap", type="string", nullable=true),
      *                 @OA\Property(property="province", type="string"),
      *                 @OA\Property(property="city", type="string"),
@@ -135,10 +131,9 @@ class SchoolController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:companies',
             'description' => 'required|string',
-            'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Changed back to nullable
-            'type' => 'required|exists:options,id',
+            'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'gmap' => 'nullable|string',
             'province' => 'required|string|max:255',
             'city' => 'required|string|max:255',
@@ -157,10 +152,10 @@ class SchoolController extends Controller
         try {
             $data = $request->all();
             
-            $school = new School([
+            // First create the company with a default image path
+            $company = new Company([
                 'name' => $data['name'],
                 'description' => $data['description'],
-                'type' => $data['type'],
                 'gmap' => $data['gmap'] ?? null,
                 'province' => $data['province'],
                 'city' => $data['city'], 
@@ -170,25 +165,26 @@ class SchoolController extends Controller
                 'facebook' => $data['facebook'] ?? null,
                 'x' => $data['x'] ?? null,
                 'read_counter' => 0,
+                'img' => '/storage/companies/images/default.jpg', // Default image path
             ]);
 
             // Handle image upload if provided
             if ($request->hasFile('img')) {
                 $image = $request->file('img');
                 $imageName = 'img_' . time() . '.' . $image->getClientOriginalExtension();
-                $imagePath = $image->storeAs('schools/images', $imageName, 'public');
-                $school->img = '/storage/' . $imagePath;
+                $imagePath = $image->storeAs('companies/images', $imageName, 'public');
+                $company->img = '/storage/' . $imagePath;
             }
 
-            $school->save();
+            $company->save();
 
             DB::commit();
-            return response()->json(['message' => 'School created successfully', 'data' => $school], 201);
+            return response()->json(['message' => 'Company created successfully', 'data' => $company], 201);
         } catch (\Exception $e) {
             DB::rollback();
-            Log::error('Error creating school: ' . $e->getMessage());
+            Log::error('Error creating company: ' . $e->getMessage());
             return response()->json([
-                'message' => 'Error creating school',
+                'message' => 'Error creating company',
                 'error' => $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -196,14 +192,14 @@ class SchoolController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/schools/{id}",
-     *     tags={"Schools"},
-     *     summary="Get specific school by ID",
+     *     path="/api/companies/{id}",
+     *     tags={"Companies"},
+     *     summary="Get specific company by ID",
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
-     *         description="School ID",
+     *         description="Company ID",
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Response(
@@ -212,37 +208,37 @@ class SchoolController extends Controller
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="School not found"
+     *         description="Company not found"
      *     )
      * )
      */
     public function show(int $id): JsonResponse
     {
-        $school = School::withTrashed()->find($id);
+        $company = Company::withTrashed()->find($id);
 
-        if (!$school) {
-            return response()->json(['message' => 'School not found'], Response::HTTP_NOT_FOUND);
+        if (!$company) {
+            return response()->json(['message' => 'Company not found'], Response::HTTP_NOT_FOUND);
         }
 
         // Increment read counter
-        $school->read_counter = $school->read_counter + 1;
-        $school->save();
+        $company->read_counter = $company->read_counter + 1;
+        $company->save();
 
-        return response()->json($school, Response::HTTP_OK);
+        return response()->json($company, Response::HTTP_OK);
     }
 
     /**
      * @OA\Post(
-     *     path="/api/schools/{id}",
-     *     tags={"Schools"},
-     *     summary="Update an existing school",
-     *     description="Update a school with optional image upload.",
+     *     path="/api/companies/{id}",
+     *     tags={"Companies"},
+     *     summary="Update an existing company",
+     *     description="Update a company with optional image upload.",
      *     security={{ "bearerAuth": {} }},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
-     *         description="School ID",
+     *         description="Company ID",
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\RequestBody(
@@ -252,9 +248,7 @@ class SchoolController extends Controller
      *             @OA\Schema(
      *                 @OA\Property(property="name", type="string", nullable=true),
      *                 @OA\Property(property="description", type="string", nullable=true),
-     *                 @OA\Property(property="link", type="string", nullable=true),
      *                 @OA\Property(property="img", type="string", format="binary", nullable=true),
-     *                 @OA\Property(property="type", type="integer", nullable=true),
      *                 @OA\Property(property="gmap", type="string", nullable=true),
      *                 @OA\Property(property="province", type="string", nullable=true),
      *                 @OA\Property(property="city", type="string", nullable=true),
@@ -266,8 +260,8 @@ class SchoolController extends Controller
      *             )
      *         )
      *     ),
-     *     @OA\Response(response=200, description="School updated successfully"),
-     *     @OA\Response(response=404, description="School not found"),
+     *     @OA\Response(response=200, description="Company updated successfully"),
+     *     @OA\Response(response=404, description="Company not found"),
      *     @OA\Response(response=422, description="Validation errors"),
      *     @OA\Response(response=500, description="Server error")
      * )
@@ -275,10 +269,9 @@ class SchoolController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'nullable|string|max:255',
+            'name' => 'nullable|string|max:255|unique:companies,name,'.$id,
             'description' => 'nullable|string',
             'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'type' => 'nullable|exists:options,id',
             'gmap' => 'nullable|string',
             'province' => 'nullable|string|max:100',
             'city' => 'nullable|string|max:100',
@@ -295,15 +288,15 @@ class SchoolController extends Controller
 
         DB::beginTransaction();
         try {
-            // Find school by ID
-            $school = School::find($id);
-            if (!$school) {
-                return response()->json(['message' => 'School not found'], 404);
+            // Find company by ID
+            $company = Company::find($id);
+            if (!$company) {
+                return response()->json(['message' => 'Company not found'], 404);
             }
 
-            // Update school data
+            // Update company data
             $updateData = [];
-            foreach(['name', 'description', 'type', 'gmap', 'province', 'city', 
+            foreach(['name', 'description', 'gmap', 'province', 'city', 
                     'address', 'website', 'instagram', 'facebook', 'x'] as $field) {
                 if ($request->has($field)) {
                     $updateData[$field] = $request->$field;
@@ -311,13 +304,14 @@ class SchoolController extends Controller
             }
             
             if (!empty($updateData)) {
-                $school->update($updateData);
+                $company->update($updateData);
             }
 
             // Handle image upload if provided
             if ($request->hasFile('img')) {
-                if (!empty($school->img)) {
-                    $path = storage_path('app/public/' . str_replace('/storage/', '', $school->img));
+                // Delete old image if it's not the default one
+                if (!empty($company->img) && !str_contains($company->img, 'default.jpg')) {
+                    $path = storage_path('app/public/' . str_replace('/storage/', '', $company->img));
                     if (file_exists($path)) {
                         unlink($path);
                     }
@@ -325,82 +319,82 @@ class SchoolController extends Controller
 
                 $image = $request->file('img');
                 $timestamp = Carbon::now()->format('Y-m-d_His');
-                $imageName = $school->id . '_' . $timestamp . '.' . $image->getClientOriginalExtension();
-                $imagePath = $image->storeAs('schools/images', $imageName, 'public');
-                $school->update(['img' => '/storage/' . $imagePath]);
+                $imageName = $company->id . '_' . $timestamp . '.' . $image->getClientOriginalExtension();
+                $imagePath = $image->storeAs('companies/images', $imageName, 'public');
+                $company->update(['img' => '/storage/' . $imagePath]);
             }
 
             DB::commit();
-            return response()->json(['message' => 'School updated successfully', 'data' => $school], 200);
+            return response()->json(['message' => 'Company updated successfully', 'data' => $company], 200);
         } catch (\Exception $e) {
             DB::rollback();
-            return response()->json(['message' => 'Error updating school', 'error' => $e->getMessage()], 500);
+            return response()->json(['message' => 'Error updating company', 'error' => $e->getMessage()], 500);
         }
     }
 
     /**
      * @OA\Delete(
-     *     path="/api/schools/{id}",
-     *     tags={"Schools"},
-     *     summary="Soft delete a school",
+     *     path="/api/companies/{id}",
+     *     tags={"Companies"},
+     *     summary="Soft delete a company",
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
-     *         description="School ID",
+     *         description="Company ID",
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="School deleted successfully"
+     *         description="Company deleted successfully"
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="School not found"
+     *         description="Company not found"
      *     )
      * )
      */
     public function destroy(int $id): JsonResponse
     {
-        $school = School::find($id);
+        $company = Company::find($id);
 
-        if (!$school) {
-            Log::warning("School with ID $id not found.");
-            return response()->json(['message' => 'School not found'], Response::HTTP_NOT_FOUND);
+        if (!$company) {
+            Log::warning("Company with ID $id not found.");
+            return response()->json(['message' => 'Company not found'], Response::HTTP_NOT_FOUND);
         }
 
-        Log::info('Soft deleting school:', ['id' => $school->id]);
-        $school->delete();
+        Log::info('Soft deleting company:', ['id' => $company->id]);
+        $company->delete();
 
-        return response()->json(['message' => 'School successfully soft deleted.', 'deleted_at' => $school->deleted_at], Response::HTTP_OK);
+        return response()->json(['message' => 'Company successfully soft deleted.', 'deleted_at' => $company->deleted_at], Response::HTTP_OK);
     }
 
     /**
      * @OA\Post(
-     *     path="/api/schools/{id}/restore",
-     *     tags={"Schools"},
-     *     summary="Restore a soft-deleted school",
+     *     path="/api/companies/{id}/restore",
+     *     tags={"Companies"},
+     *     summary="Restore a soft-deleted company",
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
-     *         description="School ID",
+     *         description="Company ID",
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="School restored successfully"
+     *         description="Company restored successfully"
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="School not found"
+     *         description="Company not found"
      *     )
      * )
      */
     public function restore(int $id): JsonResponse
     {
-        $school = School::withTrashed()->findOrFail($id);
-        $school->restore();
-        return response()->json($school, Response::HTTP_OK);
+        $company = Company::withTrashed()->findOrFail($id);
+        $company->restore();
+        return response()->json($company, Response::HTTP_OK);
     }
 }

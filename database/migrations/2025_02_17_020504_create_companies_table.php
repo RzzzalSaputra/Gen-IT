@@ -6,33 +6,39 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateCompaniesTable extends Migration
 {
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
     public function up()
     {
         Schema::create('companies', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name')->unique();
             $table->text('description');
-            $table->binary('file');
-            $table->text('link');
-            $table->binary('img');
-            $table->foreignId('type')->constrained('options');
-            $table->text('gmap');
+            $table->text('img')->nullable();
+            $table->text('gmap')->nullable();
             $table->string('province');
             $table->string('city');
             $table->text('address');
-            $table->text('website');
-            $table->text('instagram');
-            $table->text('facebook');
-            $table->text('x');
-            $table->integer('read_counter');
-            $table->integer('download_counter');
+            $table->text('website')->nullable();
+            $table->text('instagram')->nullable();
+            $table->text('facebook')->nullable();
+            $table->text('x')->nullable();
+            $table->integer('read_counter')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });
     }
 
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
     public function down()
     {
         Schema::dropIfExists('companies');
     }
-};
+}

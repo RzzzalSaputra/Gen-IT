@@ -13,17 +13,30 @@ class Company extends Model
     protected $fillable = [
         'name',
         'description',
-        'file',
-        'link',
         'img',
-        'type'
+        'gmap',
+        'province',
+        'city',
+        'address',
+        'website',
+        'instagram',
+        'facebook',
+        'x',
+        'read_counter',
     ];
 
-    public function option()
-    {
-        return $this->belongsTo(Option::class, 'type');
-    }
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'read_counter' => 'integer',
+    ];
 
+    /**
+     * Get jobs associated with this company.
+     */
     public function jobs()
     {
         return $this->hasMany(Job::class);

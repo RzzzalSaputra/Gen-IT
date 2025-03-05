@@ -14,12 +14,35 @@ class Job extends Model
         'company_id',
         'title',
         'description',
-        'requirement',
-        'salary_range'
+        'requirment',
+        'salary_range',
+        'register_link',
+        'type',
+        'experience',
+        'read_counter',
     ];
 
+    /**
+     * Get the company that owns this job.
+     */
     public function company()
     {
         return $this->belongsTo(Company::class);
+    }
+
+    /**
+     * Get the option that represents the type of this job.
+     */
+    public function jobType()
+    {
+        return $this->belongsTo(Option::class, 'type');
+    }
+
+    /**
+     * Get the option that represents the experience required for this job.
+     */
+    public function experienceLevel()
+    {
+        return $this->belongsTo(Option::class, 'experience');
     }
 }

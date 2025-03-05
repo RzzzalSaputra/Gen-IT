@@ -1,3 +1,4 @@
+create_jobs_table.php
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -6,6 +7,11 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateJobsTable extends Migration
 {
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
     public function up()
     {
         Schema::create('jobs', function (Blueprint $table) {
@@ -13,22 +19,24 @@ class CreateJobsTable extends Migration
             $table->foreignId('company_id')->constrained('companies');
             $table->text('title');
             $table->text('description');
-            $table->text('requirement');
+            $table->text('requirment');
             $table->integer('salary_range');
-            $table->integer('register_link');
-            $table->binary('file');
-            $table->text('link');
-            $table->binary('img');
+            $table->text('register_link');
             $table->foreignId('type')->constrained('options');
             $table->foreignId('experience')->constrained('options');
-            $table->integer('read_counter');
+            $table->integer('read_counter')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });
     }
 
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
     public function down()
     {
         Schema::dropIfExists('jobs');
     }
-};
+}

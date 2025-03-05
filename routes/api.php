@@ -13,6 +13,8 @@ use App\Http\Controllers\Api\ArticleController;
 use App\Http\Controllers\Api\MaterialController;
 use App\Http\Controllers\Api\SchoolController;
 use App\Http\Controllers\Api\StudyController;
+use App\Http\Controllers\Api\CompanyController;
+use App\Http\Controllers\Api\JobController;
 use App\Http\Controllers\Api\SubmissionController;
 use App\Http\Middleware\ValidateRememberToken;
 use App\Http\Middleware\RoleMiddleware;
@@ -162,6 +164,40 @@ Route::middleware('api')->group(function () {
             Route::post('/{id}', [StudyController::class, 'update']);
             Route::post('/', [StudyController::class, 'store']);
             Route::delete('/{id}', [StudyController::class, 'destroy']);
+        });
+    });
+
+    // Company Routes
+    Route::prefix('companies')->group(function () {
+        Route::get('/', [CompanyController::class, 'index']);
+        Route::get('/active', [CompanyController::class, 'active']);
+        Route::get('/{id}', [CompanyController::class, 'show']);
+
+        // Admin Routes
+        Route::middleware([ValidateRememberToken::class, RoleMiddleware::class.':admin'])->group(function () {
+            Route::post('/{id}/restore', [CompanyController::class, 'restore']);
+            Route::post('/{id}', [CompanyController::class, 'update']);
+            Route::post('/', [CompanyController::class, 'store']);
+            Route::delete('/{id}', [CompanyController::class, 'destroy']);
+        });
+        
+        // Get jobs by company
+        Route::get('/{companyId}/jobs', [JobController::class, 'getJobsByCompany']);
+    });
+    
+    // Job Routes
+    Route::prefix('jobs')->group(function () {
+        // Public Routes
+        Route::get('/', [JobController::class, 'index']);
+        Route::get('/active', [JobController::class, 'active']);
+        Route::get('/{id}', [JobController::class, 'show']);
+
+        // Admin Routes
+        Route::middleware([ValidateRememberToken::class, RoleMiddleware::class.':admin'])->group(function () {
+            Route::post('/{id}/restore', [JobController::class, 'restore']);
+            Route::post('/{id}', [JobController::class, 'update']);
+            Route::post('/', [JobController::class, 'store']);
+            Route::delete('/{id}', [JobController::class, 'destroy']);
         });
     });
 

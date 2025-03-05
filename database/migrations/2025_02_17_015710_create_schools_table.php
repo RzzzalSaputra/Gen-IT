@@ -1,4 +1,3 @@
-schools_table.php
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -18,7 +17,6 @@ class CreateSchoolsTable extends Migration
             $table->id();
             $table->string('name');
             $table->text('description');
-            $table->text('link')->nullable();
             $table->text('img')->nullable();
             $table->foreignId('type')->constrained('options');
             $table->text('gmap')->nullable();

@@ -13,7 +13,6 @@ class School extends Model
     protected $fillable = [
         'name',
         'description',
-        'link',
         'img',
         'type',
         'gmap',
