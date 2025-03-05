@@ -16,6 +16,8 @@ return new class extends Migration
             $table->datetime('time');
             $table->string('link');
             $table->string('download')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->foreign('created_by')->references('id')->on('users');
             $table->timestamps();
             $table->softDeletes();
         });
