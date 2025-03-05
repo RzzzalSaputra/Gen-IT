@@ -19,15 +19,11 @@ class Article extends Model
         'type',
         'writer',
         'post_time',
-        'create_at',
-        'create_by',
-        'delete_at'
+        'created_by',
     ];
 
     protected $dates = [
         'post_time',
-        'create_at',
-        'delete_at',
         'created_at',
         'updated_at',
         'deleted_at'
@@ -45,6 +41,6 @@ class Article extends Model
 
     public function creator()
     {
-        return $this->belongsTo(User::class, 'create_by');
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

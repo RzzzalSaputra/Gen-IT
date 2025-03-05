@@ -58,7 +58,7 @@ class ArticleController extends Controller
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\MediaType(
-     *             mediaType="application/json",
+     *             mediaType="multipart/form-data",
      *             @OA\Schema(
      *                 required={"title", "slug", "content", "summary", "status", "type", "writer", "post_time"},
      *                 @OA\Property(property="title", type="string"),
@@ -114,7 +114,6 @@ class ArticleController extends Controller
         try {
             $data = $request->all();
             $userId = Auth::id();
-            $currentTimestamp = Carbon::now();
 
             $article = Article::create([
                 'title' => $data['title'],
@@ -125,8 +124,7 @@ class ArticleController extends Controller
                 'type' => $data['type'],
                 'writer' => $data['writer'],
                 'post_time' => $data['post_time'],
-                'create_at' => $currentTimestamp,
-                'create_by' => $userId
+                'created_by' => $userId  // Use created_by instead of create_by
             ]);
 
             DB::commit();
@@ -187,7 +185,7 @@ class ArticleController extends Controller
      *     @OA\RequestBody(
      *         required=false,
      *         @OA\MediaType(
-     *             mediaType="application/json",
+     *             mediaType="multipart/form-data",
      *             @OA\Schema(
      *                 @OA\Property(property="title", type="string", nullable=true),
      *                 @OA\Property(property="slug", type="string", nullable=true),
@@ -280,8 +278,6 @@ class ArticleController extends Controller
 
         Log::info('Soft deleting article:', ['id' => $article->id]);
         $article->delete();
-        $article->delete_at = $article->deleted_at;
-        $article->save();
 
         return response()->json([
             'message' => 'Article successfully soft deleted.',
@@ -316,8 +312,7 @@ class ArticleController extends Controller
     {
         $article = Article::withTrashed()->findOrFail($id);
         $article->restore();
-        $article->delete_at = null;
-        $article->save();
+        // No need to manually set delete_at to null
 
         return response()->json(['message' => 'Article restored successfully', 'data' => $article], Response::HTTP_OK);
     }

@@ -28,9 +28,9 @@ Route::middleware('api')->group(function () {
     Route::prefix('vicons')->middleware([ValidateRememberToken::class, RoleMiddleware::class.':admin'])->group(function () {
         Route::get('/', [ViconController::class, 'index']);
         Route::post('/', [ViconController::class, 'store']);
-        Route::get('/{vicon}', [ViconController::class, 'show']);
-        Route::put('/{vicon}', [ViconController::class, 'update']);
-        Route::delete('/{vicon}', [ViconController::class, 'destroy']);
+        Route::get('/{id}', [ViconController::class, 'show']);  // Changed {vicon} to {id}
+        Route::post('/{id}', [ViconController::class, 'update']);  // Changed from PUT to POST
+        Route::delete('/{id}', [ViconController::class, 'destroy']);  // Changed {vicon} to {id}
         Route::post('/{id}/restore', [ViconController::class, 'restore']);
     });
 

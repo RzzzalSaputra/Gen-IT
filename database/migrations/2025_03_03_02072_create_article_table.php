@@ -22,7 +22,6 @@ return new class extends Migration
             $table->foreignId('type')->constrained('options');
             $table->string('writer', 255);
             $table->timestamp('post_time');
-            $table->timestamp('create_at');
             $table->foreignId('created_by')->constrained('users');
             $table->timestamp('deleted_at')->nullable();
             $table->timestamps(); // This creates created_at and updated_at columns

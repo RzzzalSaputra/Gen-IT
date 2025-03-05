@@ -20,17 +20,18 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
  *
  * @OA\Tags(
  *     @OA\Tag(name="Authentication", description="User authentication endpoints"),
+ *     @OA\Tag(name="Options", description="API Endpoints for Options management")
  *     @OA\Tag(name="Posts", description="API Endpoints for Posts management"),
  *     @OA\Tag(name="Gallery", description="Gallery management endpoints"),
  *     @OA\Tag(name="Contacts", description="Contact management endpoints"),
  *     @OA\Tag(name="Vicons", description="Video conference management endpoints"),
- *     @OA\Tag(name="Options", description="API Endpoints for Options management")
+ *     
  * )
  *
  * @OA\TagGroups(
  *     @OA\TagGroup(
  *         name="API Documentation",
- *         tags={"Authentication", "Posts", "Gallery", "Contacts", "Vicons", "Options"}
+ *         tags={"Authentication", "Options", "Posts", "Gallery", "Contacts", "Vicons"}
  *     )
  * )
  */
