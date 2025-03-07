@@ -14,29 +14,60 @@ class OptionController extends Controller
     /**
      * @OA\Get(
      *     path="/api/options",
+     *     summary="Get all options with pagination",
      *     tags={"Options"},
-     *     summary="Get all options including soft deleted ones",
-     *     description="Returns list of all options including soft deleted records",
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful operation",
-     *         @OA\JsonContent(
-     *             type="array",
-     *             @OA\Items(
-     *                 @OA\Property(property="id", type="integer"),
-     *                 @OA\Property(property="type", type="string"),
-     *                 @OA\Property(property="value", type="string"),
-     *                 @OA\Property(property="created_at", type="string", format="datetime"),
-     *                 @OA\Property(property="updated_at", type="string", format="datetime"),
-     *                 @OA\Property(property="deleted_at", type="string", format="datetime", nullable=true)
-     *             )
-     *         )
-     *     )
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="_page",
+     *         in="query",
+     *         description="Current page number",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Parameter(
+     *         name="_limit",
+     *         in="query",
+     *         description="Number of items per page",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=10)
+     *     ),
+     *     @OA\Parameter(
+     *         name="_search",
+     *         in="query",
+     *         description="Search by option value",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="type",
+     *         in="query",
+     *         description="Filter by option type",
+     *         required=false,
+     *         @OA\Schema(type="string", example="job_type")
+     *     ),
+     *     @OA\Response(response=200, description="List of options with pagination"),
+     *     @OA\Response(response=403, description="Unauthorized")
      * )
      */
-    public function index(): JsonResponse
+    public function index(Request $request)
     {
-        return response()->json(Option::withTrashed()->get(), Response::HTTP_OK);
+        $query = Option::query();
+
+        // Filter berdasarkan type
+        if ($request->has('type')) {
+            $query->where('type', $request->type);
+        }
+
+        // Pencarian berdasarkan value
+        if ($request->has('_search')) {
+            $query->where('value', 'like', "%{$request->_search}%");
+        }
+
+        // Pagination
+        $perPage = $request->_limit ?? 10;
+        $options = $query->paginate($perPage);
+
+        return response()->json($options);
     }
 
     /**

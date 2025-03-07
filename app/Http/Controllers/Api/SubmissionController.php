@@ -14,15 +14,74 @@ class SubmissionController extends Controller
     /**
      * @OA\Get(
      *     path="/api/submissions",
-     *     summary="Display a listing of submissions",
+     *     summary="Get all submissions with pagination",
      *     tags={"Submissions"},
-     *     @OA\Response(response=200, description="Submissions retrieved successfully")
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="_page",
+     *         in="query",
+     *         description="Current page number",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Parameter(
+     *         name="_limit",
+     *         in="query",
+     *         description="Number of items per page",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=10)
+     *     ),
+     *     @OA\Parameter(
+     *         name="_search",
+     *         in="query",
+     *         description="Search by title or content",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="type",
+     *         in="query",
+     *         description="Filter by submission type",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=2)
+     *     ),
+     *     @OA\Parameter(
+     *         name="status",
+     *         in="query",
+     *         description="Filter by submission status",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(response=200, description="List of submissions with pagination"),
+     *     @OA\Response(response=403, description="Unauthorized")
      * )
      */
-    public function index()
+    public function index(Request $request)
     {
-        $submissions = Submission::all();
-        return response()->json(['message' => 'Submissions retrieved successfully', 'data' => $submissions], 200);
+        $query = Submission::query();
+
+        // Filter berdasarkan status dan type
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+        }
+        if ($request->has('type')) {
+            $query->where('type', $request->type);
+        }
+
+        // Pencarian berdasarkan title atau content
+        if ($request->has('_search')) {
+            $search = $request->_search;
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%$search%")
+                    ->orWhere('content', 'like', "%$search%");
+            });
+        }
+
+        // Pagination
+        $perPage = $request->_limit ?? 10;
+        $submissions = $query->paginate($perPage);
+
+        return response()->json($submissions);
     }
 
     /**
@@ -87,7 +146,7 @@ class SubmissionController extends Controller
             if ($request->hasFile('file')) {
                 $file = $request->file('file');
                 $ext = $file->getClientOriginalExtension();
-                $filename = "file_{$submission->id}_{$timestamp}.{$ext}";
+                $filename = "{$submission->id}_{$timestamp}.{$ext}";
                 $path = $file->storeAs('submissions/files', $filename, 'public');
                 $submission->file = '/storage/' . $path;
             }
@@ -95,7 +154,7 @@ class SubmissionController extends Controller
             if ($request->hasFile('img')) {
                 $img = $request->file('img');
                 $imgExt = $img->getClientOriginalExtension();
-                $imgName = "img_{$submission->id}_{$timestamp}.{$imgExt}";
+                $imgName = "{$submission->id}_{$timestamp}.{$imgExt}";
                 $imgPath = $img->storeAs('submissions/images', $imgName, 'public');
                 $submission->img = '/storage/' . $imgPath;
             }

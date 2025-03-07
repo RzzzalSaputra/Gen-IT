@@ -21,16 +21,104 @@ class CompanyController extends Controller
      *     path="/api/companies",
      *     tags={"Companies"},
      *     summary="Get all companies including soft deleted ones",
-     *     description="Returns list of all companies including soft deleted records",
+     *     description="Returns list of all companies including soft deleted records with filters and pagination",
      *     @OA\Response(
      *         response=200,
-     *         description="Successful operation"
+     *         description="Successful operation",
+     *         @OA\JsonContent()
+     *     ),
+     *     @OA\Parameter(
+     *         name="_page",
+     *         in="query",
+     *         description="Current page",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="integer",
+     *             format="int64",
+     *             example=1
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="_limit",
+     *         in="query",
+     *         description="Max items in a page",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="integer",
+     *             format="int64",
+     *             example=10
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="_search",
+     *         in="query",
+     *         description="Word to search in name, province, or city",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string"
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="province",
+     *         in="query",
+     *         description="Filter by province",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string"
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="city",
+     *         in="query",
+     *         description="Filter by city",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string"
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="_dir",
+     *         in="query",
+     *         description="Order by direction (asc/desc)",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *             example="asc"
+     *         )
      *     )
      * )
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        return response()->json(Company::withTrashed()->get(), Response::HTTP_OK);
+        $query = Company::query()->withTrashed();
+
+        // Filter berdasarkan province dan city
+        if ($request->has('province')) {
+            $query->where('province', $request->province);
+        }
+        if ($request->has('city')) {
+            $query->where('city', $request->city);
+        }
+
+        // Filter berdasarkan pencarian di name, province, atau city
+        if ($request->has('_search')) {
+            $search = $request->_search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%$search%")
+                    ->orWhere('province', 'like', "%$search%")
+                    ->orWhere('city', 'like', "%$search%");
+            });
+        }
+
+        // Sorting (default: desc)
+        $direction = $request->_dir ?? 'desc';
+        $query->orderBy('created_at', $direction);
+
+        // Pagination
+        $perPage = $request->_limit ?? 5;
+        $companies = $query->paginate($perPage);
+
+        return response()->json($companies, Response::HTTP_OK);
     }
 
     /**

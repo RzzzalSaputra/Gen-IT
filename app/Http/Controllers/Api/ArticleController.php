@@ -19,17 +19,125 @@ class ArticleController extends Controller
      * @OA\Get(
      *     path="/api/articles",
      *     tags={"Articles"},
-     *     summary="Get all articles including soft deleted ones",
-     *     description="Returns list of all articles including soft deleted records",
+     *     summary="Display a listing of articles",
+     *     operationId="articleIndex",
      *     @OA\Response(
      *         response=200,
-     *         description="Successful operation"
-     *     )
+     *         description="successful",
+     *         @OA\JsonContent()
+     *     ),
+     *     @OA\Parameter(
+     *         name="_page",
+     *         in="query",
+     *         description="Current page",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer",
+     *             format="int64",
+     *             example=1
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="_limit",
+     *         in="query",
+     *         description="Max items in a page",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer",
+     *             format="int64",
+     *             example=10
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="_search",
+     *         in="query",
+     *         description="Word to search in title, content, summary, or writer",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="_dir",
+     *         in="query",
+     *         description="Order by direction (asc/desc)",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *             example="asc"
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="status",
+     *         in="query",
+     *         description="Filter by status",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="integer",
+     *             format="int64",
+     *             example=1
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="type",
+     *         in="query",
+     *         description="Filter by type",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="integer",
+     *             format="int64",
+     *             example=2
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="created_by",
+     *         in="query",
+     *         description="Filter by creator ID",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="integer",
+     *             format="int64",
+     *             example=5
+     *         )
+     *     ),
      * )
      */
-    public function index(): JsonResponse
+
+    public function index(Request $request): JsonResponse
     {
-        return response()->json(Article::withTrashed()->get(), Response::HTTP_OK);
+        $query = Article::query()->withTrashed();
+
+        // Filter berdasarkan status, type, dan created_by
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+        }
+        if ($request->has('type')) {
+            $query->where('type', $request->type);
+        }
+        if ($request->has('created_by')) {
+            $query->where('created_by', $request->created_by);
+        }
+
+        // Filter berdasarkan pencarian di title, content, summary, atau writer
+        if ($request->has('_search')) {
+            $search = $request->_search;
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%$search%")
+                    ->orWhere('content', 'like', "%$search%")
+                    ->orWhere('summary', 'like', "%$search%")
+                    ->orWhere('writer', 'like', "%$search%");
+            });
+        }
+
+        // Sorting (default: desc)
+        $direction = $request->_dir ?? 'desc';
+        $query->orderBy('created_at', $direction);
+
+        // Pagination
+        $perPage = $request->_limit ?? 5;
+        $articles = $query->paginate($perPage);
+
+        return response()->json($articles);
     }
 
     /**

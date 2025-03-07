@@ -19,18 +19,76 @@ class StudyController extends Controller
     /**
      * @OA\Get(
      *     path="/api/studies",
+     *     summary="Get all studies with pagination",
      *     tags={"Studies"},
-     *     summary="Get all study programs including soft deleted ones",
-     *     description="Returns list of all study programs including soft deleted records",
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful operation"
-     *     )
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="_page",
+     *         in="query",
+     *         description="Current page number",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Parameter(
+     *         name="_limit",
+     *         in="query",
+     *         description="Number of items per page",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=10)
+     *     ),
+     *     @OA\Parameter(
+     *         name="_search",
+     *         in="query",
+     *         description="Search by study name or description",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="school_id",
+     *         in="query",
+     *         description="Filter by school ID",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Parameter(
+     *         name="level",
+     *         in="query",
+     *         description="Filter by study level",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=3)
+     *     ),
+     *     @OA\Response(response=200, description="List of studies with pagination"),
+     *     @OA\Response(response=403, description="Unauthorized")
      * )
      */
-    public function index(): JsonResponse
+    public function index(Request $request)
     {
-        return response()->json(Study::withTrashed()->get(), Response::HTTP_OK);
+        $query = Study::query();
+
+        // Filter berdasarkan sekolah
+        if ($request->has('school_id')) {
+            $query->where('school_id', $request->school_id);
+        }
+
+        // Filter berdasarkan level
+        if ($request->has('level')) {
+            $query->where('level', $request->level);
+        }
+
+        // Pencarian berdasarkan nama atau deskripsi studi
+        if ($request->has('_search')) {
+            $search = $request->_search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%$search%")
+                    ->orWhere('description', 'like', "%$search%");
+            });
+        }
+
+        // Pagination
+        $perPage = $request->_limit ?? 10;
+        $studies = $query->paginate($perPage);
+
+        return response()->json($studies);
     }
 
     /**

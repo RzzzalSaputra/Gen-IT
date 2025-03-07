@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Http\JsonResponse;
 
 class GalleryController extends Controller
 {
@@ -23,17 +25,91 @@ class GalleryController extends Controller
     /**
      * @OA\Get(
      *     path="/api/gallery",
-     *     summary="Get all gallery items",
      *     tags={"Gallery"},
-     *     security={{"bearerAuth":{}}},
-     *     @OA\Response(response=200, description="List of gallery items"),
-     *     @OA\Response(response=403, description="Unauthorized")
+     *     summary="Display a listing of galleries",
+     *     operationId="galleryIndex",
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful",
+     *         @OA\JsonContent()
+     *     ),
+     *     @OA\Parameter(
+     *         name="_page",
+     *         in="query",
+     *         description="Current page",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="integer",
+     *             example=1
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="_limit",
+     *         in="query",
+     *         description="Max items per page",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="integer",
+     *             example=10
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="_search",
+     *         in="query",
+     *         description="Search by title",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string"
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="type",
+     *         in="query",
+     *         description="Filter by type",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="integer",
+     *             example=1
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="created_by",
+     *         in="query",
+     *         description="Filter by creator ID",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="integer",
+     *             example=5
+     *         )
+     *     )
      * )
      */
-    public function index()
+    public function index(Request $request): JsonResponse
     {
-        $galleries = Gallery::all();
-        return response()->json(['data' => $galleries]);
+        $query = Gallery::query()->withTrashed();
+
+        // Filtering berdasarkan type dan created_by
+        if ($request->has('type')) {
+            $query->where('type', $request->type);
+        }
+        if ($request->has('created_by')) {
+            $query->where('created_by', $request->created_by);
+        }
+
+        // Pencarian berdasarkan title
+        if ($request->has('_search')) {
+            $query->where('title', 'like', "%{$request->_search}%");
+        }
+
+        // Sorting
+        $direction = $request->_dir ?? 'desc';
+        $query->orderBy('created_at', $direction);
+
+        // Pagination
+        $perPage = $request->_limit ?? 10;
+        $galleries = $query->paginate($perPage);
+
+        return response()->json($galleries, Response::HTTP_OK);
     }
 
     /**
@@ -87,7 +163,7 @@ class GalleryController extends Controller
             // Handle file upload jika ada
             if ($request->hasFile('file')) {
                 $file = $request->file('file');
-                $timestamp = Carbon::now()->format('Y-m-d_His');
+                $timestamp = Carbon::now()->format('Ymd_His');
                 $filename = $gallery->id . '_' . $timestamp . '.' . $file->getClientOriginalExtension();
 
 

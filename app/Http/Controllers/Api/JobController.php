@@ -17,19 +17,82 @@ class JobController extends Controller
     /**
      * @OA\Get(
      *     path="/api/jobs",
+     *     summary="Get all jobs with pagination",
      *     tags={"Jobs"},
-     *     summary="Get all job listings including soft deleted ones",
-     *     description="Returns list of all jobs including soft deleted records",
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful operation"
-     *     )
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="_page",
+     *         in="query",
+     *         description="Current page number",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Parameter(
+     *         name="_limit",
+     *         in="query",
+     *         description="Number of items per page",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=10)
+     *     ),
+     *     @OA\Parameter(
+     *         name="_search",
+     *         in="query",
+     *         description="Search by job title",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="company_id",
+     *         in="query",
+     *         description="Filter by company ID",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Parameter(
+     *         name="type",
+     *         in="query",
+     *         description="Filter by job type ID",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=2)
+     *     ),
+     *     @OA\Parameter(
+     *         name="experience",
+     *         in="query",
+     *         description="Filter by experience level",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=3)
+     *     ),
+     *     @OA\Response(response=200, description="List of jobs with pagination"),
+     *     @OA\Response(response=403, description="Unauthorized")
      * )
      */
-    public function index(): JsonResponse
+    public function index(Request $request)
     {
-        return response()->json(Job::withTrashed()->get(), Response::HTTP_OK);
+        $query = Job::query();
+
+        // Filter berdasarkan company_id, type, dan experience
+        if ($request->has('company_id')) {
+            $query->where('company_id', $request->company_id);
+        }
+        if ($request->has('type')) {
+            $query->where('type', $request->type);
+        }
+        if ($request->has('experience')) {
+            $query->where('experience', $request->experience);
+        }
+
+        // Pencarian berdasarkan title
+        if ($request->has('_search')) {
+            $query->where('title', 'like', "%{$request->_search}%");
+        }
+
+        // Pagination
+        $perPage = $request->_limit ?? 10;
+        $jobs = $query->paginate($perPage);
+
+        return response()->json($jobs);
     }
+
 
     /**
      * @OA\Get(

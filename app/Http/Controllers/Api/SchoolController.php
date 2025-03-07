@@ -19,18 +19,88 @@ class SchoolController extends Controller
     /**
      * @OA\Get(
      *     path="/api/schools",
+     *     summary="Get all schools with pagination",
      *     tags={"Schools"},
-     *     summary="Get all schools including soft deleted ones",
-     *     description="Returns list of all schools including soft deleted records",
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful operation"
-     *     )
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="_page",
+     *         in="query",
+     *         description="Current page number",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Parameter(
+     *         name="_limit",
+     *         in="query",
+     *         description="Number of items per page",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=10)
+     *     ),
+     *     @OA\Parameter(
+     *         name="_search",
+     *         in="query",
+     *         description="Search by school name or description",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="type",
+     *         in="query",
+     *         description="Filter by school type",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=2)
+     *     ),
+     *     @OA\Parameter(
+     *         name="province",
+     *         in="query",
+     *         description="Filter by province",
+     *         required=false,
+     *         @OA\Schema(type="string", example="Jawa Barat")
+     *     ),
+     *     @OA\Parameter(
+     *         name="city",
+     *         in="query",
+     *         description="Filter by city",
+     *         required=false,
+     *         @OA\Schema(type="string", example="Bandung")
+     *     ),
+     *     @OA\Response(response=200, description="List of schools with pagination"),
+     *     @OA\Response(response=403, description="Unauthorized")
      * )
      */
-    public function index(): JsonResponse
+    public function index(Request $request)
     {
-        return response()->json(School::withTrashed()->get(), Response::HTTP_OK);
+        $query = School::query();
+
+        // Filter berdasarkan tipe sekolah
+        if ($request->has('type')) {
+            $query->where('type', $request->type);
+        }
+
+        // Filter berdasarkan provinsi
+        if ($request->has('province')) {
+            $query->where('province', 'like', "%{$request->province}%");
+        }
+
+        // Filter berdasarkan kota
+        if ($request->has('city')) {
+            $query->where('city', 'like', "%{$request->city}%");
+        }
+
+        // Pencarian berdasarkan nama atau deskripsi sekolah
+        if ($request->has('_search')) {
+            $search = $request->_search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%$search%")
+                    ->orWhere('description', 'like', "%$search%");
+            });
+        }
+
+        // Pagination
+        $perPage = $request->_limit ?? 10;
+        $schools = $query->paginate($perPage);
+
+        return response()->json($schools);
     }
 
     /**

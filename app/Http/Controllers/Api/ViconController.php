@@ -37,27 +37,64 @@ class ViconController extends Controller
     /**
      * @OA\Get(
      *     path="/api/vicons",
-     *     summary="Get all vicons",
+     *     summary="Get all Vicons with pagination",
      *     tags={"Vicons"},
      *     security={{"bearerAuth":{}}},
-     *     @OA\Response(
-     *         response=200,
-     *         description="List of all vicons including soft deleted ones"
+     *     @OA\Parameter(
+     *         name="_page",
+     *         in="query",
+     *         description="Current page number",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=1)
      *     ),
-     *     @OA\Response(
-     *         response=403,
-     *         description="Unauthorized - Admin access required"
-     *     )
+     *     @OA\Parameter(
+     *         name="_limit",
+     *         in="query",
+     *         description="Number of items per page",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=10)
+     *     ),
+     *     @OA\Parameter(
+     *         name="_search",
+     *         in="query",
+     *         description="Search by title or description",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="created_by",
+     *         in="query",
+     *         description="Filter by creator",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(response=200, description="List of Vicons with pagination"),
+     *     @OA\Response(response=403, description="Unauthorized")
      * )
      */
-    public function index()
+    public function index(Request $request)
     {
-        if (Auth::user()->role !== 'admin') {
-            return response()->json(['message' => 'Unauthorized'], Response::HTTP_FORBIDDEN);
+        $query = Vicon::query();
+
+        // Filter berdasarkan created_by
+        if ($request->has('created_by')) {
+            $query->where('created_by', $request->created_by);
         }
 
-        $vicons = Vicon::withTrashed()->get();
-        return response()->json($vicons, Response::HTTP_OK);
+        // Pencarian berdasarkan title atau desc
+        if ($request->has('_search')) {
+            $search = $request->_search;
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%$search%")
+                    ->orWhere('desc', 'like', "%$search%");
+            });
+        }
+
+        // Pagination
+        $perPage = $request->_limit ?? 10;
+        $vicons = $query->paginate($perPage);
+
+        return response()->json($vicons);
     }
 
     /**
@@ -153,28 +190,26 @@ class ViconController extends Controller
 
         DB::beginTransaction();
         try {
-            $data = $request->all();
-            
-            // Create Vicon with default image
-            $vicon = new Vicon([
-                'title' => $data['title'],
-                'desc' => $data['desc'],
-                'time' => $data['time'],
-                'link' => $data['link'],
-                'download' => $data['download'] ?? null,
-                'created_by' => Auth::id(),
-                'img' => '/storage/' . $this->default_folder . '/default.jpg' // Default image
-            ]);
+            // Simpan data Vicon terlebih dahulu
+            $vicon = new Vicon();
+            $vicon->title = $request->title;
+            $vicon->desc = $request->desc;
+            $vicon->time = $request->time;
+            $vicon->link = $request->link;
+            $vicon->download = $request->download ?? null;
+            $vicon->created_by = Auth::id();
+            $vicon->img = '/storage/' . $this->default_folder . '/default.jpg'; 
+            $vicon->save();
 
-            // Handle image upload
+            // Handle upload gambar setelah ID tersedia
             if ($request->hasFile('img')) {
                 $file = $request->file('img');
-                $imageName = 'img_' . time() . '.' . $file->getClientOriginalExtension();
+                $timestamp = Carbon::now()->format('Ymd_His');
+                $imageName = $vicon->id . '_' . $timestamp . '.' . $file->getClientOriginalExtension();
                 $imagePath = $file->storeAs($this->default_folder, $imageName, 'public');
                 $vicon->img = '/storage/' . $imagePath;
+                $vicon->save();
             }
-
-            $vicon->save();
 
             DB::commit();
             return response()->json(['message' => 'Vicon created successfully', 'data' => $vicon], Response::HTTP_CREATED);

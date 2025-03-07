@@ -19,12 +19,92 @@
                 "tags": [
                     "Articles"
                 ],
-                "summary": "Get all articles including soft deleted ones",
-                "description": "Returns list of all articles including soft deleted records",
-                "operationId": "93ded9e31119e6bbb22455c72ef97f19",
+                "summary": "Display a listing of articles",
+                "operationId": "articleIndex",
+                "parameters": [
+                    {
+                        "name": "_page",
+                        "in": "query",
+                        "description": "Current page",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "_limit",
+                        "in": "query",
+                        "description": "Max items in a page",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "_search",
+                        "in": "query",
+                        "description": "Word to search in title, content, summary, or writer",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "_dir",
+                        "in": "query",
+                        "description": "Order by direction (asc/desc)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "asc"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Filter by status",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "description": "Filter by type",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64",
+                            "example": 2
+                        }
+                    },
+                    {
+                        "name": "created_by",
+                        "in": "query",
+                        "description": "Filter by creator ID",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64",
+                            "example": 5
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Successful operation"
+                        "description": "successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
                     }
                 }
             },
@@ -384,11 +464,77 @@
                     "Companies"
                 ],
                 "summary": "Get all companies including soft deleted ones",
-                "description": "Returns list of all companies including soft deleted records",
+                "description": "Returns list of all companies including soft deleted records with filters and pagination",
                 "operationId": "a261a49d113a2af2a5ccb5798c6aae7e",
+                "parameters": [
+                    {
+                        "name": "_page",
+                        "in": "query",
+                        "description": "Current page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "_limit",
+                        "in": "query",
+                        "description": "Max items in a page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "_search",
+                        "in": "query",
+                        "description": "Word to search in name, province, or city",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "province",
+                        "in": "query",
+                        "description": "Filter by province",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "city",
+                        "in": "query",
+                        "description": "Filter by city",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "_dir",
+                        "in": "query",
+                        "description": "Order by direction (asc/desc)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "asc"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Successful operation"
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
                     }
                 }
             },
@@ -798,21 +944,85 @@
                 "tags": [
                     "Contacts"
                 ],
-                "summary": "Get all contacts",
-                "operationId": "bc39494d59500e2d75e6f6648b43c8de",
+                "summary": "Display a listing of contacts",
+                "operationId": "contactIndex",
+                "parameters": [
+                    {
+                        "name": "_page",
+                        "in": "query",
+                        "description": "Current page",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "_limit",
+                        "in": "query",
+                        "description": "Max items in a page",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "respond_by",
+                        "in": "query",
+                        "description": "Filter by user who responded",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64",
+                            "example": 5
+                        }
+                    },
+                    {
+                        "name": "created_by",
+                        "in": "query",
+                        "description": "Filter by creator ID",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64",
+                            "example": 2
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Filter by status",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "_dir",
+                        "in": "query",
+                        "description": "Order by direction (asc/desc)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "asc"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "List of contacts"
-                    },
-                    "403": {
-                        "description": "Unauthorized - Admin access required"
+                        "description": "successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             },
             "post": {
                 "tags": [
@@ -1105,21 +1315,69 @@
                 "tags": [
                     "Gallery"
                 ],
-                "summary": "Get all gallery items",
-                "operationId": "9f04eba8f10637da7f41b33254912b00",
+                "summary": "Display a listing of galleries",
+                "operationId": "galleryIndex",
+                "parameters": [
+                    {
+                        "name": "_page",
+                        "in": "query",
+                        "description": "Current page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "_limit",
+                        "in": "query",
+                        "description": "Max items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "_search",
+                        "in": "query",
+                        "description": "Search by title",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "description": "Filter by type",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "created_by",
+                        "in": "query",
+                        "description": "Filter by creator ID",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 5
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "List of gallery items"
-                    },
-                    "403": {
-                        "description": "Unauthorized"
+                        "description": "successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             },
             "post": {
                 "tags": [
@@ -1314,14 +1572,82 @@
                 "tags": [
                     "Jobs"
                 ],
-                "summary": "Get all job listings including soft deleted ones",
-                "description": "Returns list of all jobs including soft deleted records",
+                "summary": "Get all jobs with pagination",
                 "operationId": "63963513839a812f56fe5eddf9fe529a",
+                "parameters": [
+                    {
+                        "name": "_page",
+                        "in": "query",
+                        "description": "Current page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "_limit",
+                        "in": "query",
+                        "description": "Number of items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "_search",
+                        "in": "query",
+                        "description": "Search by job title",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "company_id",
+                        "in": "query",
+                        "description": "Filter by company ID",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "description": "Filter by job type ID",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 2
+                        }
+                    },
+                    {
+                        "name": "experience",
+                        "in": "query",
+                        "description": "Filter by experience level",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 3
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Successful operation"
+                        "description": "List of jobs with pagination"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -1706,11 +2032,75 @@
                 "tags": [
                     "Materials"
                 ],
-                "summary": "Get all materials",
+                "summary": "Get all materials with pagination",
                 "operationId": "5f90e5ed7d0e44b67d3fb4893d531d21",
+                "parameters": [
+                    {
+                        "name": "_page",
+                        "in": "query",
+                        "description": "Current page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "_limit",
+                        "in": "query",
+                        "description": "Number of items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "_search",
+                        "in": "query",
+                        "description": "Search by material title",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "layout",
+                        "in": "query",
+                        "description": "Filter by layout ID",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "description": "Filter by material type ID",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 2
+                        }
+                    },
+                    {
+                        "name": "created_by",
+                        "in": "query",
+                        "description": "Filter by creator ID",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 3
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "List of materials"
+                        "description": "List of materials with pagination"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -1943,48 +2333,62 @@
                 "tags": [
                     "Options"
                 ],
-                "summary": "Get all options including soft deleted ones",
-                "description": "Returns list of all options including soft deleted records",
+                "summary": "Get all options with pagination",
                 "operationId": "bf647c54bc541968a0dbc4111982da23",
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "properties": {
-                                            "id": {
-                                                "type": "integer"
-                                            },
-                                            "type": {
-                                                "type": "string"
-                                            },
-                                            "value": {
-                                                "type": "string"
-                                            },
-                                            "created_at": {
-                                                "type": "string",
-                                                "format": "datetime"
-                                            },
-                                            "updated_at": {
-                                                "type": "string",
-                                                "format": "datetime"
-                                            },
-                                            "deleted_at": {
-                                                "type": "string",
-                                                "format": "datetime",
-                                                "nullable": true
-                                            }
-                                        },
-                                        "type": "object"
-                                    }
-                                }
-                            }
+                "parameters": [
+                    {
+                        "name": "_page",
+                        "in": "query",
+                        "description": "Current page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "_limit",
+                        "in": "query",
+                        "description": "Number of items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "_search",
+                        "in": "query",
+                        "description": "Search by option value",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "description": "Filter by option type",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "job_type"
                         }
                     }
-                }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of options with pagination"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -2317,14 +2721,72 @@
                 "tags": [
                     "Posts"
                 ],
-                "summary": "Get all posts including soft deleted ones",
-                "description": "Returns list of all posts including soft deleted records",
+                "summary": "Get all posts with pagination",
                 "operationId": "3fda362e2e082b5357ac416e7767e435",
+                "parameters": [
+                    {
+                        "name": "_page",
+                        "in": "query",
+                        "description": "Current page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "_limit",
+                        "in": "query",
+                        "description": "Number of items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "_search",
+                        "in": "query",
+                        "description": "Search by title or content",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "created_by",
+                        "in": "query",
+                        "description": "Filter by creator ID",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 5
+                        }
+                    },
+                    {
+                        "name": "layout",
+                        "in": "query",
+                        "description": "Filter by layout ID",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 2
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Successful operation"
+                        "description": "List of posts with pagination"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -2728,14 +3190,82 @@
                 "tags": [
                     "Schools"
                 ],
-                "summary": "Get all schools including soft deleted ones",
-                "description": "Returns list of all schools including soft deleted records",
+                "summary": "Get all schools with pagination",
                 "operationId": "ca27f206450153531c9da4459c02d0b3",
+                "parameters": [
+                    {
+                        "name": "_page",
+                        "in": "query",
+                        "description": "Current page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "_limit",
+                        "in": "query",
+                        "description": "Number of items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "_search",
+                        "in": "query",
+                        "description": "Search by school name or description",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "description": "Filter by school type",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 2
+                        }
+                    },
+                    {
+                        "name": "province",
+                        "in": "query",
+                        "description": "Filter by province",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "Jawa Barat"
+                        }
+                    },
+                    {
+                        "name": "city",
+                        "in": "query",
+                        "description": "Filter by city",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "Bandung"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Successful operation"
+                        "description": "List of schools with pagination"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -3155,14 +3685,72 @@
                 "tags": [
                     "Studies"
                 ],
-                "summary": "Get all study programs including soft deleted ones",
-                "description": "Returns list of all study programs including soft deleted records",
+                "summary": "Get all studies with pagination",
                 "operationId": "f852a5bf21c1d45f95b52cf7865446ed",
+                "parameters": [
+                    {
+                        "name": "_page",
+                        "in": "query",
+                        "description": "Current page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "_limit",
+                        "in": "query",
+                        "description": "Number of items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "_search",
+                        "in": "query",
+                        "description": "Search by study name or description",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "school_id",
+                        "in": "query",
+                        "description": "Filter by school ID",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "level",
+                        "in": "query",
+                        "description": "Filter by study level",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 3
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Successful operation"
+                        "description": "List of studies with pagination"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -3541,13 +4129,72 @@
                 "tags": [
                     "Submissions"
                 ],
-                "summary": "Display a listing of submissions",
+                "summary": "Get all submissions with pagination",
                 "operationId": "1ab2c30900bcf0239d12dadb880c27d4",
+                "parameters": [
+                    {
+                        "name": "_page",
+                        "in": "query",
+                        "description": "Current page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "_limit",
+                        "in": "query",
+                        "description": "Number of items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "_search",
+                        "in": "query",
+                        "description": "Search by title or content",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "description": "Filter by submission type",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 2
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Filter by submission status",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Submissions retrieved successfully"
+                        "description": "List of submissions with pagination"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -3773,14 +4420,55 @@
                 "tags": [
                     "Vicons"
                 ],
-                "summary": "Get all vicons",
+                "summary": "Get all Vicons with pagination",
                 "operationId": "22465994ceb1ecebdf568afb37822cb0",
+                "parameters": [
+                    {
+                        "name": "_page",
+                        "in": "query",
+                        "description": "Current page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "_limit",
+                        "in": "query",
+                        "description": "Number of items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "_search",
+                        "in": "query",
+                        "description": "Search by title or description",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "created_by",
+                        "in": "query",
+                        "description": "Filter by creator",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "List of all vicons including soft deleted ones"
+                        "description": "List of Vicons with pagination"
                     },
                     "403": {
-                        "description": "Unauthorized - Admin access required"
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [

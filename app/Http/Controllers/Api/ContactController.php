@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use App\Models\Contact;
 use App\Models\Option;
 use Illuminate\Http\Request;
@@ -20,24 +22,102 @@ class ContactController extends Controller
     /**
      * @OA\Get(
      *     path="/api/contacts",
-     *     summary="Get all contacts",
      *     tags={"Contacts"},
-     *     security={{"bearerAuth":{}}},
+     *     summary="Display a listing of contacts",
+     *     operationId="contactIndex",
      *     @OA\Response(
      *         response=200,
-     *         description="List of contacts"
+     *         description="successful",
+     *         @OA\JsonContent()
      *     ),
-     *     @OA\Response(
-     *         response=403,
-     *         description="Unauthorized - Admin access required"
+     *     @OA\Parameter(
+     *         name="_page",
+     *         in="query",
+     *         description="Current page",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer",
+     *             format="int64",
+     *             example=1
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="_limit",
+     *         in="query",
+     *         description="Max items in a page",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer",
+     *             format="int64",
+     *             example=10
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="respond_by",
+     *         in="query",
+     *         description="Filter by user who responded",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="integer",
+     *             format="int64",
+     *             example=5
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="created_by",
+     *         in="query",
+     *         description="Filter by creator ID",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="integer",
+     *             format="int64",
+     *             example=2
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="status",
+     *         in="query",
+     *         description="Filter by status",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="integer",
+     *             format="int64",
+     *             example=1
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="_dir",
+     *         in="query",
+     *         description="Order by direction (asc/desc)",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *             example="asc"
+     *         )
      *     )
      * )
      */
-    public function index()
+    public function index(Request $request): JsonResponse
     {
+        $query = Contact::query()->withTrashed();
 
-        $contacts = Contact::all();
-        return response()->json(['data' => $contacts]);
+        if ($request->has('respond_by')) {
+            $query->where('respond_by', $request->respond_by);
+        }
+        if ($request->has('created_by')) {
+            $query->where('created_by', $request->created_by);
+        }
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $direction = $request->_dir ?? 'desc';
+        $query->orderBy('created_at', $direction);
+
+        $perPage = $request->_limit ?? 10;
+        $contacts = $query->paginate($perPage);
+
+        return response()->json($contacts, Response::HTTP_OK);
     }
 
     /**

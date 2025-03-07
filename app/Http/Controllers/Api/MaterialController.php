@@ -15,19 +15,82 @@ class MaterialController extends Controller
     /**
      * @OA\Get(
      *     path="/api/materials",
-     *     summary="Get all materials",
+     *     summary="Get all materials with pagination",
      *     tags={"Materials"},
-     *     security={{ "bearerAuth": {} }},
-     *     @OA\Response(
-     *         response=200,
-     *         description="List of materials",
-     *     )
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="_page",
+     *         in="query",
+     *         description="Current page number",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Parameter(
+     *         name="_limit",
+     *         in="query",
+     *         description="Number of items per page",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=10)
+     *     ),
+     *     @OA\Parameter(
+     *         name="_search",
+     *         in="query",
+     *         description="Search by material title",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="layout",
+     *         in="query",
+     *         description="Filter by layout ID",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Parameter(
+     *         name="type",
+     *         in="query",
+     *         description="Filter by material type ID",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=2)
+     *     ),
+     *     @OA\Parameter(
+     *         name="created_by",
+     *         in="query",
+     *         description="Filter by creator ID",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=3)
+     *     ),
+     *     @OA\Response(response=200, description="List of materials with pagination"),
+     *     @OA\Response(response=403, description="Unauthorized")
      * )
      */
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(Material::all(), 200);
+        $query = Material::query();
+
+        // Filter berdasarkan layout, type, dan created_by
+        if ($request->has('layout')) {
+            $query->where('layout', $request->layout);
+        }
+        if ($request->has('type')) {
+            $query->where('type', $request->type);
+        }
+        if ($request->has('created_by')) {
+            $query->where('created_by', $request->created_by);
+        }
+
+        // Pencarian berdasarkan title
+        if ($request->has('_search')) {
+            $query->where('title', 'like', "%{$request->_search}%");
+        }
+
+        // Pagination
+        $perPage = $request->_limit ?? 10;
+        $materials = $query->paginate($perPage);
+
+        return response()->json($materials);
     }
+
 
     /**
      * @OA\Post(
@@ -91,7 +154,7 @@ class MaterialController extends Controller
             if ($request->hasFile('file')) {
                 $file = $request->file('file');
                 $ext = $file->getClientOriginalExtension();
-                $filename = "file_{$material->id}_{$timestamp}.{$ext}";
+                $filename = "{$material->id}_{$timestamp}.{$ext}";
                 $path = $file->storeAs('materials/files', $filename, 'public');
 
                 // Simpan path file di database
@@ -102,7 +165,7 @@ class MaterialController extends Controller
             if ($request->hasFile('img')) {
                 $img = $request->file('img');
                 $imgExt = $img->getClientOriginalExtension();
-                $imgName = "img_{$material->id}_{$timestamp}.{$imgExt}";
+                $imgName = "{$material->id}_{$timestamp}.{$imgExt}";
                 $imgPath = $img->storeAs('materials/images', $imgName, 'public');
 
                 // Simpan path image di database

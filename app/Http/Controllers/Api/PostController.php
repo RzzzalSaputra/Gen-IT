@@ -21,18 +21,76 @@ class PostController extends Controller
     /**
      * @OA\Get(
      *     path="/api/posts",
+     *     summary="Get all posts with pagination",
      *     tags={"Posts"},
-     *     summary="Get all posts including soft deleted ones",
-     *     description="Returns list of all posts including soft deleted records",
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful operation"
-     *     )
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="_page",
+     *         in="query",
+     *         description="Current page number",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Parameter(
+     *         name="_limit",
+     *         in="query",
+     *         description="Number of items per page",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=10)
+     *     ),
+     *     @OA\Parameter(
+     *         name="_search",
+     *         in="query",
+     *         description="Search by title or content",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="created_by",
+     *         in="query",
+     *         description="Filter by creator ID",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=5)
+     *     ),
+     *     @OA\Parameter(
+     *         name="layout",
+     *         in="query",
+     *         description="Filter by layout ID",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=2)
+     *     ),
+     *     @OA\Response(response=200, description="List of posts with pagination"),
+     *     @OA\Response(response=403, description="Unauthorized")
      * )
      */
-    public function index(): JsonResponse
+    public function index(Request $request)
     {
-        return response()->json(Post::withTrashed()->get(), Response::HTTP_OK);
+        $query = Post::query();
+
+        // Filter berdasarkan pembuat
+        if ($request->has('created_by')) {
+            $query->where('created_by', $request->created_by);
+        }
+
+        // Filter berdasarkan layout
+        if ($request->has('layout')) {
+            $query->where('layout', $request->layout);
+        }
+
+        // Pencarian berdasarkan title atau content
+        if ($request->has('_search')) {
+            $search = $request->_search;
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%$search%")
+                    ->orWhere('content', 'like', "%$search%");
+            });
+        }
+
+        // Pagination
+        $perPage = $request->_limit ?? 10;
+        $posts = $query->paginate($perPage);
+
+        return response()->json($posts);
     }
 
     /**
