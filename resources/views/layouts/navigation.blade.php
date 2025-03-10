@@ -5,7 +5,7 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ url('/') }}" class="flex items-center">
-                        <img src="{{ asset('https://upload.wikimedia.org/wikipedia/commons/4/4b/Lambang_Kabupaten_Katingan.png') }}" alt="Logo" class="h-8 w-auto mr-2">
+                        <img src="{{ asset('/storage/icon/Lambang_Kabupaten_Katingan.png') }}" alt="Logo" class="h-8 w-auto mr-2">
                         <span class="text-white font-bold text-xl">
                             <span class="text-blue-500">Gen</span>-IT
                         </span>
@@ -19,9 +19,6 @@
                     </a>
                     <a href="/gallery?type=7" class="{{ request()->routeIs('gallery.index') && request()->input('type') == 7 ? 'text-blue-400' : 'text-white hover:text-blue-300' }} px-3 py-2 text-sm font-medium transition-colors duration-200">
                         {{ __('Gallery') }}
-                    </a>
-                    <a href="{{ route('gallery.index', ['type' => 8]) }}" class="{{ request()->routeIs('gallery.index') && request()->input('type') == 8 ? 'text-blue-400' : 'text-white hover:text-blue-300' }} px-3 py-2 text-sm font-medium transition-colors duration-200">
-                        {{ __('Videos') }}
                     </a>
                     <a href="{{ route('articles.index') }}" class="{{ request()->routeIs('articles.index') ? 'text-blue-400' : 'text-white hover:text-blue-300' }} px-3 py-2 text-sm font-medium transition-colors duration-200">
                         {{ __('Articles') }}
