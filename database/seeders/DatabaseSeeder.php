@@ -24,6 +24,8 @@ class DatabaseSeeder extends Seeder
             ['type' => 'user_role', 'value' => 'user'],
             ['type' => 'post_layout', 'value' => 'default'],
             ['type' => 'post_layout', 'value' => 'teks+konten+teks'],
+            ['type' => 'gallery_type', 'value' => 'image'], // Add gallery type option
+            ['type' => 'gallery_type', 'value' => 'video'], // Add gallery type option
         ];
 
         foreach ($options as $option) {
@@ -134,5 +136,10 @@ class DatabaseSeeder extends Seeder
         foreach ($posts as $post) {
             Post::create($post);
         }
+
+        // Call the gallery seeder
+        $this->call([
+            GallerySeeder::class,
+        ]);
     }
 }

@@ -19,7 +19,10 @@ class GalleryController extends Controller
 
     public function __construct()
     {
-        request()->headers->set('Accept', 'application/json');
+        // Only set the Accept header for API requests
+        if (request()->is('api/*')) {
+            request()->headers->set('Accept', 'application/json');
+        }
     }
 
     /**
@@ -84,19 +87,24 @@ class GalleryController extends Controller
      *     )
      * )
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request)
     {
-        $query = Gallery::query()->withTrashed();
+        // Check if this is a web request or API request
+        $isApiRequest = $request->is('api/*');
+        
+        // Start the query
+        $query = $isApiRequest ? Gallery::query()->withTrashed() : Gallery::query();
 
-        // Filtering berdasarkan type dan created_by
+        // Filtering based on type and created_by
         if ($request->has('type')) {
             $query->where('type', $request->type);
         }
+        
         if ($request->has('created_by')) {
             $query->where('created_by', $request->created_by);
         }
 
-        // Pencarian berdasarkan title
+        // Search by title
         if ($request->has('_search')) {
             $query->where('title', 'like', "%{$request->_search}%");
         }
@@ -108,8 +116,14 @@ class GalleryController extends Controller
         // Pagination
         $perPage = $request->_limit ?? 10;
         $galleries = $query->paginate($perPage);
-
-        return response()->json($galleries, Response::HTTP_OK);
+        
+        // For web requests, return a view
+        if (!$isApiRequest) {
+            return view('gallery.index', compact('galleries'));
+        }
+        
+        // For API requests, return JSON
+        return response()->json($galleries);
     }
 
     /**
