@@ -12,6 +12,14 @@ use App\Models\Material;
 
 class MaterialController extends Controller
 {
+    public function __construct()
+    {
+        // Only set the Accept header for API requests
+        if (request()->is('api/*')) {
+            request()->headers->set('Accept', 'application/json');
+        }
+    }
+
     /**
      * @OA\Get(
      *     path="/api/materials",
@@ -66,9 +74,12 @@ class MaterialController extends Controller
      */
     public function index(Request $request)
     {
+        // Check if this is a web request or API request
+        $isApiRequest = $request->is('api/*');
+        
         $query = Material::query();
 
-        // Filter berdasarkan layout, type, dan created_by
+        // Filter based on layout, type, and created_by
         if ($request->has('layout')) {
             $query->where('layout', $request->layout);
         }
@@ -79,15 +90,58 @@ class MaterialController extends Controller
             $query->where('created_by', $request->created_by);
         }
 
-        // Pencarian berdasarkan title
-        if ($request->has('_search')) {
-            $query->where('title', 'like', "%{$request->_search}%");
+        // Filter by content type
+        if ($request->has('content_type')) {
+            switch ($request->content_type) {
+                case 'text':
+                    $query->where(function($q) {
+                        $q->whereNull('file')
+                          ->whereNull('link')
+                          ->orWhere(function($inner) {
+                              $inner->whereNull('link')
+                                  ->whereNotNull('content')
+                                  ->whereNull('file');
+                          });
+                    });
+                    break;
+                case 'downloadable':
+                    $query->whereNotNull('file');
+                    break;
+                case 'video':
+                    $query->whereNotNull('link')
+                          ->where(function($q) {
+                              $q->where('link', 'LIKE', '%youtube%')
+                                ->orWhere('link', 'LIKE', '%youtu.be%');
+                          });
+                    break;
+            }
         }
+
+        // Case-insensitive search functionality
+        if ($request->has('_search') || $request->filled('search')) {
+            $searchTerm = '%' . ($request->filled('search') ? $request->search : $request->_search) . '%';
+            $query->where(function($q) use ($searchTerm) {
+                // Using ILIKE for case-insensitive matching in PostgreSQL
+                $q->whereRaw('title ILIKE ?', [$searchTerm])
+                  ->orWhereRaw('content ILIKE ?', [$searchTerm]);
+                // Add more fields to search if needed
+            });
+        }
+
+        // Sorting
+        $direction = $request->_dir ?? 'desc';
+        $query->orderBy('created_at', $direction);
 
         // Pagination
         $perPage = $request->_limit ?? 10;
         $materials = $query->paginate($perPage);
-
+        
+        // For web requests, return a view
+        if (!$isApiRequest) {
+            return view('material.index', compact('materials'));
+        }
+        
+        // For API requests, return JSON
         return response()->json($materials);
     }
 

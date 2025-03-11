@@ -21,6 +21,7 @@ Route::get('/gallery', [GalleryController::class, 'index'])->name('gallery.index
 Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
 Route::get('/articles/{id}', [ArticleController::class, 'show'])->name('articles.show');
 Route::get('/materials', [MaterialController::class, 'index'])->name('materials.index');
+Route::get('/materials/{id}', [MaterialController::class, 'show'])->name('materials.show');
 Route::get('/schools', [SchoolController::class, 'index'])->name('schools.index');
 Route::get('/studies', [StudyController::class, 'index'])->name('studies.index');
 Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');

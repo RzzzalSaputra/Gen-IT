@@ -20,30 +20,39 @@ class AuthenticatedSessionController extends Controller
 
     public function store(LoginRequest $request): RedirectResponse
     {
-        Auth::attempt($request->only('email', 'password'), false);
-        $request->session()->regenerate();
-
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
+        // Attempt authentication
+        $attempt = Auth::attempt($request->only('email', 'password'), $request->boolean('remember'));
         
-        // Generate new auth token and store in remember_token
-        $token = Str::random(60);
-        $user->remember_token = $token;
-        $user->save();
-
-        // Create HTTP-only cookie
-        Cookie::queue(
-            'auth_token',
-            $token,
-            720,
-            '/',
-            null,
-            true,
-            true
-        );
+        // Only proceed if authentication was successful
+        if ($attempt) {
+            $request->session()->regenerate();
+            
+            /** @var \App\Models\User $user */
+            $user = Auth::user();
+            
+            // Generate new auth token and store in remember_token
+            $token = Str::random(60);
+            $user->remember_token = $token;
+            $user->save();
+    
+            // Create HTTP-only cookie
+            Cookie::queue(
+                'auth_token',
+                $token,
+                720,
+                '/',
+                null,
+                true,
+                true
+            );
+            
+            return redirect()->intended(route('dashboard', absolute: false));
+        }
         
-
-        return redirect()->intended(route('dashboard', absolute: false));
+        // If we get here, authentication failed
+        return back()->withErrors([
+            'email' => trans('auth.failed'),
+        ])->onlyInput('email');
     }
 
     public function destroy(Request $request): RedirectResponse

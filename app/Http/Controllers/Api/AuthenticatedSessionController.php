@@ -59,8 +59,16 @@ class AuthenticatedSessionController extends Controller
             ], 401);
         }
 
+        // At this point, authentication was successful
         /** @var \App\Models\User $user */
         $user = Auth::user();
+        
+        // Safety check to make sure user is not null
+        if (!$user) {
+            return response()->json([
+                'message' => 'Authentication error'
+            ], 500);
+        }
         
         // Generate new auth token and store in remember_token
         $token = Str::random(60);
@@ -120,7 +128,8 @@ class AuthenticatedSessionController extends Controller
             ])->withCookie($cookie);
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Failed to logout'
+                'message' => 'Failed to logout',
+                'error' => $e->getMessage()
             ], 500);
         }
     }
