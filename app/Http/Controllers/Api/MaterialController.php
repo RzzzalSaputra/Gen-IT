@@ -74,75 +74,44 @@ class MaterialController extends Controller
      */
     public function index(Request $request)
     {
-        // Check if this is a web request or API request
-        $isApiRequest = $request->is('api/*');
+        // Get content_type from either route parameter or query parameter
+        $contentType = $request->route('content_type') ?? $request->query('content_type') ?? 'text';
         
+        // Query builder for materials
         $query = Material::query();
-
-        // Filter based on layout, type, and created_by
-        if ($request->has('layout')) {
-            $query->where('layout', $request->layout);
+        
+        // Apply content type filter
+        if ($contentType == 'text') {
+            // Filter for text materials (no file, no video link)
+            $query->where(function($q) {
+                $q->whereNull('file')
+                  ->where(function($q2) {
+                      $q2->whereNull('link')
+                         ->orWhere('link', '');
+                  });
+            });
+        } elseif ($contentType == 'downloadable') {
+            // Filter for downloadable materials (has file)
+            $query->whereNotNull('file');
+        } elseif ($contentType == 'video') {
+            // Filter for video materials (has YouTube link)
+            $query->where('link', 'like', '%youtube.com%')
+                  ->orWhere('link', 'like', '%youtu.be%');
         }
-        if ($request->has('type')) {
-            $query->where('type', $request->type);
-        }
-        if ($request->has('created_by')) {
-            $query->where('created_by', $request->created_by);
-        }
-
-        // Filter by content type
-        if ($request->has('content_type')) {
-            switch ($request->content_type) {
-                case 'text':
-                    $query->where(function($q) {
-                        $q->whereNull('file')
-                          ->whereNull('link')
-                          ->orWhere(function($inner) {
-                              $inner->whereNull('link')
-                                  ->whereNotNull('content')
-                                  ->whereNull('file');
-                          });
-                    });
-                    break;
-                case 'downloadable':
-                    $query->whereNotNull('file');
-                    break;
-                case 'video':
-                    $query->whereNotNull('link')
-                          ->where(function($q) {
-                              $q->where('link', 'LIKE', '%youtube%')
-                                ->orWhere('link', 'LIKE', '%youtu.be%');
-                          });
-                    break;
-            }
-        }
-
-        // Case-insensitive search functionality
-        if ($request->has('_search') || $request->filled('search')) {
-            $searchTerm = '%' . ($request->filled('search') ? $request->search : $request->_search) . '%';
-            $query->where(function($q) use ($searchTerm) {
-                // Using ILIKE for case-insensitive matching in PostgreSQL
-                $q->whereRaw('title ILIKE ?', [$searchTerm])
-                  ->orWhereRaw('content ILIKE ?', [$searchTerm]);
-                // Add more fields to search if needed
+        
+        // Apply search if provided
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->where(function($q) use ($search) {
+                $q->whereRaw('LOWER(title) LIKE ?', ['%' . strtolower($search) . '%'])
+                  ->orWhereRaw('LOWER(content) LIKE ?', ['%' . strtolower($search) . '%']);
             });
         }
-
-        // Sorting
-        $direction = $request->_dir ?? 'desc';
-        $query->orderBy('created_at', $direction);
-
-        // Pagination
-        $perPage = $request->_limit ?? 10;
-        $materials = $query->paginate($perPage);
         
-        // For web requests, return a view
-        if (!$isApiRequest) {
-            return view('material.index', compact('materials'));
-        }
+        // Get paginated results
+        $materials = $query->latest()->paginate(12);
         
-        // For API requests, return JSON
-        return response()->json($materials);
+        return view('material.index', compact('materials'));
     }
 
 
@@ -401,5 +370,53 @@ class MaterialController extends Controller
         $material->restore();
 
         return response()->json(['message' => 'Material restored successfully', 'data' => $material], 200);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show($id)
+    {
+        $material = Material::findOrFail($id);
+        
+        // Increment read counter
+        $material->increment('read_counter');
+        
+        // If this is an API request
+        if (request()->is('api/*')) {
+            return response()->json($material);
+        }
+        
+        // For web view
+        return view('material.show', compact('material'));
+    }
+    
+    /**
+     * Download a material file and increment download counter.
+     */
+    public function download($id)
+    {
+        $material = Material::findOrFail($id);
+        
+        // Increment the download counter
+        $material->increment('download_counter');
+        
+        // Fix the file path construction
+        $filePath = storage_path('app/public/materials/files/' . basename($material->file));
+        
+        // Check if file exists
+        if (!file_exists($filePath)) {
+            // Try alternate path formats
+            $alternateFilePath = public_path('storage/materials/files/' . basename($material->file));
+            
+            if (file_exists($alternateFilePath)) {
+                return response()->download($alternateFilePath);
+            }
+            
+            // If still not found, return error
+            abort(404, 'File not found: ' . basename($material->file));
+        }
+        
+        return response()->download($filePath);
     }
 }

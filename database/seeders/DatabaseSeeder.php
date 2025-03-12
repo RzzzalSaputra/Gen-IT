@@ -32,6 +32,9 @@ class DatabaseSeeder extends Seeder
         
         // ===== MATERIALS SEEDING =====
         $this->seedMaterials();
+        
+        // ===== ARTICLES SEEDING =====
+        $this->seedArticles();
     }
     
     /**
@@ -53,7 +56,7 @@ class DatabaseSeeder extends Seeder
             // Layout types
             ['type' => 'layout', 'value' => 'Text Only'],
             ['type' => 'layout', 'value' => 'Text with Image'],
-            ['type' => 'layout', 'value' => 'Text with File'],
+            ['type' => 'layout', 'value' => 'Video Content'], // Changed from 'Text with File'
             ['type' => 'layout', 'value' => 'File Only'],
             // Material types
             
@@ -486,9 +489,10 @@ function initializeFeature() {
             [
                 'title' => 'Leadership Skills Development',
                 'content' => $trainingContent,
-                'layout' => $layoutOptions['Text with File'],
+                'layout' => $layoutOptions['Video Content'],
                 'type' => $materialTypes['Training'],
-                'file' => '/storage/materials/files/sample_leadership_training.pdf',
+                'link' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', // Example YouTube link
+                'file' => null, // No file for video content
             ],
 
             // Workshop materials
@@ -508,9 +512,10 @@ function initializeFeature() {
             [
                 'title' => 'Cloud Infrastructure Workshop',
                 'content' => $workshopContent,
-                'layout' => $layoutOptions['Text with File'],
+                'layout' => $layoutOptions['Video Content'],
                 'type' => $materialTypes['Workshop'],
-                'file' => '/storage/materials/files/sample_cloud_workshop.pdf',
+                'link' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', // Example YouTube link
+                'file' => null, // No file for video content
             ],
 
             // Journal materials
@@ -574,9 +579,10 @@ function initializeFeature() {
             [
                 'title' => 'Database Optimization Techniques',
                 'content' => $tutorialContent,
-                'layout' => $layoutOptions['Text with File'],
+                'layout' => $layoutOptions['Video Content'],
                 'type' => $materialTypes['Tutorial'],
-                'file' => '/storage/materials/files/sample_database_tutorial.pdf',
+                'link' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', // Example YouTube link
+                'file' => null, // No file for video content
             ],
 
             // Additional materials
@@ -590,9 +596,10 @@ function initializeFeature() {
             [
                 'title' => 'Blockchain Technology Overview',
                 'content' => $documentationContent,
-                'layout' => $layoutOptions['Text with File'],
+                'layout' => $layoutOptions['Video Content'],
                 'type' => $materialTypes['Documentation'],
-                'file' => '/storage/materials/files/sample_blockchain_overview.pdf',
+                'link' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', // Example YouTube link
+                'file' => null, // No file for video content
             ],
             [
                 'title' => 'Product Management Workshop',
@@ -637,6 +644,7 @@ function initializeFeature() {
                 'type' => $material['type'],
                 'file' => $material['file'] ?? null,
                 'img' => $material['img'] ?? null,
+                'link' => $material['link'] ?? null,
                 'created_by' => $userIds[array_rand($userIds)],
                 'read_counter' => rand(0, 150),
                 'download_counter' => isset($material['file']) ? rand(0, 50) : 0,
@@ -646,5 +654,81 @@ function initializeFeature() {
         }
 
         $this->command->info('Materials seeded successfully!');
+    }
+
+    /**
+     * Seed the articles table.
+     */
+    private function seedArticles(): void
+    {
+        // Check if Article model exists
+        if (!class_exists('App\Models\Article')) {
+            $this->command->error('Article model not found! Skipping article seeding.');
+            return;
+        }
+
+        // Get users for created_by field
+        $userIds = User::pluck('id')->toArray();
+        if (empty($userIds)) {
+            $this->command->error('No users found! Cannot seed articles.');
+            return;
+        }
+
+        $articles = [
+            [
+                'title' => 'Getting Started with Laravel',
+                'slug' => 'getting-started-with-laravel',
+                'content' => '<p>Laravel is a web application framework with expressive, elegant syntax. Laravel takes the pain out of web development by easing common tasks used in many web projects.</p><h2>Installation</h2><p>Laravel utilizes Composer to manage its dependencies. So, before using Laravel, make sure you have Composer installed on your machine.</p><p>You can install Laravel by issuing the Composer create-project command in your terminal:</p><pre><code>composer create-project laravel/laravel example-app</code></pre><p>This will create a new Laravel project in a directory named example-app.</p>',
+                'summary' => 'A beginner\'s guide to setting up and using the Laravel framework for web development.',
+                'writer' => 'John Doe',
+                'post_time' => now()->subDays(5),
+            ],
+            [
+                'title' => 'Understanding MVC Architecture',
+                'slug' => 'understanding-mvc-architecture',
+                'content' => '<p>The Model-View-Controller (MVC) architectural pattern separates an application into three main logical components: the model, the view, and the controller.</p><h2>Components</h2><h3>Model</h3><p>The Model component corresponds to all the data-related logic that the user works with. This can represent either the data that is being transferred between the View and Controller components or any other business logic-related data.</p><h3>View</h3><p>The View component is used for all the UI logic of the application. It generates output based on the data provided by the model.</p><h3>Controller</h3><p>Controllers act as an interface between Model and View components to process all the business logic and incoming requests, manipulate data using the Model component and interact with the Views to render the final output.</p>',
+                'summary' => 'Explore the fundamentals of Model-View-Controller architecture and its implementation in modern web frameworks.',
+                'writer' => 'Jane Smith',
+                'post_time' => now()->subDays(3),
+            ],
+            [
+                'title' => 'Best Practices for API Development',
+                'slug' => 'best-practices-for-api-development',
+                'content' => '<p>Building a robust API requires careful planning and adherence to best practices. Here are some key considerations when developing APIs.</p><h2>Use HTTP Methods Correctly</h2><p>RESTful APIs should use HTTP methods explicitly as follows:</p><ul><li>GET: To retrieve a resource</li><li>POST: To create a resource</li><li>PUT/PATCH: To update a resource</li><li>DELETE: To delete a resource</li></ul><h2>Use Proper Status Codes</h2><p>Return appropriate HTTP status codes with each response. Some common ones include:</p><ul><li>200 OK: The request was successful</li><li>201 Created: A new resource was successfully created</li><li>400 Bad Request: The request couldn\'t be understood</li><li>401 Unauthorized: Authentication failed or user doesn\'t have permissions</li><li>404 Not Found: The resource doesn\'t exist</li><li>500 Internal Server Error: A generic server error occurred</li></ul>',
+                'summary' => 'Learn essential guidelines and practices for building secure, efficient, and maintainable APIs.',
+                'writer' => 'Alex Johnson',
+                'post_time' => now()->subDays(1),
+            ],
+            [
+                'title' => 'Introduction to Tailwind CSS',
+                'slug' => 'introduction-to-tailwind-css',
+                'content' => '<p>Tailwind CSS is a utility-first CSS framework that allows you to build custom designs without leaving your HTML. Unlike other CSS frameworks that provide predefined components, Tailwind offers low-level utility classes that let you build completely custom designs.</p><h2>Getting Started</h2><p>To get started with Tailwind CSS, you can include it in your project using npm:</p><pre><code>npm install tailwindcss</code></pre><p>Then, create a configuration file:</p><pre><code>npx tailwindcss init</code></pre><h2>Using Utility Classes</h2><p>Tailwind provides utility classes for almost everything you might need:</p><pre><code>&lt;div class="p-6 max-w-sm mx-auto bg-white rounded-xl shadow-md flex items-center space-x-4"&gt;\n  &lt;div&gt;\n    &lt;div class="text-xl font-medium text-black"&gt;Tailwind CSS&lt;/div&gt;\n    &lt;p class="text-gray-500"&gt;Utility-first CSS framework&lt;/p&gt;\n  &lt;/div&gt;\n&lt;/div&gt;</code></pre>',
+                'summary' => 'Discover how Tailwind CSS can streamline your frontend development workflow with its utility-first approach.',
+                'writer' => 'Emily Chen',
+                'post_time' => now()->subDays(7),
+            ],
+            [
+                'title' => 'Data Structures and Algorithms: A Primer',
+                'slug' => 'data-structures-and-algorithms-primer',
+                'content' => '<p>Understanding data structures and algorithms is fundamental to computer science and software engineering. This article provides an overview of key concepts and their practical applications.</p><h2>Common Data Structures</h2><ul><li><strong>Arrays</strong>: Continuous memory allocation, fast access by index, O(1)</li><li><strong>Linked Lists</strong>: Non-continuous memory, dynamic size, O(n) access</li><li><strong>Stacks</strong>: LIFO (Last In First Out) principle</li><li><strong>Queues</strong>: FIFO (First In First Out) principle</li><li><strong>Trees</strong>: Hierarchical structure, efficient for searching and sorting</li><li><strong>Graphs</strong>: Collection of nodes and edges, useful for complex relationships</li></ul><h2>Essential Algorithms</h2><h3>Sorting Algorithms</h3><p>Comparison between common sorting techniques:</p><table><tr><th>Algorithm</th><th>Time Complexity (Avg)</th><th>Space Complexity</th></tr><tr><td>Bubble Sort</td><td>O(n²)</td><td>O(1)</td></tr><tr><td>Quick Sort</td><td>O(n log n)</td><td>O(log n)</td></tr><tr><td>Merge Sort</td><td>O(n log n)</td><td>O(n)</td></tr></table><h3>Search Algorithms</h3><p>Binary search can find elements in sorted arrays with O(log n) complexity, compared to linear search with O(n).</p>',
+                'summary' => 'An introduction to fundamental data structures and algorithms that every programmer should know.',
+                'writer' => 'Michael Wong',
+                'post_time' => now()->subDays(14),
+            ],
+        ];
+
+        foreach ($articles as $articleData) {
+            \App\Models\Article::create([
+                'title' => $articleData['title'],
+                'slug' => $articleData['slug'],
+                'content' => $articleData['content'],
+                'summary' => $articleData['summary'],
+                'writer' => $articleData['writer'],
+                'post_time' => $articleData['post_time'],
+                'created_by' => $userIds[array_rand($userIds)],
+            ]);
+        }
+
+        $this->command->info('Articles seeded successfully!');
     }
 }

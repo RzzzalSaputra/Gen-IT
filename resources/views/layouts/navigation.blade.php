@@ -37,7 +37,7 @@
                              x-transition:leave-end="transform opacity-0 scale-95"
                              class="absolute mt-2 w-48 rounded-md shadow-lg py-1 bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none"
                              style="display: none;">
-                            <a href="{{ route('materials.index') }}" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-700">
+                            <a href="{{ url('/materials=text') }}" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-700">
                                 {{ __('Materials') }}
                             </a>
                             <a href="{{ route('articles.index') }}" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-700">
@@ -99,8 +99,6 @@
                             <a href="{{ url('/gallery?type=7') }}" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-700">
                                 {{ __('Gallery') }}
                             </a>
-                            <a href="{{ route('gallery.index', ['type' => 8]) }}" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-700">
-                                {{ __('Videos') }}
                             </a>
                             <a href="{{ url('/posts') }}" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-700">
                                 {{ __('Posts') }}
@@ -193,7 +191,7 @@
                     </svg>
                 </button>
                 <div x-show="openLearning" class="pl-4 bg-gray-700/50">
-                    <a href="{{ route('materials.index') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
+                    <a href="{{ url('/materials=text') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
                         {{ __('Materials') }}
                     </a>
                     <a href="{{ route('articles.index') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">

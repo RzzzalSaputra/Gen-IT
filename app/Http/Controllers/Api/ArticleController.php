@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Illuminate\View\View;
 
 class ArticleController extends Controller
 {
@@ -103,29 +104,26 @@ class ArticleController extends Controller
      * )
      */
 
-    public function index(Request $request): JsonResponse
+    /**
+     * Handle the API request for article listing
+     */
+    public function apiIndex(Request $request): JsonResponse
     {
         $query = Article::query()->withTrashed();
 
-        // Filter berdasarkan status, type, dan created_by
-        if ($request->has('status')) {
-            $query->where('status', $request->status);
-        }
-        if ($request->has('type')) {
-            $query->where('type', $request->type);
-        }
+        // Remove status and type filters
         if ($request->has('created_by')) {
             $query->where('created_by', $request->created_by);
         }
 
-        // Filter berdasarkan pencarian di title, content, summary, atau writer
+        // Filter based on search in title, content, summary, or writer - with case insensitivity
         if ($request->has('_search')) {
             $search = $request->_search;
             $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', "%$search%")
-                    ->orWhere('content', 'like', "%$search%")
-                    ->orWhere('summary', 'like', "%$search%")
-                    ->orWhere('writer', 'like', "%$search%");
+                $q->whereRaw('LOWER(title) LIKE ?', ['%' . strtolower($search) . '%'])
+                  ->orWhereRaw('LOWER(content) LIKE ?', ['%' . strtolower($search) . '%'])
+                  ->orWhereRaw('LOWER(summary) LIKE ?', ['%' . strtolower($search) . '%'])
+                  ->orWhereRaw('LOWER(writer) LIKE ?', ['%' . strtolower($search) . '%']);
             });
         }
 
@@ -138,6 +136,34 @@ class ArticleController extends Controller
         $articles = $query->paginate($perPage);
 
         return response()->json($articles);
+    }
+
+    /**
+     * Display a listing of articles in the frontend
+     */
+    public function index(Request $request): View
+    {
+        $query = Article::query()
+            ->with(['statusOption', 'typeOption', 'creator']);
+
+        // Search functionality with case insensitivity
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->whereRaw('LOWER(title) LIKE ?', ['%' . strtolower($search) . '%'])
+                  ->orWhereRaw('LOWER(content) LIKE ?', ['%' . strtolower($search) . '%'])
+                  ->orWhereRaw('LOWER(summary) LIKE ?', ['%' . strtolower($search) . '%'])
+                  ->orWhereRaw('LOWER(writer) LIKE ?', ['%' . strtolower($search) . '%']);
+            });
+        }
+
+        // Default ordering
+        $query->orderBy('created_at', 'desc');
+
+        // Get paginated results
+        $articles = $query->paginate(9);
+        
+        return view('article.index', compact('articles'));
     }
 
     /**
@@ -266,15 +292,28 @@ class ArticleController extends Controller
      *     )
      * )
      */
-    public function show(int $id): JsonResponse
+    public function apiShow(int $id): JsonResponse
     {
-        $article = Article::withTrashed()->find($id);
+        $article = Article::with(['statusOption', 'typeOption', 'creator'])
+            ->findOrFail($id);
+            
+        return response()->json($article);
+    }
 
-        if (!$article) {
-            return response()->json(['message' => 'Article not found'], Response::HTTP_NOT_FOUND);
+    /**
+     * Display the specified article in the frontend
+     */
+    public function show($id): View
+    {
+        $article = Article::with(['statusOption', 'typeOption', 'creator'])
+            ->findOrFail($id);
+            
+        // Increment read counter if it exists
+        if (property_exists($article, 'read_counter')) {
+            $article->increment('read_counter', 1);
         }
-
-        return response()->json($article, Response::HTTP_OK);
+            
+        return view('article.show', compact('article'));
     }
 
     /**

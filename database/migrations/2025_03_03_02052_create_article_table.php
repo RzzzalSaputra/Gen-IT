@@ -16,10 +16,8 @@ return new class extends Migration
             $table->id();
             $table->string('slug', 255)->unique();
             $table->string('title', 255);
-            $table->string('content');
-            $table->string('summary', 255);
-            $table->foreignId('status')->constrained('options');
-            $table->foreignId('type')->constrained('options');
+            $table->text('content');
+            $table->text('summary');
             $table->string('writer', 255);
             $table->timestamp('post_time');
             $table->foreignId('created_by')->constrained('users');

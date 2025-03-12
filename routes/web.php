@@ -20,8 +20,13 @@ Route::get('/', function () {
 Route::get('/gallery', [GalleryController::class, 'index'])->name('gallery.index');
 Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
 Route::get('/articles/{id}', [ArticleController::class, 'show'])->name('articles.show');
+
+// Add this route before the existing materials routes
+Route::get('/materials={content_type}', [MaterialController::class, 'index'])->name('materials.type');
+
 Route::get('/materials', [MaterialController::class, 'index'])->name('materials.index');
 Route::get('/materials/{id}', [MaterialController::class, 'show'])->name('materials.show');
+Route::get('/materials/{material}/download', [MaterialController::class, 'download'])->name('materials.download');
 Route::get('/schools', [SchoolController::class, 'index'])->name('schools.index');
 Route::get('/studies', [StudyController::class, 'index'])->name('studies.index');
 Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');
