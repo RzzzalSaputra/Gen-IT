@@ -5,7 +5,7 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ url('/') }}" class="flex items-center">
-                        <img src="{{ asset('/storage/icon/Lambang_Kabupaten_Katingan.png') }}" alt="Logo" class="h-8 w-auto mr-2">
+                        <img src="{{ asset('https://upload.wikimedia.org/wikipedia/commons/4/4b/Lambang_Kabupaten_Katingan.png') }}" alt="Logo" class="h-8 w-auto mr-2">
                         <span class="text-white font-bold text-xl">
                             <span class="text-blue-500">Gen</span>-IT
                         </span>
