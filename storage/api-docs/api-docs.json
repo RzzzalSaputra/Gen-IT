@@ -14,100 +14,22 @@
         "version": "1.0.0"
     },
     "paths": {
-        "/api/articles": {
+        "/api/articles/active": {
             "get": {
                 "tags": [
                     "Articles"
                 ],
-                "summary": "Display a listing of articles",
-                "operationId": "articleIndex",
-                "parameters": [
-                    {
-                        "name": "_page",
-                        "in": "query",
-                        "description": "Current page",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "format": "int64",
-                            "example": 1
-                        }
-                    },
-                    {
-                        "name": "_limit",
-                        "in": "query",
-                        "description": "Max items in a page",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "format": "int64",
-                            "example": 10
-                        }
-                    },
-                    {
-                        "name": "_search",
-                        "in": "query",
-                        "description": "Word to search in title, content, summary, or writer",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "_dir",
-                        "in": "query",
-                        "description": "Order by direction (asc/desc)",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "example": "asc"
-                        }
-                    },
-                    {
-                        "name": "status",
-                        "in": "query",
-                        "description": "Filter by status",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "format": "int64",
-                            "example": 1
-                        }
-                    },
-                    {
-                        "name": "type",
-                        "in": "query",
-                        "description": "Filter by type",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "format": "int64",
-                            "example": 2
-                        }
-                    },
-                    {
-                        "name": "created_by",
-                        "in": "query",
-                        "description": "Filter by creator ID",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "format": "int64",
-                            "example": 5
-                        }
-                    }
-                ],
+                "summary": "Get all active articles",
+                "description": "Returns list of active (not soft deleted) articles",
+                "operationId": "48a43806e2e71d64f934ec9bc523bfb5",
                 "responses": {
                     "200": {
-                        "description": "successful",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
+                        "description": "Successful operation"
                     }
                 }
-            },
+            }
+        },
+        "/api/articles": {
             "post": {
                 "tags": [
                     "Articles"
@@ -204,28 +126,13 @@
                 ]
             }
         },
-        "/api/articles/active": {
-            "get": {
-                "tags": [
-                    "Articles"
-                ],
-                "summary": "Get all active articles",
-                "description": "Returns list of active (not soft deleted) articles",
-                "operationId": "48a43806e2e71d64f934ec9bc523bfb5",
-                "responses": {
-                    "200": {
-                        "description": "Successful operation"
-                    }
-                }
-            }
-        },
         "/api/articles/{id}": {
             "get": {
                 "tags": [
                     "Articles"
                 ],
                 "summary": "Get specific article by ID",
-                "operationId": "a85697b2464e9aaa3f9980a83edbef88",
+                "operationId": "18afaccc0558a66579770d12f6e99e5a",
                 "parameters": [
                     {
                         "name": "id",

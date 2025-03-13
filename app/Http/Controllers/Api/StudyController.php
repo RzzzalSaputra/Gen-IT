@@ -16,6 +16,14 @@ use Illuminate\Support\Facades\Storage;
 
 class StudyController extends Controller
 {
+    public function __construct()
+    {
+        // Only set the Accept header for API requests
+        if (request()->is('api/*')) {
+            request()->headers->set('Accept', 'application/json');
+        }
+    }
+
     /**
      * @OA\Get(
      *     path="/api/studies",
@@ -254,19 +262,28 @@ class StudyController extends Controller
      *     )
      * )
      */
-    public function show(int $id): JsonResponse
+    public function show(int $id)
     {
-        $study = Study::withTrashed()->find($id);
+        $study = Study::with(['school', 'levelOption'])->find($id);
 
         if (!$study) {
-            return response()->json(['message' => 'Study program not found'], Response::HTTP_NOT_FOUND);
+            if (request()->is('api/*')) {
+                return response()->json(['message' => 'Study program not found'], Response::HTTP_NOT_FOUND);
+            }
+            abort(404, 'Study program not found');
         }
 
         // Increment read counter
         $study->read_counter = $study->read_counter + 1;
         $study->save();
-
-        return response()->json($study, Response::HTTP_OK);
+        
+        // If this is an API request
+        if (request()->is('api/*')) {
+            return response()->json($study, Response::HTTP_OK);
+        }
+        
+        // For web view
+        return view('studies.show', compact('study'));
     }
 
     /**

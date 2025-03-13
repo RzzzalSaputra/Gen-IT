@@ -98,91 +98,91 @@
                             
                             <!-- Article Content -->
                             <div id="material-content" class="prose lg:prose-xl dark:prose-invert text-gray-100 
-    prose-headings:font-bold 
-    
-    prose-h1:text-3xl prose-h1:md:text-4xl prose-h1:bg-clip-text prose-h1:text-transparent 
-    prose-h1:bg-gradient-to-r prose-h1:from-blue-400 prose-h1:to-purple-400 
-    prose-h1:border-b prose-h1:border-blue-500/30 prose-h1:pb-2 prose-h1:mb-6
-    
-    prose-h2:text-2xl prose-h2:md:text-3xl prose-h2:text-blue-300 
-    prose-h2:mt-12 prose-h2:mb-6 prose-h2:pb-1 prose-h2:border-b prose-h2:border-blue-600/20
-    
-    prose-h3:text-xl prose-h3:md:text-2xl prose-h3:text-indigo-300 
-    prose-h3:mt-8 prose-h3:mb-4
-    
-    prose-h4:text-lg prose-h4:md:text-xl prose-h4:text-purple-300 
-    prose-h4:mt-6 prose-h4:mb-3
-    
-    prose-h5:text-base prose-h5:md:text-lg prose-h5:text-pink-300 
-    prose-h5:font-semibold prose-h5:mt-5 prose-h5:mb-3
-    
-    prose-h6:text-sm prose-h6:md:text-base prose-h6:text-cyan-300 
-    prose-h6:font-semibold prose-h6:mt-4 prose-h6:mb-2
-    
-    prose-p:text-gray-100 prose-p:leading-relaxed prose-p:my-4
-    
-    prose-strong:text-blue-200 prose-strong:font-semibold
-    prose-em:text-indigo-200
-    
-    prose-a:text-sky-400 prose-a:no-underline hover:prose-a:underline 
-    hover:prose-a:text-sky-300 prose-a:transition-colors prose-a:duration-200
-    
-    prose-code:text-amber-200 prose-code:bg-gray-900/80 prose-code:border 
-    prose-code:border-amber-900/30 prose-code:px-1.5 prose-code:py-0.5 
-    prose-code:rounded prose-code:text-sm prose-code:font-mono
-    
-    prose-pre:bg-gradient-to-b prose-pre:from-gray-800 prose-pre:to-gray-900 
-    prose-pre:border prose-pre:border-gray-700/60 prose-pre:rounded-lg
-    prose-pre:shadow-inner prose-pre:shadow-black/20 prose-pre:overflow-x-auto
-    prose-pre:my-8 prose-pre:p-6 prose-pre:relative
-    
-    prose-blockquote:border-l-4 prose-blockquote:border-indigo-500
-    prose-blockquote:bg-indigo-900/20 prose-blockquote:px-6 
-    prose-blockquote:py-4 prose-blockquote:rounded-r-md
-    prose-blockquote:text-indigo-100 prose-blockquote:not-italic
-    prose-blockquote:shadow-md prose-blockquote:my-6
-    
-    prose-li:text-gray-100 prose-li:my-1
-    prose-li:marker:text-blue-400
-    prose-ol:text-gray-100 prose-ol:marker:text-purple-400
-    prose-ul:text-gray-100 prose-ul:my-4
-    
-    prose-table:border prose-table:border-gray-700 prose-table:my-6
-    prose-th:bg-gray-800 prose-th:text-gray-100 prose-th:p-3 prose-th:font-semibold
-    prose-td:border prose-td:border-gray-700 prose-td:p-3 prose-td:text-gray-200
-    
-    prose-img:rounded-xl prose-img:shadow-lg prose-img:my-8 prose-img:mx-auto
-    prose-hr:border-gray-700 prose-hr:my-10
-    
-    [&_ol>li]:pl-2 [&_ul>li]:pl-2 [&_li]:my-1.5
-    [&_ol>li::marker]:text-indigo-400 [&_ul>li::marker]:text-blue-400
-    
-    [&_pre]:backdrop-blur-sm [&_pre]:shadow-lg
-    [&_pre_code]:text-blue-100 [&_pre_code]:font-mono [&_pre_code]:text-sm
-    
-    [&_.note]:bg-blue-900/20 [&_.note]:border-l-4 [&_.note]:border-blue-500 
-    [&_.note]:p-4 [&_.note]:rounded-r-md [&_.note]:text-blue-100 [&_.note]:my-6
-    
-    [&_.warning]:bg-amber-900/20 [&_.warning]:border-l-4 [&_.warning]:border-amber-500 
-    [&_.warning]:p-4 [&_.warning]:rounded-r-md [&_.warning]:text-amber-100 [&_.warning]:my-6
-    
-    [&_.tip]:bg-emerald-900/20 [&_.tip]:border-l-4 [&_.tip]:border-emerald-500 
-    [&_.tip]:p-4 [&_.tip]:rounded-r-md [&_.tip]:text-emerald-100 [&_.tip]:my-6
-    
-    [&_.step]:bg-gray-800/40 [&_.step]:p-5 [&_.step]:rounded-lg 
-    [&_.step]:border [&_.step]:border-blue-800/30 [&_.step]:my-6 [&_.step]:shadow-md
-    
-    [&_.step-title]:text-cyan-300 [&_.step-title]:font-bold [&_.step-title]:text-lg 
-    [&_.step-title]:flex [&_.step-title]:items-center [&_.step-title]:gap-2 [&_.step-title]:mb-3
-    
-    [&_.step-number]:bg-blue-900/50 [&_.step-number]:text-blue-200 [&_.step-number]:w-6 
-    [&_.step-number]:h-6 [&_.step-number]:rounded-full [&_.step-number]:flex 
-    [&_.step-number]:items-center [&_.step-number]:justify-center [&_.step-number]:text-sm
-    [&_.step-number]:border [&_.step-number]:border-blue-700/50
-    
-    max-w-none">
-    {!! $material->content !!}
-</div>
+                                prose-headings:font-bold 
+                                
+                                prose-h1:text-3xl prose-h1:md:text-4xl prose-h1:bg-clip-text prose-h1:text-transparent 
+                                prose-h1:bg-gradient-to-r prose-h1:from-blue-400 prose-h1:to-purple-400 
+                                prose-h1:border-b prose-h1:border-blue-500/30 prose-h1:pb-2 prose-h1:mb-6
+                                
+                                prose-h2:text-2xl prose-h2:md:text-3xl prose-h2:text-blue-300 
+                                prose-h2:mt-12 prose-h2:mb-6 prose-h2:pb-1 prose-h2:border-b prose-h2:border-blue-600/20
+                                
+                                prose-h3:text-xl prose-h3:md:text-2xl prose-h3:text-indigo-300 
+                                prose-h3:mt-8 prose-h3:mb-4
+                                
+                                prose-h4:text-lg prose-h4:md:text-xl prose-h4:text-purple-300 
+                                prose-h4:mt-6 prose-h4:mb-3
+                                
+                                prose-h5:text-base prose-h5:md:text-lg prose-h5:text-pink-300 
+                                prose-h5:font-semibold prose-h5:mt-5 prose-h5:mb-3
+                                
+                                prose-h6:text-sm prose-h6:md:text-base prose-h6:text-cyan-300 
+                                prose-h6:font-semibold prose-h6:mt-4 prose-h6:mb-2
+                                
+                                prose-p:text-gray-100 prose-p:leading-relaxed prose-p:my-4
+                                
+                                prose-strong:text-blue-200 prose-strong:font-semibold
+                                prose-em:text-indigo-200
+                                
+                                prose-a:text-sky-400 prose-a:no-underline hover:prose-a:underline 
+                                hover:prose-a:text-sky-300 prose-a:transition-colors prose-a:duration-200
+                                
+                                prose-code:text-amber-200 prose-code:bg-gray-900/80 prose-code:border 
+                                prose-code:border-amber-900/30 prose-code:px-1.5 prose-code:py-0.5 
+                                prose-code:rounded prose-code:text-sm prose-code:font-mono
+                                
+                                prose-pre:bg-gradient-to-b prose-pre:from-gray-800 prose-pre:to-gray-900 
+                                prose-pre:border prose-pre:border-gray-700/60 prose-pre:rounded-lg
+                                prose-pre:shadow-inner prose-pre:shadow-black/20 prose-pre:overflow-x-auto
+                                prose-pre:my-8 prose-pre:p-6 prose-pre:relative
+                                
+                                prose-blockquote:border-l-4 prose-blockquote:border-indigo-500
+                                prose-blockquote:bg-indigo-900/20 prose-blockquote:px-6 
+                                prose-blockquote:py-4 prose-blockquote:rounded-r-md
+                                prose-blockquote:text-indigo-100 prose-blockquote:not-italic
+                                prose-blockquote:shadow-md prose-blockquote:my-6
+                                
+                                prose-li:text-gray-100 prose-li:my-1
+                                prose-li:marker:text-blue-400
+                                prose-ol:text-gray-100 prose-ol:marker:text-purple-400
+                                prose-ul:text-gray-100 prose-ul:my-4
+                                
+                                prose-table:border prose-table:border-gray-700 prose-table:my-6
+                                prose-th:bg-gray-800 prose-th:text-gray-100 prose-th:p-3 prose-th:font-semibold
+                                prose-td:border prose-td:border-gray-700 prose-td:p-3 prose-td:text-gray-200
+                                
+                                prose-img:rounded-xl prose-img:shadow-lg prose-img:my-8 prose-img:mx-auto
+                                prose-hr:border-gray-700 prose-hr:my-10
+                                
+                                [&_ol>li]:pl-2 [&_ul>li]:pl-2 [&_li]:my-1.5
+                                [&_ol>li::marker]:text-indigo-400 [&_ul>li::marker]:text-blue-400
+                                
+                                [&_pre]:backdrop-blur-sm [&_pre]:shadow-lg
+                                [&_pre_code]:text-blue-100 [&_pre_code]:font-mono [&_pre_code]:text-sm
+                                
+                                [&_.note]:bg-blue-900/20 [&_.note]:border-l-4 [&_.note]:border-blue-500 
+                                [&_.note]:p-4 [&_.note]:rounded-r-md [&_.note]:text-blue-100 [&_.note]:my-6
+                                
+                                [&_.warning]:bg-amber-900/20 [&_.warning]:border-l-4 [&_.warning]:border-amber-500 
+                                [&_.warning]:p-4 [&_.warning]:rounded-r-md [&_.warning]:text-amber-100 [&_.warning]:my-6
+                                
+                                [&_.tip]:bg-emerald-900/20 [&_.tip]:border-l-4 [&_.tip]:border-emerald-500 
+                                [&_.tip]:p-4 [&_.tip]:rounded-r-md [&_.tip]:text-emerald-100 [&_.tip]:my-6
+                                
+                                [&_.step]:bg-gray-800/40 [&_.step]:p-5 [&_.step]:rounded-lg 
+                                [&_.step]:border [&_.step]:border-blue-800/30 [&_.step]:my-6 [&_.step]:shadow-md
+                                
+                                [&_.step-title]:text-cyan-300 [&_.step-title]:font-bold [&_.step-title]:text-lg 
+                                [&_.step-title]:flex [&_.step-title]:items-center [&_.step-title]:gap-2 [&_.step-title]:mb-3
+                                
+                                [&_.step-number]:bg-blue-900/50 [&_.step-number]:text-blue-200 [&_.step-number]:w-6 
+                                [&_.step-number]:h-6 [&_.step-number]:rounded-full [&_.step-number]:flex 
+                                [&_.step-number]:items-center [&_.step-number]:justify-center [&_.step-number]:text-sm
+                                [&_.step-number]:border [&_.step-number]:border-blue-700/50
+                                
+                                max-w-none">
+                                {!! $material->content !!}
+                            </div>
                             
                             <div class="mt-16 pt-8 border-t border-gray-700/50">
                                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">

@@ -7,6 +7,8 @@ use App\Models\Option;
 use App\Models\Post;
 use App\Models\Material;
 use App\Models\Gallery;
+use App\Models\School;
+use App\Models\Study;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -35,6 +37,12 @@ class DatabaseSeeder extends Seeder
         
         // ===== ARTICLES SEEDING =====
         $this->seedArticles();
+        
+        // ===== SCHOOLS SEEDING =====
+        $this->seedSchools();
+        
+        // ===== STUDIES SEEDING =====
+        $this->seedStudies();
     }
     
     /**
@@ -66,6 +74,10 @@ class DatabaseSeeder extends Seeder
             ['type' => 'material_type', 'value' => 'Documentation'],
             ['type' => 'material_type', 'value' => 'Tutorial'],
             
+            // School types
+            ['type' => 'school_type', 'value' => 'SMA'],
+            ['type' => 'school_type', 'value' => 'SMK'],
+            ['type' => 'school_type', 'value' => 'University'],
 
         ];
 
@@ -730,5 +742,369 @@ function initializeFeature() {
         }
 
         $this->command->info('Articles seeded successfully!');
+    }
+
+    /**
+     * Seed the schools table.
+     */
+    private function seedSchools(): void
+    {
+        // Get school type options
+        $schoolTypes = Option::where('type', 'school_type')->pluck('id', 'value')->toArray();
+        if (empty($schoolTypes)) {
+            $this->command->error('No school type options found! Cannot seed schools.');
+            return;
+        }
+
+
+        // Schools data
+        $schools = [
+            // SMA Data
+            [
+                'name' => 'SMA Negeri 1 Bandung',
+                'description' => 'SMA Negeri 1 Bandung adalah salah satu sekolah menengah atas negeri unggulan di Kota Bandung. Didirikan pada tahun 1950, sekolah ini telah mencetak ribuan lulusan berkualitas yang tersebar di berbagai bidang. Dengan fasilitas lengkap dan guru-guru berpengalaman, SMA Negeri 1 Bandung berkomitmen untuk memberikan pendidikan terbaik bagi para siswa.',
+                'img' => 'https://picsum.photos/id/1001/800/600',
+                'type' => $schoolTypes['SMA'],
+                'gmap' => 'https://maps.google.com/maps?q=-6.9034443,107.6431857&z=15&output=embed',
+                'province' => 'Jawa Barat',
+                'city' => 'Bandung',
+                'address' => 'Jl. Ir. H. Juanda No.93, Bandung',
+                'website' => 'https://sman1bandung.sch.id',
+                'instagram' => 'https://instagram.com/sman1bdg',
+                'facebook' => 'https://facebook.com/sman1bandung',
+                'x' => 'https://x.com/sman1bdg',
+            ],
+            [
+                'name' => 'SMA Negeri 3 Jakarta',
+                'description' => 'SMA Negeri 3 Jakarta merupakan sekolah dengan sejarah panjang yang berlokasi di jantung ibukota. Dikenal dengan prestasi akademik dan non-akademik yang gemilang, SMAN 3 Jakarta menawarkan lingkungan belajar yang kondusif dengan berbagai fasilitas modern. Lulusan SMA Negeri 3 Jakarta dikenal memiliki daya saing tinggi dan tersebar di perguruan tinggi ternama baik dalam maupun luar negeri.',
+                'img' => 'https://picsum.photos/id/1002/800/600',
+                'type' => $schoolTypes['SMA'],
+                'gmap' => 'https://maps.google.com/maps?q=-6.2088898,106.8355483&z=15&output=embed',
+                'province' => 'DKI Jakarta',
+                'city' => 'Jakarta Selatan',
+                'address' => 'Jl. Setiabudi II No.1, Jakarta Selatan',
+                'website' => 'https://sman3jkt.sch.id',
+                'instagram' => 'https://instagram.com/sman3jkt',
+                'facebook' => 'https://facebook.com/sman3jakarta',
+                'x' => 'https://x.com/sman3jkt',
+            ],
+            [
+                'name' => 'SMA Negeri 1 Yogyakarta',
+                'description' => 'SMA Negeri 1 Yogyakarta atau lebih dikenal sebagai SMA Teladan adalah sekolah unggulan dengan reputasi akademik yang sangat baik. Berlokasi di kawasan Malioboro, sekolah ini memadukan nilai-nilai budaya dan pendidikan modern. Dengan kurikulum yang komprehensif dan berbagai kegiatan ekstrakurikuler, SMA Negeri 1 Yogyakarta fokus pada pengembangan karakter dan prestasi siswa secara seimbang.',
+                'img' => 'https://picsum.photos/id/1003/800/600',
+                'type' => $schoolTypes['SMA'],
+                'gmap' => 'https://maps.google.com/maps?q=-7.7956328,110.3695414&z=15&output=embed',
+                'province' => 'DI Yogyakarta',
+                'city' => 'Yogyakarta',
+                'address' => 'Jl. HOS Cokroaminoto No.10, Yogyakarta',
+                'website' => 'https://sman1yogya.sch.id',
+                'instagram' => 'https://instagram.com/smateladanjogja',
+                'facebook' => 'https://facebook.com/sman1yogyakarta',
+                'x' => 'https://x.com/smateladan',
+            ],
+            
+            // SMK Data
+            [
+                'name' => 'SMK Negeri 1 Denpasar',
+                'description' => 'SMK Negeri 1 Denpasar adalah sekolah kejuruan unggulan dengan fokus pada bidang teknologi dan bisnis. Dengan laboratorium dan workshop yang lengkap, sekolah ini memberikan pendidikan vokasi berkualitas tinggi. Kerjasama dengan berbagai industri memastikan lulusan SMK Negeri 1 Denpasar siap memasuki dunia kerja dengan keterampilan yang relevan dan berdaya saing.',
+                'img' => 'https://picsum.photos/id/1004/800/600',
+                'type' => $schoolTypes['SMK'],
+                'gmap' => 'https://maps.google.com/maps?q=-8.6478175,115.2167033&z=15&output=embed',
+                'province' => 'Bali',
+                'city' => 'Denpasar',
+                'address' => 'Jl. Cokroaminoto No.84, Denpasar',
+                'website' => 'https://smkn1denpasar.sch.id',
+                'instagram' => 'https://instagram.com/smkn1denpasar',
+                'facebook' => 'https://facebook.com/smkn1denpasar',
+                'x' => 'https://x.com/smkn1denpasar',
+            ],
+            [
+                'name' => 'SMK Telkom Malang',
+                'description' => 'SMK Telkom Malang adalah sekolah kejuruan yang berfokus pada bidang teknologi informasi dan komunikasi. Didukung oleh Telkom Indonesia, sekolah ini dilengkapi dengan fasilitas modern dan kurikulum yang dirancang bersama industri. Dengan metode pembelajaran berbasis proyek dan sertifikasi internasional, SMK Telkom Malang telah menjadi salah satu SMK terbaik di Indonesia dalam melahirkan tenaga IT profesional.',
+                'img' => 'https://picsum.photos/id/1005/800/600',
+                'type' => $schoolTypes['SMK'],
+                'gmap' => 'https://maps.google.com/maps?q=-7.9666204,112.6173992&z=15&output=embed',
+                'province' => 'Jawa Timur',
+                'city' => 'Malang',
+                'address' => 'Jl. Danau Ranau, Sawojajar, Malang',
+                'website' => 'https://smktelkom-mlg.sch.id',
+                'instagram' => 'https://instagram.com/smktelkommalang',
+                'facebook' => 'https://facebook.com/smktelkommalang',
+                'x' => 'https://x.com/smktelkommlg',
+            ],
+            [
+                'name' => 'SMK Negeri 4 Padang',
+                'description' => 'SMK Negeri 4 Padang adalah sekolah kejuruan dengan keunggulan di bidang perhotelan, tata boga, dan pariwisata. Terletak di kota Padang dengan akses mudah ke berbagai destinasi wisata, sekolah ini memberikan kesempatan praktik langsung bagi siswanya. Dengan guru-guru berkompeten dan fasilitas pendukung yang lengkap, SMK Negeri 4 Padang berkomitmen menghasilkan lulusan yang siap kerja di industri hospitalitas.',
+                'img' => 'https://picsum.photos/id/1006/800/600',
+                'type' => $schoolTypes['SMK'],
+                'gmap' => 'https://maps.google.com/maps?q=-0.9115136,100.3580286&z=15&output=embed',
+                'province' => 'Sumatera Barat',
+                'city' => 'Padang',
+                'address' => 'Jl. Pulai Anak Air, Pauh, Padang',
+                'website' => 'https://smkn4padang.sch.id',
+                'instagram' => 'https://instagram.com/smkn4padang',
+                'facebook' => 'https://facebook.com/smkn4padang',
+                'x' => 'https://x.com/smkn4pdg',
+            ],
+            
+            // University Data
+            [
+                'name' => 'Universitas Indonesia',
+                'description' => 'Universitas Indonesia (UI) adalah salah satu perguruan tinggi terkemuka di Indonesia yang berlokasi di Depok, Jawa Barat. Didirikan pada tahun 1849, UI telah menjadi pusat keunggulan akademik dengan berbagai program studi dari jenjang sarjana hingga doktoral. Kampus yang asri dan fasilitas modern mendukung kegiatan pembelajaran dan penelitian yang inovatif. Dengan reputasi internasional yang kuat, UI terus berkomitmen untuk berkontribusi dalam pembangunan bangsa melalui pendidikan tinggi yang berkualitas.',
+                'img' => 'https://picsum.photos/id/1008/800/600',
+                'type' => $schoolTypes['University'],
+                'gmap' => 'https://maps.google.com/maps?q=-6.3660259,106.8271192&z=15&output=embed',
+                'province' => 'Jawa Barat',
+                'city' => 'Depok',
+                'address' => 'Kampus UI Depok, Jawa Barat',
+                'website' => 'https://ui.ac.id',
+                'instagram' => 'https://instagram.com/universitasindonesia',
+                'facebook' => 'https://facebook.com/universitasindonesia',
+                'x' => 'https://x.com/univ_indonesia',
+            ],
+            [
+                'name' => 'Institut Teknologi Bandung',
+                'description' => 'Institut Teknologi Bandung (ITB) adalah perguruan tinggi teknik terkemuka di Indonesia yang didirikan pada tahun 1920. Dengan fokus pada bidang sains, teknologi, dan seni, ITB telah mencetak banyak ilmuwan, insinyur, dan seniman yang berkontribusi pada pembangunan nasional dan internasional. Kampus utama yang bersejarah di Jalan Ganesha dilengkapi dengan laboratorium canggih dan pusat penelitian yang mendukung inovasi dan pengembangan teknologi.',
+                'img' => 'https://picsum.photos/id/1009/800/600',
+                'type' => $schoolTypes['University'],
+                'gmap' => 'https://maps.google.com/maps?q=-6.8913528,107.610667&z=15&output=embed',
+                'province' => 'Jawa Barat',
+                'city' => 'Bandung',
+                'address' => 'Jl. Ganesha No.10, Bandung',
+                'website' => 'https://itb.ac.id',
+                'instagram' => 'https://instagram.com/itbofficial',
+                'facebook' => 'https://facebook.com/institutteknologibandung',
+                'x' => 'https://x.com/itbofficial',
+            ],
+            [
+                'name' => 'Universitas Gadjah Mada',
+                'description' => 'Universitas Gadjah Mada (UGM) adalah universitas riset tertua dan terkemuka di Indonesia yang berlokasi di Yogyakarta. Didirikan pada tahun 1949, UGM menawarkan pendidikan berkualitas tinggi dalam berbagai disiplin ilmu dengan memadukan nilai-nilai lokal dan standar akademik global. Dengan kampus yang luas dan asri, UGM menyediakan lingkungan belajar yang ideal bagi mahasiswa dari seluruh Indonesia dan mancanegara. UGM berkomitmen untuk terus mengembangkan penelitian dan pengabdian masyarakat yang bermanfaat bagi kemajuan bangsa.',
+                'img' => 'https://picsum.photos/id/1010/800/600',
+                'type' => $schoolTypes['University'],
+                'gmap' => 'https://maps.google.com/maps?q=-7.7713847,110.3774998&z=15&output=embed',
+                'province' => 'DI Yogyakarta',
+                'city' => 'Yogyakarta',
+                'address' => 'Bulaksumur, Yogyakarta',
+                'website' => 'https://ugm.ac.id',
+                'instagram' => 'https://instagram.com/ugm_yogyakarta',
+                'facebook' => 'https://facebook.com/universitasgadjahmada',
+                'x' => 'https://x.com/ugm_yogyakarta',
+            ],
+        ];
+
+        // Insert schools
+        foreach ($schools as $schoolData) {
+            $school = School::updateOrCreate(
+                ['name' => $schoolData['name']],
+                array_merge($schoolData, [
+                    'read_counter' => rand(100, 5000),
+                    'created_at' => now()->subDays(rand(30, 365)),
+                    'updated_at' => now()->subDays(rand(1, 30)),
+                ])
+            );
+        }
+        
+        $this->command->info('Schools seeded successfully!');
+    }
+
+    /**
+     * Seed the studies table.
+     */
+    private function seedStudies(): void
+    {
+        // First, add study level options if they don't exist
+        $studyLevels = [
+            ['type' => 'study_level', 'value' => 'SMA'],
+            ['type' => 'study_level', 'value' => 'SMK'],
+            ['type' => 'study_level', 'value' => 'D3'],
+            ['type' => 'study_level', 'value' => 'D4'],
+            ['type' => 'study_level', 'value' => 'S1'],
+            ['type' => 'study_level', 'value' => 'S2'],
+            ['type' => 'study_level', 'value' => 'S3'],
+        ];
+
+        foreach ($studyLevels as $level) {
+            Option::updateOrCreate(
+                ['type' => $level['type'], 'value' => $level['value']],
+                array_merge($level, ['created_at' => now(), 'updated_at' => now()])
+            );
+        }
+        
+        // Get study level IDs
+        $smaLevelId = Option::where('type', 'study_level')->where('value', 'SMA')->first()->id;
+        $smkLevelId = Option::where('type', 'study_level')->where('value', 'SMK')->first()->id;
+        $d3LevelId = Option::where('type', 'study_level')->where('value', 'D3')->first()->id;
+        $s1LevelId = Option::where('type', 'study_level')->where('value', 'S1')->first()->id;
+        $s2LevelId = Option::where('type', 'study_level')->where('value', 'S2')->first()->id;
+        $s3LevelId = Option::where('type', 'study_level')->where('value', 'S3')->first()->id;
+        
+        // Get school types
+        $schoolTypeIds = Option::where('type', 'school_type')->pluck('id', 'value')->toArray();
+        
+        // Get all schools
+        $schools = School::all();
+        
+        // Study descriptions
+        $smaDescription = "Program pembelajaran yang komprehensif untuk mempersiapkan siswa menghadapi berbagai tantangan akademik. Dengan kurikulum yang dirancang khusus, program ini memberikan landasan pengetahuan yang kuat dalam berbagai mata pelajaran. Siswa akan memperoleh kemampuan analisis, pemecahan masalah, dan keterampilan komunikasi yang esensial untuk melanjutkan ke perguruan tinggi dan berkarir di masa depan.";
+        
+        $smkDescription = "Program pendidikan kejuruan yang dirancang untuk mempersiapkan siswa dengan keterampilan praktis dan pengetahuan teoretis untuk memasuki dunia kerja. Kurikulum di program ini menekankan pada pembelajaran berbasis proyek dan praktikum di laboratorium atau bengkel yang dilengkapi peralatan industri standar. Siswa juga akan mendapatkan kesempatan magang di industri untuk mendapatkan pengalaman kerja nyata sebelum lulus.";
+        
+        $d3Description = "Program diploma tiga tahun yang menekankan pada penguasaan keterampilan praktis dan siap kerja. Kurikulum dirancang dengan masukan dari industri untuk memastikan relevansi dengan kebutuhan pasar kerja terkini. Mahasiswa akan menjalani praktikum intensif dan proyek akhir yang berfokus pada penerapan praktis dari bidang studi. Lulusan program ini memiliki keunggulan dalam keterampilan teknis yang langsung dapat diterapkan di dunia kerja.";
+        
+        $s1Description = "Program sarjana empat tahun yang memberikan landasan teoretis yang kuat dan keterampilan praktis dalam bidang studi. Kurikulum komprehensif mencakup mata kuliah inti, pilihan, dan pendukung untuk mengembangkan pemahaman mendalam tentang disiplin ilmu. Mahasiswa akan melakukan penelitian untuk tugas akhir yang mengintegrasikan pengetahuan dan keterampilan yang diperoleh selama studi. Program ini mempersiapkan lulusan untuk karir profesional atau melanjutkan ke jenjang pendidikan yang lebih tinggi.";
+        
+        $s2Description = "Program magister yang dirancang untuk memperdalam pengetahuan dan keahlian dalam bidang spesifik. Mahasiswa akan mengembangkan pemikiran kritis dan kemampuan penelitian melalui studi lanjutan dan seminar khusus. Program ini melibatkan riset mandiri yang menghasilkan tesis dengan kontribusi orisinal pada bidang studi. Lulusan akan memiliki keahlian tingkat lanjut dan perspektif yang lebih luas untuk posisi kepemimpinan dalam karir akademis maupun profesional.";
+        
+        $s3Description = "Program doktoral yang berfokus pada penelitian orisinal dan pengembangan pengetahuan baru dalam bidang spesifik. Mahasiswa akan bekerja di bawah bimbingan pakar terkemuka untuk mengembangkan dan melakukan penelitian yang signifikan. Program ini menghasilkan disertasi yang memberikan kontribusi substansial pada ilmu pengetahuan. Lulusan program doktoral akan menjadi ahli dalam bidangnya, siap untuk karir di penelitian tingkat lanjut, pendidikan tinggi, atau posisi kepemimpinan dalam industri.";
+
+        // Create study programs for each school
+        foreach ($schools as $school) {
+            // Determine which programs to create based on school type
+            switch ($school->type) {
+                case $schoolTypeIds['SMA']:
+                    $studyPrograms = [
+                        [
+                            'name' => 'Program Reguler',
+                            'description' => $smaDescription,
+                            'duration' => '3 tahun',
+                            'level' => $smaLevelId,
+                            'img' => 'https://picsum.photos/id/' . rand(100, 999) . '/800/600',
+                        ],
+                        [
+                            'name' => 'Jurusan Ilmu Pengetahuan Alam',
+                            'description' => $smaDescription . ' Jurusan IPA menekankan pada mata pelajaran Matematika, Fisika, Kimia, dan Biologi untuk mempersiapkan siswa melanjutkan ke jurusan teknik, kedokteran, farmasi, atau ilmu alam lainnya di perguruan tinggi.',
+                            'duration' => '3 tahun',
+                            'level' => $smaLevelId,
+                            'img' => 'https://picsum.photos/id/' . rand(100, 999) . '/800/600',
+                        ],
+                        [
+                            'name' => 'Jurusan Ilmu Pengetahuan Sosial',
+                            'description' => $smaDescription . ' Jurusan IPS fokus pada mata pelajaran Ekonomi, Geografi, Sejarah, dan Sosiologi untuk mempersiapkan siswa melanjutkan ke jurusan ekonomi, hukum, psikologi, atau ilmu sosial lainnya di perguruan tinggi.',
+                            'duration' => '3 tahun',
+                            'level' => $smaLevelId,
+                            'img' => 'https://picsum.photos/id/' . rand(100, 999) . '/800/600',
+                        ],
+                    ];
+                    break;
+                    
+                case $schoolTypeIds['SMK']:
+                    $studyPrograms = [
+                        [
+                            'name' => 'Teknik Komputer dan Jaringan',
+                            'description' => $smkDescription . ' Program TKJ berfokus pada perakitan komputer, administrasi jaringan, keamanan sistem, dan pemecahan masalah IT dengan sertifikasi standar industri.',
+                            'duration' => '3 tahun',
+                            'level' => $smkLevelId,
+                            'img' => 'https://picsum.photos/id/' . rand(100, 999) . '/800/600',
+                        ],
+                        [
+                            'name' => 'Rekayasa Perangkat Lunak',
+                            'description' => $smkDescription . ' Program RPL mempelajari pengembangan aplikasi, basis data, pemrograman web, dan mobile dengan pendekatan agile dan devops.',
+                            'duration' => '3 tahun',
+                            'level' => $smkLevelId,
+                            'img' => 'https://picsum.photos/id/' . rand(100, 999) . '/800/600',
+                        ],
+                        [
+                            'name' => 'Tata Boga',
+                            'description' => $smkDescription . ' Program Tata Boga fokus pada teknik memasak, pastry, food styling, manajemen restoran, dan inovasi kuliner dengan praktik di dapur profesional.',
+                            'duration' => '3 tahun',
+                            'level' => $smkLevelId,
+                            'img' => 'https://picsum.photos/id/' . rand(100, 999) . '/800/600',
+                        ],
+                    ];
+                    break;
+                    
+                case $schoolTypeIds['University']:
+                    // For universities, create a mix of programs
+                    $studyPrograms = [
+                        // Diploma programs
+                        [
+                            'name' => 'D3 Akuntansi',
+                            'description' => $d3Description . ' Program ini membekali mahasiswa dengan keterampilan praktis dalam pembukuan, perpajakan, dan analisis laporan keuangan.',
+                            'duration' => '3 tahun (6 semester)',
+                            'level' => $d3LevelId,
+                            'img' => 'https://picsum.photos/id/' . rand(100, 999) . '/800/600',
+                        ],
+                        [
+                            'name' => 'D3 Teknologi Informasi',
+                            'description' => $d3Description . ' Program ini fokus pada pengembangan aplikasi, jaringan komputer, dan manajemen sistem informasi.',
+                            'duration' => '3 tahun (6 semester)',
+                            'level' => $d3LevelId,
+                            'img' => 'https://picsum.photos/id/' . rand(100, 999) . '/800/600',
+                        ],
+                        
+                        // Bachelor programs
+                        [
+                            'name' => 'S1 Teknik Informatika',
+                            'description' => $s1Description . ' Program ini mencakup algoritma, struktur data, pengembangan perangkat lunak, kecerdasan buatan, dan teknologi komputasi canggih.',
+                            'duration' => '4 tahun (8 semester)',
+                            'level' => $s1LevelId,
+                            'img' => 'https://picsum.photos/id/' . rand(100, 999) . '/800/600',
+                            'link' => 'https://example.com/informatika',
+                        ],
+                        [
+                            'name' => 'S1 Manajemen',
+                            'description' => $s1Description . ' Program ini mengajarkan prinsip bisnis, pemasaran, manajemen sumber daya manusia, keuangan, dan strategi organisasi.',
+                            'duration' => '4 tahun (8 semester)',
+                            'level' => $s1LevelId,
+                            'img' => 'https://picsum.photos/id/' . rand(100, 999) . '/800/600',
+                        ],
+                        [
+                            'name' => 'S1 Kedokteran',
+                            'description' => $s1Description . ' Program ini meliputi ilmu dasar kedokteran, sistem organ, penyakit, diagnostik, dan terapi dengan praktik klinis di rumah sakit pendidikan.',
+                            'duration' => '5.5 tahun (11 semester)',
+                            'level' => $s1LevelId,
+                            'img' => 'https://picsum.photos/id/' . rand(100, 999) . '/800/600',
+                            'link' => 'https://example.com/kedokteran',
+                        ],
+                        
+                        // Master programs
+                        [
+                            'name' => 'S2 Ilmu Komputer',
+                            'description' => $s2Description . ' Program ini menawarkan spesialisasi dalam komputasi berperforma tinggi, data science, atau keamanan siber dengan riset kolaboratif bersama industri.',
+                            'duration' => '2 tahun (4 semester)',
+                            'level' => $s2LevelId,
+                            'img' => 'https://picsum.photos/id/' . rand(100, 999) . '/800/600',
+                        ],
+                        [
+                            'name' => 'S2 Manajemen Bisnis',
+                            'description' => $s2Description . ' Program MBA ini mengembangkan keterampilan kepemimpinan, analisis bisnis, dan pengambilan keputusan strategis untuk posisi eksekutif.',
+                            'duration' => '2 tahun (4 semester)',
+                            'level' => $s2LevelId,
+                            'img' => 'https://picsum.photos/id/' . rand(100, 999) . '/800/600',
+                        ],
+                        
+                        // Doctoral program
+                        [
+                            'name' => 'S3 Ilmu Komputer',
+                            'description' => $s3Description . ' Program doktoral ini mendukung penelitian canggih dalam bidang machine learning, computer vision, komputasi kuantum, dan teknologi disruptif lainnya.',
+                            'duration' => '3-5 tahun (6-10 semester)',
+                            'level' => $s3LevelId,
+                            'img' => 'https://picsum.photos/id/' . rand(100, 999) . '/800/600',
+                        ],
+                    ];
+                    break;
+                    
+                default:
+                    $studyPrograms = [];
+            }
+            
+            // Create each study program for the current school
+            foreach ($studyPrograms as $program) {
+                Study::create([
+                    'school_id' => $school->id,
+                    'name' => $program['name'],
+                    'description' => $program['description'],
+                    'duration' => $program['duration'],
+                    'link' => $program['link'] ?? null,
+                    'img' => $program['img'] ?? null,
+                    'level' => $program['level'],
+                    'read_counter' => rand(10, 500),
+                    'created_at' => now()->subDays(rand(1, 60)),
+                    'updated_at' => now()->subDays(rand(0, 30)),
+                ]);
+            }
+        }
+        
+        $this->command->info('Studies seeded successfully!');
     }
 }

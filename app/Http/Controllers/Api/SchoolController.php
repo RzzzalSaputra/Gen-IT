@@ -16,6 +16,14 @@ use Illuminate\Support\Facades\Storage;
 
 class SchoolController extends Controller
 {
+    public function __construct()
+    {
+        // Only set the Accept header for API requests
+        if (request()->is('api/*')) {
+            request()->headers->set('Accept', 'application/json');
+        }
+    }
+
     /**
      * @OA\Get(
      *     path="/api/schools",
@@ -87,20 +95,60 @@ class SchoolController extends Controller
             $query->where('city', 'like', "%{$request->city}%");
         }
 
-        // Pencarian berdasarkan nama atau deskripsi sekolah
+        // Pencarian berdasarkan nama atau deskripsi sekolah - MODIFIED FOR CASE-INSENSITIVE SEARCH
         if ($request->has('_search')) {
             $search = $request->_search;
             $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%$search%")
-                    ->orWhere('description', 'like', "%$search%");
+                $q->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($search) . '%'])
+                  ->orWhereRaw('LOWER(description) LIKE ?', ['%' . strtolower($search) . '%']);
             });
         }
 
         // Pagination
         $perPage = $request->_limit ?? 10;
-        $schools = $query->paginate($perPage);
+        $schools = $query->with('typeOption')->paginate($perPage);
 
-        return response()->json($schools);
+        // If this is an API request
+        if (request()->is('api/*')) {
+            return response()->json([
+                'data' => $schools->items(),
+                'meta' => [
+                    'current_page' => $schools->currentPage(),
+                    'last_page' => $schools->lastPage(),
+                    'per_page' => $schools->perPage(),
+                    'total' => $schools->total()
+                ]
+            ], Response::HTTP_OK);
+        }
+
+        // For web view
+        // Get unique provinces and cities for filters
+        $provinces = School::distinct('province')->pluck('province')->filter()->values();
+        $cities = School::distinct('city')->pluck('city')->filter()->values();
+        
+        // Get school types for filter tabs - fixed query
+        try {
+            // Try to get school types from distinct values in the schools table instead
+            $schoolTypeIds = School::distinct('type')->pluck('type')->filter()->values();
+            $schoolTypes = \App\Models\Option::whereIn('id', $schoolTypeIds)->get();
+        } catch (\Exception $e) {
+            // Fallback to empty collection if query fails
+            $schoolTypes = collect();
+        }
+
+        // Get cities with their associated provinces
+        $cityProvinceMap = School::select('city', 'province')
+            ->whereNotNull('city')
+            ->whereNotNull('province')
+            ->distinct()
+            ->get()
+            ->groupBy('province')
+            ->map(function($cities) {
+                return $cities->pluck('city')->filter()->values();
+            })
+            ->toArray();
+
+        return view('schools.index', compact('schools', 'provinces', 'cities', 'schoolTypes', 'cityProvinceMap'));
     }
 
     /**
@@ -286,19 +334,20 @@ class SchoolController extends Controller
      *     )
      * )
      */
-    public function show(int $id): JsonResponse
+    public function show($id)
     {
-        $school = School::withTrashed()->find($id);
-
-        if (!$school) {
-            return response()->json(['message' => 'School not found'], Response::HTTP_NOT_FOUND);
-        }
+        $school = School::with(['typeOption', 'studies'])->findOrFail($id);
 
         // Increment read counter
-        $school->read_counter = $school->read_counter + 1;
-        $school->save();
+        $school->increment('read_counter');
 
-        return response()->json($school, Response::HTTP_OK);
+        // Check if it's an API request by URL pattern
+        if (request()->is('api/*')) {
+            return response()->json($school, Response::HTTP_OK);
+        }
+        
+        // For web view requests, explicitly render the view
+        return view('schools.show', compact('school'));
     }
 
     /**
