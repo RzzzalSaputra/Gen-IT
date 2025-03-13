@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\SchoolController;
 use App\Http\Controllers\Api\StudyController;
 use App\Http\Controllers\Api\CompanyController;
 use App\Http\Controllers\Api\JobController;
+use App\Http\Controllers\Api\ContactController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -33,14 +34,21 @@ Route::get('/studies/{id}', [StudyController::class, 'show'])->name('studies.sho
 Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');
 Route::get('/jobs', [JobController::class, 'index'])->name('jobs.index');
 
+
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('/contact/create', [ContactController::class, 'create'])->name('contacts.create');
+Route::post('/contact', [ContactController::class, 'store'])->name('contacts.store');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
 });
 
 require __DIR__.'/auth.php';

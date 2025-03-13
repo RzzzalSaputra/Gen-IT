@@ -117,7 +117,12 @@ class ContactController extends Controller
         $perPage = $request->_limit ?? 10;
         $contacts = $query->paginate($perPage);
 
-        return response()->json($contacts, Response::HTTP_OK);
+        return response()->json($contacts, 200);
+    }
+
+    public function create()
+    {
+        return view('contact.create');
     }
 
     /**
@@ -149,7 +154,10 @@ class ContactController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            if ($request->ajax()) {
+                return response()->json(['errors' => $validator->errors()], 422);
+            }
+            return redirect()->back()->withErrors($validator)->withInput();
         }
 
         DB::beginTransaction();
@@ -158,7 +166,10 @@ class ContactController extends Controller
             $pendingStatus = Option::where('value', 'pending')->first();
 
             if (!$pendingStatus) {
-                return response()->json(['message' => 'Status "pending" tidak ditemukan di options'], 500);
+                if ($request->ajax()) {
+                    return response()->json(['message' => 'Status "pending" tidak ditemukan'], 500);
+                }
+                return redirect()->back()->with('error', 'Status "pending" tidak ditemukan.');
             }
 
             $contact = Contact::create([
@@ -166,14 +177,22 @@ class ContactController extends Controller
                 'email' => Auth::user()->email,
                 'message' => $request->message,
                 'created_by' => Auth::id(),
-                'status' => $pendingStatus->id // Assign status "pending" ke contact
+                'status' => $pendingStatus->id
             ]);
 
             DB::commit();
-            return response()->json(['message' => 'Contact created successfully', 'data' => $contact], 201);
+
+            if ($request->ajax()) {
+                return response()->json(['message' => 'Contact created successfully', 'data' => $contact], 201);
+            }
+            return redirect()->route('contacts.create')->with('success', 'Kontak berhasil dibuat!');
         } catch (\Exception $e) {
             DB::rollback();
-            return response()->json(['message' => 'Error creating contact', 'error' => $e->getMessage()], 500);
+
+            if ($request->ajax()) {
+                return response()->json(['message' => 'Error creating contact', 'error' => $e->getMessage()], 500);
+            }
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 

@@ -25,7 +25,7 @@ Route::middleware('api')->group(function () {
     Route::post('/login', [AuthenticatedSessionController::class, 'login']);
 
     // Protected Vicon Routes - Admin Only
-    Route::prefix('vicons')->middleware([ValidateRememberToken::class, RoleMiddleware::class.':admin'])->group(function () {
+    Route::prefix('vicons')->middleware([ValidateRememberToken::class, RoleMiddleware::class . ':admin'])->group(function () {
         Route::get('/', [ViconController::class, 'index']);
         Route::post('/', [ViconController::class, 'store']);
         Route::get('/{id}', [ViconController::class, 'show']);  // Changed {vicon} to {id}
@@ -41,7 +41,7 @@ Route::middleware('api')->group(function () {
         Route::post('/{gallery}', [GalleryController::class, 'update']);
 
         // Admin Routes
-        Route::middleware([ValidateRememberToken::class, RoleMiddleware::class.':admin'])->group(function () {
+        Route::middleware([ValidateRememberToken::class, RoleMiddleware::class . ':admin'])->group(function () {
             Route::post('/', [GalleryController::class, 'store']);
             Route::delete('/{gallery}', [GalleryController::class, 'destroy']);
         });
@@ -50,18 +50,18 @@ Route::middleware('api')->group(function () {
     Route::prefix('contacts')->group(function () {
         Route::get('/', [ContactController::class, 'index']);
         Route::get('/{contact}', [ContactController::class, 'show']);
-        
+
         // User Routes
-        Route::middleware([ValidateRememberToken::class, RoleMiddleware::class.':admin'])->group(function () {
+        Route::middleware([ValidateRememberToken::class, RoleMiddleware::class . ':admin'])->group(function () {
             Route::post('/', [ContactController::class, 'store']);
         });
-        
+
         // Admin Routes
-        Route::middleware([ValidateRememberToken::class, RoleMiddleware::class.':admin'])->group(function () {
+        Route::middleware([ValidateRememberToken::class, RoleMiddleware::class . ':admin'])->group(function () {
             Route::put('/{id}/respond', [ContactController::class, 'updateResponse']);
             Route::post('/{id}/restore', [ContactController::class, 'restore']);
         });
-        
+
         // Admin or User Routes
         Route::middleware([ValidateRememberToken::class])->group(function () {
             Route::put('/{contact}', [ContactController::class, 'update']);
@@ -79,15 +79,15 @@ Route::middleware('api')->group(function () {
         Route::delete('/{option}', [OptionController::class, 'destroy']);
         Route::post('/{id}/restore', [OptionController::class, 'restore']);
     });
-    
+
     Route::prefix('posts')->group(function () {
         Route::get('/', [PostController::class, 'index']);
         Route::get('/active', [PostController::class, 'active']);
         Route::get('/{id}', [PostController::class, 'show']);
         Route::post('/{post}', [PostController::class, 'update']);
-        
+
         // Admin Routes
-        Route::middleware([ValidateRememberToken::class, RoleMiddleware::class.':admin'])->group(function () {
+        Route::middleware([ValidateRememberToken::class, RoleMiddleware::class . ':admin'])->group(function () {
             Route::post('/{id}/restore', [PostController::class, 'restore']);
         });
 
@@ -97,16 +97,16 @@ Route::middleware('api')->group(function () {
             Route::delete('/{id}', [PostController::class, 'destroy']);
         });
     });
-    
+
     // Article Routes
     Route::prefix('articles')->group(function () {
         Route::get('/', [ArticleController::class, 'index']);
         Route::get('/active', [ArticleController::class, 'active']);
         Route::get('/{id}', [ArticleController::class, 'show']);
-        
+
         // Admin Routes
-        
-        Route::middleware([ValidateRememberToken::class, RoleMiddleware::class.':admin'])->group(function () {
+
+        Route::middleware([ValidateRememberToken::class, RoleMiddleware::class . ':admin'])->group(function () {
             Route::post('/{id}/restore', [ArticleController::class, 'restore']);
             Route::post('/', [ArticleController::class, 'store']);
             Route::put('/{id}', [ArticleController::class, 'update']);
@@ -139,18 +139,18 @@ Route::middleware('api')->group(function () {
         Route::get('/active', [SchoolController::class, 'active']);
         Route::get('/{id}', [SchoolController::class, 'show']);
 
-     // Admin Routes
-        Route::middleware([ValidateRememberToken::class, RoleMiddleware::class.':admin'])->group(function () {
+        // Admin Routes
+        Route::middleware([ValidateRememberToken::class, RoleMiddleware::class . ':admin'])->group(function () {
             Route::post('/{id}/restore', [SchoolController::class, 'restore']);
             Route::post('/{id}', [SchoolController::class, 'update']);
             Route::post('/', [SchoolController::class, 'store']);
             Route::delete('/{id}', [SchoolController::class, 'destroy']);
         });
-        
+
         // Get studies by school
         Route::get('/{schoolId}/studies', [StudyController::class, 'getStudiesBySchool']);
     });
-    
+
     // Study Routes
     Route::prefix('studies')->group(function () {
         // Public Routes
@@ -159,7 +159,7 @@ Route::middleware('api')->group(function () {
         Route::get('/{id}', [StudyController::class, 'show']);
 
         // Admin Routes
-        Route::middleware([ValidateRememberToken::class, RoleMiddleware::class.':admin'])->group(function () {
+        Route::middleware([ValidateRememberToken::class, RoleMiddleware::class . ':admin'])->group(function () {
             Route::post('/{id}/restore', [StudyController::class, 'restore']);
             Route::post('/{id}', [StudyController::class, 'update']);
             Route::post('/', [StudyController::class, 'store']);
@@ -174,17 +174,17 @@ Route::middleware('api')->group(function () {
         Route::get('/{id}', [CompanyController::class, 'show']);
 
         // Admin Routes
-        Route::middleware([ValidateRememberToken::class, RoleMiddleware::class.':admin'])->group(function () {
+        Route::middleware([ValidateRememberToken::class, RoleMiddleware::class . ':admin'])->group(function () {
             Route::post('/{id}/restore', [CompanyController::class, 'restore']);
             Route::post('/{id}', [CompanyController::class, 'update']);
             Route::post('/', [CompanyController::class, 'store']);
             Route::delete('/{id}', [CompanyController::class, 'destroy']);
         });
-        
+
         // Get jobs by company
         Route::get('/{companyId}/jobs', [JobController::class, 'getJobsByCompany']);
     });
-    
+
     // Job Routes
     Route::prefix('jobs')->group(function () {
         // Public Routes
@@ -193,7 +193,7 @@ Route::middleware('api')->group(function () {
         Route::get('/{id}', [JobController::class, 'show']);
 
         // Admin Routes
-        Route::middleware([ValidateRememberToken::class, RoleMiddleware::class.':admin'])->group(function () {
+        Route::middleware([ValidateRememberToken::class, RoleMiddleware::class . ':admin'])->group(function () {
             Route::post('/{id}/restore', [JobController::class, 'restore']);
             Route::post('/{id}', [JobController::class, 'update']);
             Route::post('/', [JobController::class, 'store']);
