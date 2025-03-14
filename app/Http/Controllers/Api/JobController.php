@@ -14,6 +14,14 @@ use Illuminate\Support\Facades\Auth;
 
 class JobController extends Controller
 {
+    public function __construct()
+    {
+        // Only set the Accept header for API requests
+        if (request()->is('api/*')) {
+            request()->headers->set('Accept', 'application/json');
+        }
+    }
+
     /**
      * @OA\Get(
      *     path="/api/jobs",
@@ -62,6 +70,27 @@ class JobController extends Controller
      *         required=false,
      *         @OA\Schema(type="integer", example=3)
      *     ),
+     *     @OA\Parameter(
+     *         name="work_type",
+     *         in="query",
+     *         description="Filter by work type (office/remote/hybrid)",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=4)
+     *     ),
+     *     @OA\Parameter(
+     *         name="province",
+     *         in="query",
+     *         description="Filter by province",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="city",
+     *         in="query",
+     *         description="Filter by city",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
      *     @OA\Response(response=200, description="List of jobs with pagination"),
      *     @OA\Response(response=403, description="Unauthorized")
      * )
@@ -70,29 +99,119 @@ class JobController extends Controller
     {
         $query = Job::query();
 
-        // Filter berdasarkan company_id, type, dan experience
-        if ($request->has('company_id')) {
+        // Filter by company_id, type, experience, and work_type
+        if ($request->filled('company_id')) {
             $query->where('company_id', $request->company_id);
         }
-        if ($request->has('type')) {
+        
+        if ($request->filled('type')) {
             $query->where('type', $request->type);
         }
-        if ($request->has('experience')) {
+        
+        if ($request->filled('experience')) {
             $query->where('experience', $request->experience);
         }
 
-        // Pencarian berdasarkan title
-        if ($request->has('_search')) {
-            $query->where('title', 'like', "%{$request->_search}%");
+        if ($request->filled('work_type')) {
+            $query->where('work_type', $request->work_type);
+        }
+
+        // Filter by province (through company relation)
+        if ($request->filled('province')) {
+            $query->whereHas('company', function($q) use ($request) {
+                $q->where('province', $request->province);
+            });
+        }
+
+        // Filter by city (through company relation)
+        if ($request->filled('city')) {
+            $query->whereHas('company', function($q) use ($request) {
+                $q->where('city', $request->city);
+            });
+        }
+
+        // Search by title - MODIFIED FOR CASE-INSENSITIVE SEARCH
+        if ($request->filled('_search')) {
+            $searchTerm = $request->_search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->whereRaw('LOWER(title) LIKE ?', ['%' . strtolower($searchTerm) . '%']);
+            });
         }
 
         // Pagination
         $perPage = $request->_limit ?? 10;
-        $jobs = $query->paginate($perPage);
+        $jobs = $query->with(['company', 'jobType', 'experienceLevel', 'workType'])->paginate($perPage);
 
-        return response()->json($jobs);
+        // If this is an API request
+        if (request()->is('api/*')) {
+            return response()->json([
+                'data' => $jobs->items(),
+                'meta' => [
+                    'current_page' => $jobs->currentPage(),
+                    'last_page' => $jobs->lastPage(),
+                    'per_page' => $jobs->perPage(),
+                    'total' => $jobs->total(),
+                ]
+            ], Response::HTTP_OK);
+        }
+
+        // For web view
+        // Get job types for filter tabs
+        try {
+            $jobTypes = \App\Models\Option::where('type', 'job_type')->get();
+        } catch (\Exception $e) {
+            Log::error('Error fetching job types: ' . $e->getMessage());
+            $jobTypes = collect();
+        }
+
+        // Get experience levels for dropdown
+        try {
+            $experienceLevels = \App\Models\Option::where('type', 'experience_level')->orderBy('id')->get();
+        } catch (\Exception $e) {
+            Log::error('Error fetching experience levels: ' . $e->getMessage());
+            $experienceLevels = collect();
+        }
+
+        // Get work types for dropdown
+        try {
+            $workTypes = \App\Models\Option::where('type', 'work_type')->get();
+        } catch (\Exception $e) {
+            Log::error('Error fetching work types: ' . $e->getMessage());
+            $workTypes = collect();
+        }
+
+        // Get companies for dropdown
+        $companies = \App\Models\Company::orderBy('name')->get();
+        
+        // Get provinces for filtering
+        $provinces = \App\Models\Company::distinct('province')->pluck('province')->filter()->values();
+        
+        // Get cities for filtering
+        $cities = \App\Models\Company::distinct('city')->pluck('city')->filter()->values();
+        
+        // Get cities with their associated provinces
+        $cityProvinceMap = \App\Models\Company::select('city', 'province')
+            ->whereNotNull('city')
+            ->whereNotNull('province')
+            ->distinct()
+            ->get()
+            ->groupBy('province')
+            ->map(function ($cities) {
+                return $cities->pluck('city')->toArray();
+            })
+            ->toArray();
+
+        return view('jobs.index', compact(
+            'jobs', 
+            'jobTypes', 
+            'experienceLevels',
+            'workTypes', 
+            'companies',
+            'provinces',
+            'cities',
+            'cityProvinceMap'
+        ));
     }
-
 
     /**
      * @OA\Get(
@@ -122,7 +241,7 @@ class JobController extends Controller
      *         @OA\MediaType(
      *             mediaType="multipart/form-data",
      *             @OA\Schema(
-     *                 required={"company_id", "title", "description", "requirment", "salary_range", "register_link", "type", "experience"},
+     *                 required={"company_id", "title", "description", "requirment", "salary_range", "register_link", "type", "experience", "work_type"},
      *                 @OA\Property(property="company_id", type="integer"),
      *                 @OA\Property(property="title", type="string"),
      *                 @OA\Property(property="description", type="string"),
@@ -130,7 +249,8 @@ class JobController extends Controller
      *                 @OA\Property(property="salary_range", type="integer"),
      *                 @OA\Property(property="register_link", type="string", description="URL or other text information for registration"),
      *                 @OA\Property(property="type", type="integer", description="ID of the option representing job type"),
-     *                 @OA\Property(property="experience", type="integer", description="ID of the option representing required experience")
+     *                 @OA\Property(property="experience", type="integer", description="ID of the option representing required experience"),
+     *                 @OA\Property(property="work_type", type="integer", description="ID of the option representing work type (office/remote/hybrid)")
      *             )
      *         )
      *     ),
@@ -149,6 +269,7 @@ class JobController extends Controller
      *                 @OA\Property(property="register_link", type="string"),
      *                 @OA\Property(property="type", type="integer"),
      *                 @OA\Property(property="experience", type="integer"),
+     *                 @OA\Property(property="work_type", type="integer"),
      *                 @OA\Property(property="read_counter", type="integer"),
      *                 @OA\Property(property="created_at", type="string", format="date-time"),
      *                 @OA\Property(property="updated_at", type="string", format="date-time")
@@ -194,6 +315,7 @@ class JobController extends Controller
             'register_link' => 'required|string',
             'type' => 'required|exists:options,id',
             'experience' => 'required|exists:options,id',
+            'work_type' => 'required|exists:options,id',
         ]);
 
         if ($validator->fails()) {
@@ -211,6 +333,7 @@ class JobController extends Controller
                 'register_link' => $request->register_link,
                 'type' => $request->type,
                 'experience' => $request->experience,
+                'work_type' => $request->work_type,
                 'read_counter' => 0,
             ]);
 
@@ -248,19 +371,20 @@ class JobController extends Controller
      *     )
      * )
      */
-    public function show(int $id): JsonResponse
+    public function show($id)
     {
-        $job = Job::withTrashed()->find($id);
-
-        if (!$job) {
-            return response()->json(['message' => 'Job not found'], Response::HTTP_NOT_FOUND);
-        }
+        $job = Job::with(['company', 'jobType', 'experienceLevel', 'workType'])->findOrFail($id);
 
         // Increment read counter
-        $job->read_counter = $job->read_counter + 1;
-        $job->save();
+        $job->increment('read_counter');
 
-        return response()->json($job, Response::HTTP_OK);
+        // Check if it's an API request by URL pattern
+        if (request()->is('api/*')) {
+            return response()->json($job, Response::HTTP_OK);
+        }
+        
+        // For web view requests, explicitly render the view
+        return view('jobs.show', compact('job'));
     }
 
     /**
@@ -288,7 +412,8 @@ class JobController extends Controller
      *                 @OA\Property(property="salary_range", type="integer", nullable=true),
      *                 @OA\Property(property="register_link", type="string", nullable=true),
      *                 @OA\Property(property="type", type="integer", nullable=true),
-     *                 @OA\Property(property="experience", type="integer", nullable=true)
+     *                 @OA\Property(property="experience", type="integer", nullable=true),
+     *                 @OA\Property(property="work_type", type="integer", nullable=true)
      *             )
      *         )
      *     ),
@@ -309,6 +434,7 @@ class JobController extends Controller
             'register_link' => 'nullable|string',
             'type' => 'nullable|exists:options,id',
             'experience' => 'nullable|exists:options,id',
+            'work_type' => 'nullable|exists:options,id',
         ]);
 
         if ($validator->fails()) {
@@ -325,7 +451,8 @@ class JobController extends Controller
 
             // Update job data
             $updateData = [];
-            foreach(['company_id', 'title', 'description', 'requirment', 'salary_range', 'register_link', 'type', 'experience'] as $field) {
+            foreach(['company_id', 'title', 'description', 'requirment', 'salary_range', 
+                    'register_link', 'type', 'experience', 'work_type'] as $field) {
                 if ($request->has($field)) {
                     $updateData[$field] = $request->$field;
                 }

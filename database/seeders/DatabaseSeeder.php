@@ -9,6 +9,8 @@ use App\Models\Material;
 use App\Models\Gallery;
 use App\Models\School;
 use App\Models\Study;
+use App\Models\Company;
+use App\Models\Job;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -43,6 +45,12 @@ class DatabaseSeeder extends Seeder
         
         // ===== STUDIES SEEDING =====
         $this->seedStudies();
+        
+        // ===== COMPANIES SEEDING =====
+        $this->seedCompanies();
+
+        // ===== JOBS SEEDING =====
+        $this->seedJobs();
     }
     
     /**
@@ -79,6 +87,24 @@ class DatabaseSeeder extends Seeder
             ['type' => 'school_type', 'value' => 'SMK'],
             ['type' => 'school_type', 'value' => 'University'],
 
+            // Job types
+            ['type' => 'job_type', 'value' => 'Full Time'],
+            ['type' => 'job_type', 'value' => 'Part Time'],
+            ['type' => 'job_type', 'value' => 'Internship'],
+            ['type' => 'job_type', 'value' => 'Contract'],
+            ['type' => 'job_type', 'value' => 'Freelance'],
+
+            // Experience levels
+            ['type' => 'experience_level', 'value' => 'Junior'],
+            ['type' => 'experience_level', 'value' => 'Mid-level'],
+            ['type' => 'experience_level', 'value' => 'Senior'],
+            ['type' => 'experience_level', 'value' => 'Lead'],
+            ['type' => 'experience_level', 'value' => 'Entry Level'],
+            
+            // Work types
+            ['type' => 'work_type', 'value' => 'Work from Office'],
+            ['type' => 'work_type', 'value' => 'Work from Home'],
+            ['type' => 'work_type', 'value' => 'Hybrid'],
         ];
 
         foreach ($options as $option) {
@@ -1106,5 +1132,393 @@ function initializeFeature() {
         }
         
         $this->command->info('Studies seeded successfully!');
+    }
+
+    /**
+     * Seed the companies table.
+     */
+    private function seedCompanies(): void
+    {
+        $this->command->info('Seeding companies...');
+
+        $companies = [
+            [
+                'name' => 'TechNova Solutions',
+                'description' => 'TechNova Solutions is a leading software development company specializing in custom enterprise applications, mobile development, and cloud solutions. With a team of experienced developers and designers, we deliver innovative digital products that help businesses transform their operations and reach their full potential.',
+                'img' => '/storage/companies/technova.jpg',
+                'gmap' => 'https://maps.google.com/maps?q=-6.2251319,106.8271151&z=15&output=embed',
+                'province' => 'DKI Jakarta',
+                'city' => 'Jakarta Selatan',
+                'address' => 'Jl. Gatot Subroto Kav. 38, Menara Jamsostek Lt. 12, Kuningan, Jakarta Selatan 12710',
+                'website' => 'https://www.technovasolutions.id',
+                'instagram' => 'technova_id',
+                'facebook' => 'TechNovaSolutionsID',
+                'x' => 'technova_id',
+                'read_counter' => rand(100, 5000),
+            ],
+            [
+                'name' => 'Green Earth Industries',
+                'description' => 'Green Earth Industries is an eco-friendly manufacturing company dedicated to sustainable production practices. We create biodegradable packaging solutions, renewable energy systems, and eco-conscious consumer products that help reduce environmental impact while maintaining high quality and performance standards. Our mission is to prove that business success and environmental responsibility can go hand in hand.',
+                'img' => '/storage/companies/greenearth.jpg',
+                'gmap' => 'https://maps.google.com/maps?q=-6.9269273,107.6038687&z=15&output=embed',
+                'province' => 'Jawa Barat',
+                'city' => 'Bandung',
+                'address' => 'Jl. Soekarno Hatta No. 269, Bandung 40235',
+                'website' => 'https://www.greenearthindustries.co.id',
+                'instagram' => 'greenearthid',
+                'facebook' => 'GreenEarthIndustriesID',
+                'x' => 'GreenEarthID',
+                'read_counter' => rand(100, 5000),
+            ],
+            [
+                'name' => 'Horizon Financial Group',
+                'description' => 'Horizon Financial Group is a comprehensive financial services company providing investment management, retirement planning, insurance solutions, and wealth advisory services. Our team of certified financial planners and investment specialists work closely with clients to develop personalized strategies that align with their goals and values. With a focus on long-term growth and risk management, we help individuals and businesses navigate complex financial landscapes.',
+                'img' => '/storage/companies/horizon.jpg',
+                'gmap' => 'https://maps.google.com/maps?q=-6.2563119,106.7805831&z=15&output=embed',
+                'province' => 'DKI Jakarta',
+                'city' => 'Jakarta Selatan',
+                'address' => 'Office 8 Building, Lt. 18, SCBD Lot 28, Jl. Jend. Sudirman Kav. 52-53, Jakarta Selatan 12190',
+                'website' => 'https://www.horizonfinancial.co.id',
+                'instagram' => 'horizonfinancial_id',
+                'facebook' => 'HorizonFinancialID',
+                'x' => 'HorizonFin_ID',
+                'read_counter' => rand(100, 5000),
+            ],
+            [
+                'name' => 'MediPlus Healthcare',
+                'description' => 'MediPlus Healthcare is an integrated healthcare provider offering comprehensive medical services from preventive care to specialized treatments. Our network includes modern hospitals, outpatient clinics, diagnostic centers, and telemedicine services staffed by experienced healthcare professionals. We combine advanced medical technology with compassionate care to deliver positive health outcomes for our patients, with a particular emphasis on accessibility and patient education.',
+                'img' => '/storage/companies/mediplus.jpg',
+                'gmap' => 'https://maps.google.com/maps?q=-7.2764879,112.7475366&z=15&output=embed',
+                'province' => 'Jawa Timur',
+                'city' => 'Surabaya',
+                'address' => 'Jl. Dr. Soetomo No. 122, Tegalsari, Surabaya 60264',
+                'website' => 'https://www.mediplushealthcare.co.id',
+                'instagram' => 'mediplus_id',
+                'facebook' => 'MediPlusHealthcareID',
+                'x' => 'MediPlusID',
+                'read_counter' => rand(100, 5000),
+            ],
+            [
+                'name' => 'Culinary Creations',
+                'description' => 'Culinary Creations is a food innovation company specializing in product development, restaurant consulting, and culinary education. Our team of chefs, food scientists, and nutritionists collaborate to create unique food products, develop restaurant concepts, and design specialized menus for various dietary needs. We combine traditional cooking techniques with modern food science to deliver exceptional taste experiences that meet contemporary consumer demands.',
+                'img' => '/storage/companies/culinary.jpg',
+                'gmap' => 'https://maps.google.com/maps?q=-8.6571026,115.1763829&z=15&output=embed',
+                'province' => 'Bali',
+                'city' => 'Denpasar',
+                'address' => 'Jl. Sunset Road No. 88X, Kuta, Badung, Bali 80361',
+                'website' => 'https://www.culinarycreations.id',
+                'instagram' => 'culinary_id',
+                'facebook' => 'culinarycreationsid',
+                'x' => 'culinary_id',
+                'read_counter' => rand(100, 5000),
+            ],
+            [
+                'name' => 'Nexus Education Centers',
+                'description' => 'Nexus Education Centers is a modern educational institution offering innovative learning programs for students of all ages. Our curriculum integrates traditional academic subjects with practical skills development, digital literacy, and character building. With campuses equipped with advanced learning technologies and staffed by qualified educators, we prepare students for success in a rapidly evolving global environment while fostering creativity, critical thinking, and collaboration.',
+                'img' => '/storage/companies/nexus.jpg',
+                'gmap' => 'https://maps.google.com/maps?q=-6.1760148,106.8184689&z=15&output=embed',
+                'province' => 'DKI Jakarta',
+                'city' => 'Jakarta Pusat',
+                'address' => 'Jl. Menteng Raya No. 45, Menteng, Jakarta Pusat 10340',
+                'website' => 'https://www.nexusedu.id',
+                'instagram' => 'nexusedu_id',
+                'facebook' => 'NexusEducationID',
+                'x' => 'NexusEdu_ID',
+                'read_counter' => rand(100, 5000),
+            ],
+            [
+                'name' => 'ArkaTech Systems',
+                'description' => 'ArkaTech Systems is a cybersecurity company offering comprehensive digital protection solutions for businesses and organizations. Our services include network security, threat detection and response, data encryption, compliance consulting, and security training. With a team of certified security experts and proprietary technologies, we safeguard critical digital assets against evolving cyber threats while ensuring business continuity and regulatory compliance.',
+                'img' => '/storage/companies/arkatech.jpg',
+                'gmap' => 'https://maps.google.com/maps?q=3.5796501,98.6776421&z=15&output=embed',
+                'province' => 'Sumatera Utara',
+                'city' => 'Medan',
+                'address' => 'Jl. Imam Bonjol No. 17, Medan 20112',
+                'website' => 'https://www.arkatech.co.id',
+                'instagram' => 'arkatech_id',
+                'facebook' => 'ArkaTechID',
+                'x' => 'ArkaTech_ID',
+                'read_counter' => rand(100, 5000),
+            ],
+            [
+                'name' => 'Urban Oasis Properties',
+                'description' => 'Urban Oasis Properties is a real estate development company focused on creating sustainable urban living spaces. Our portfolio includes eco-friendly residential complexes, mixed-use developments, and commercial properties designed with green building principles. We integrate energy-efficient systems, renewable materials, and community-focused amenities in our projects to deliver comfortable, healthy living environments that minimize environmental impact while enhancing quality of life.',
+                'img' => '/storage/companies/urbanoasis.jpg',
+                'gmap' => 'https://maps.google.com/maps?q=-5.1445028,119.4088722&z=15&output=embed',
+                'province' => 'Sulawesi Selatan',
+                'city' => 'Makassar',
+                'address' => 'Jl. Penghibur No. 55, Makassar 90111',
+                'website' => 'https://www.urbanoasis.id',
+                'instagram' => 'urbanoasis_id',
+                'facebook' => 'UrbanOasisID',
+                'x' => 'UrbanOasis_ID',
+                'read_counter' => rand(100, 5000),
+            ],
+            [
+                'name' => 'Stellar Logistics',
+                'description' => 'Stellar Logistics is an integrated supply chain management company providing comprehensive logistics solutions across Indonesia and Southeast Asia. Our services include freight forwarding, warehousing, distribution, customs clearance, and last-mile delivery. With advanced tracking technology and strategically located facilities, we optimize supply chains to improve efficiency, reduce costs, and enhance reliability for businesses of all sizes, from startups to multinational corporations.',
+                'img' => '/storage/companies/stellar.jpg',
+                'gmap' => 'https://maps.google.com/maps?q=-7.7597406,110.4151153&z=15&output=embed',
+                'province' => 'DI Yogyakarta',
+                'city' => 'Yogyakarta',
+                'address' => 'Jl. Magelang Km. 7, Sleman, Yogyakarta 55284',
+                'website' => 'https://www.stellarlogistics.co.id',
+                'instagram' => 'stellar_log',
+                'facebook' => 'StellarLogisticsID',
+                'x' => 'Stellar_Log',
+                'read_counter' => rand(100, 5000),
+            ],
+            [
+                'name' => 'Harmony Wellness Center',
+                'description' => 'Harmony Wellness Center is a holistic health facility combining traditional healing practices with modern wellness approaches. Our services include therapeutic massage, acupuncture, yoga classes, nutritional counseling, and mindfulness training. With a team of certified practitioners and a serene environment, we help clients achieve optimal physical, mental, and emotional wellbeing through personalized wellness programs that address the root causes of health issues rather than just symptoms.',
+                'img' => '/storage/companies/harmony.jpg',
+                'gmap' => 'https://maps.google.com/maps?q=-6.2185775,106.8030675&z=15&output=embed',
+                'province' => 'DKI Jakarta',
+                'city' => 'Jakarta Selatan',
+                'address' => 'Jl. Senopati No. 75, Kebayoran Baru, Jakarta Selatan 12190',
+                'website' => 'https://www.harmonywellness.id',
+                'instagram' => 'harmony_wellness',
+                'facebook' => 'HarmonyWellnessID',
+                'x' => 'Harmony_WellnessID',
+                'read_counter' => rand(100, 5000),
+            ]
+        ];
+
+        foreach ($companies as $companyData) {
+            // Create the company record
+            Company::updateOrCreate(
+                ['name' => $companyData['name']],
+                array_merge($companyData, [
+                    'created_at' => now()->subDays(rand(1, 365)),
+                    'updated_at' => now()->subDays(rand(0, 30)),
+                ])
+            );
+        }
+
+        $this->command->info('Companies seeded successfully!');
+    }
+    
+    /**
+     * Seed the jobs table.
+     */
+    private function seedJobs(): void
+    {
+        $this->command->info('Seeding jobs...');
+        
+        // Get job types
+        $fullTimeId = Option::where('type', 'job_type')->where('value', 'Full Time')->first()->id;
+        $partTimeId = Option::where('type', 'job_type')->where('value', 'Part Time')->first()->id;
+        $internshipId = Option::where('type', 'job_type')->where('value', 'Internship')->first()->id;
+        $contractId = Option::where('type', 'job_type')->where('value', 'Contract')->first()->id;
+        $freelanceId = Option::where('type', 'job_type')->where('value', 'Freelance')->first()->id;
+        
+        // Get experience levels
+        $juniorId = Option::where('type', 'experience_level')->where('value', 'Junior')->first()->id;
+        $midLevelId = Option::where('type', 'experience_level')->where('value', 'Mid-level')->first()->id;
+        $seniorId = Option::where('type', 'experience_level')->where('value', 'Senior')->first()->id;
+        $leadId = Option::where('type', 'experience_level')->where('value', 'Lead')->first()->id;
+        $entryLevelId = Option::where('type', 'experience_level')->where('value', 'Entry Level')->first()->id;
+        
+        // Get work types
+        $wfoId = Option::where('type', 'work_type')->where('value', 'Work from Office')->first()->id;
+        $wfhId = Option::where('type', 'work_type')->where('value', 'Work from Home')->first()->id;
+        $hybridId = Option::where('type', 'work_type')->where('value', 'Hybrid')->first()->id;
+        
+        // Get companies
+        $companies = Company::all();
+        
+        // Define job data for each company
+        $jobsData = [
+            // TechNova Solutions
+            [
+                'company_name' => 'TechNova Solutions',
+                'jobs' => [
+                    [
+                        'title' => 'Senior Backend Developer',
+                        'description' => 'We are seeking an experienced Backend Developer to join our growing team. The ideal candidate will design, develop, and maintain server-side applications using modern technologies and best practices.',
+                        'requirment' => "- 5+ years of experience in backend development\n- Strong proficiency in PHP, Laravel, and Node.js\n- Experience with RESTful APIs and microservices architecture\n- Knowledge of database design and optimization (MySQL, PostgreSQL)\n- Familiarity with cloud services (AWS, GCP, or Azure)\n- Excellent problem-solving skills and attention to detail",
+                        'salary_range' => 25000000,
+                        'register_link' => 'https://technovasolutions.id/careers/senior-backend-developer',
+                        'type' => $fullTimeId,
+                        'experience' => $seniorId,
+                        'work_type' => $hybridId,
+                    ],
+                    [
+                        'title' => 'UI/UX Designer',
+                        'description' => 'Join our creative team as a UI/UX Designer to create intuitive and engaging user experiences for web and mobile applications. You will collaborate with developers and product managers to deliver visually appealing and user-friendly interfaces.',
+                        'requirment' => "- 3+ years of experience in UI/UX design\n- Proficiency in design tools (Figma, Adobe XD, Sketch)\n- Portfolio demonstrating strong visual design skills\n- Understanding of user-centered design principles\n- Experience conducting user research and usability testing\n- Knowledge of HTML/CSS is a plus",
+                        'salary_range' => 18000000,
+                        'register_link' => 'https://technovasolutions.id/careers/ui-ux-designer',
+                        'type' => $fullTimeId,
+                        'experience' => $midLevelId,
+                        'work_type' => $hybridId,
+                    ],
+                    [
+                        'title' => 'DevOps Engineer Intern',
+                        'description' => 'We are looking for a DevOps Engineer Intern to assist our infrastructure team in implementing CI/CD pipelines, automating deployment processes, and maintaining cloud infrastructure. This is an excellent opportunity to gain hands-on experience in modern DevOps practices.',
+                        'requirment' => "- Currently pursuing or recently graduated with a degree in Computer Science or related field\n- Basic understanding of Linux systems and command line\n- Familiarity with version control systems (Git)\n- Interest in cloud technologies (AWS, GCP, or Azure)\n- Eagerness to learn and problem-solve\n- Good communication skills",
+                        'salary_range' => 5000000,
+                        'register_link' => 'https://technovasolutions.id/careers/devops-intern',
+                        'type' => $internshipId,
+                        'experience' => $entryLevelId,
+                        'work_type' => $wfoId,
+                    ],
+                ],
+            ],
+            
+            // Green Earth Industries
+            [
+                'company_name' => 'Green Earth Industries',
+                'jobs' => [
+                    [
+                        'title' => 'Environmental Engineer',
+                        'description' => 'Green Earth Industries is seeking an Environmental Engineer to help design and implement sustainable manufacturing processes. You will evaluate environmental impacts, develop solutions to minimize waste, and ensure compliance with environmental regulations.',
+                        'requirment' => "- Bachelor's or Master's degree in Environmental Engineering or related field\n- 3+ years of experience in environmental engineering or sustainable manufacturing\n- Knowledge of waste management and pollution prevention techniques\n- Familiarity with environmental regulations and compliance requirements\n- Experience with life cycle assessment and sustainability metrics\n- Strong analytical and problem-solving skills",
+                        'salary_range' => 22000000,
+                        'register_link' => 'https://greenearthindustries.co.id/careers/environmental-engineer',
+                        'type' => $fullTimeId,
+                        'experience' => $midLevelId,
+                        'work_type' => $wfoId,
+                    ],
+                    [
+                        'title' => 'Sustainable Packaging Designer',
+                        'description' => 'Join our product team as a Sustainable Packaging Designer to create innovative, eco-friendly packaging solutions. You will develop designs that minimize environmental impact while maintaining functionality and aesthetic appeal.',
+                        'requirment' => "- Degree in Industrial Design, Package Design, or related field\n- 2+ years of experience in packaging design\n- Knowledge of sustainable materials and manufacturing processes\n- Proficiency in design software (Adobe Creative Suite, SolidWorks)\n- Understanding of packaging production requirements and constraints\n- Portfolio demonstrating creative and sustainable design solutions",
+                        'salary_range' => 15000000,
+                        'register_link' => 'https://greenearthindustries.co.id/careers/packaging-designer',
+                        'type' => $fullTimeId,
+                        'experience' => $juniorId,
+                        'work_type' => $hybridId,
+                    ],
+                ],
+            ],
+            
+            // Horizon Financial Group
+            [
+                'company_name' => 'Horizon Financial Group',
+                'jobs' => [
+                    [
+                        'title' => 'Financial Analyst',
+                        'description' => 'Horizon Financial Group is seeking a Financial Analyst to join our investment team. You will analyze market trends, evaluate investment opportunities, and prepare financial models to support strategic decision-making.',
+                        'requirment' => "- Bachelor's degree in Finance, Economics, or related field (MBA preferred)\n- 2-4 years of experience in financial analysis or investment management\n- Strong analytical skills and proficiency in financial modeling\n- Knowledge of financial markets and investment principles\n- Experience with financial analysis software and tools\n- Excellent attention to detail and problem-solving abilities",
+                        'salary_range' => 20000000,
+                        'register_link' => 'https://horizonfinancial.co.id/careers/financial-analyst',
+                        'type' => $fullTimeId,
+                        'experience' => $midLevelId,
+                        'work_type' => $wfoId,
+                    ],
+                    [
+                        'title' => 'Part-Time Financial Advisor',
+                        'description' => 'We are looking for a Part-Time Financial Advisor to provide personalized financial guidance to our clients. You will develop financial plans, recommend investment strategies, and help clients achieve their financial goals.',
+                        'requirment' => "- Bachelor's degree in Finance, Economics, or related field\n- Financial advisory certifications (CFP, CFA, or equivalent)\n- 3+ years of experience in financial advising or wealth management\n- Strong interpersonal and communication skills\n- Knowledge of investment products, tax planning, and retirement strategies\n- Ability to build and maintain client relationships",
+                        'salary_range' => 12000000,
+                        'register_link' => 'https://horizonfinancial.co.id/careers/part-time-advisor',
+                        'type' => $partTimeId,
+                        'experience' => $midLevelId,
+                        'work_type' => $hybridId,
+                    ],
+                ],
+            ],
+            
+            // MediPlus Healthcare
+            [
+                'company_name' => 'MediPlus Healthcare',
+                'jobs' => [
+                    [
+                        'title' => 'Healthcare Data Analyst',
+                        'description' => 'MediPlus Healthcare is seeking a Healthcare Data Analyst to analyze clinical and operational data to improve patient care and operational efficiency. You will develop reports, identify trends, and provide data-driven insights to support decision-making.',
+                        'requirment' => "- Bachelor's degree in Health Informatics, Statistics, or related field\n- 2+ years of experience in healthcare analytics\n- Proficiency in data analysis tools and programming languages (SQL, Python, R)\n- Knowledge of healthcare terminologies and systems (ICD, CPT, EMR)\n- Experience with data visualization tools (Tableau, Power BI)\n- Strong analytical thinking and problem-solving skills",
+                        'salary_range' => 18000000,
+                        'register_link' => 'https://mediplushealthcare.co.id/careers/data-analyst',
+                        'type' => $fullTimeId,
+                        'experience' => $midLevelId,
+                        'work_type' => $wfhId,
+                    ],
+                    [
+                        'title' => 'Telemedicine Coordinator',
+                        'description' => 'Join our innovative telemedicine team as a Telemedicine Coordinator. You will manage the day-to-day operations of our virtual care platform, coordinate virtual appointments, and ensure smooth communication between patients and healthcare providers.',
+                        'requirment' => "- Background in healthcare administration or related field\n- Experience with telemedicine or virtual care platforms\n- Strong organizational and coordination skills\n- Excellent communication and customer service abilities\n- Proficiency with healthcare scheduling systems\n- Knowledge of healthcare privacy regulations (HIPAA)",
+                        'salary_range' => 15000000,
+                        'register_link' => 'https://mediplushealthcare.co.id/careers/telemedicine-coordinator',
+                        'type' => $fullTimeId,
+                        'experience' => $juniorId,
+                        'work_type' => $hybridId,
+                    ],
+                    [
+                        'title' => 'Medical Content Writer (Freelance)',
+                        'description' => 'We are seeking a skilled Medical Content Writer to create accurate, engaging, and informative healthcare content for our website, patient education materials, and social media platforms.',
+                        'requirment' => "- Degree in Medical Sciences, Health Communication, or related field\n- Experience writing healthcare content for diverse audiences\n- Strong understanding of medical terminology and concepts\n- Excellent writing, editing, and proofreading skills\n- Ability to translate complex medical information into accessible content\n- Portfolio of published healthcare content",
+                        'salary_range' => 8000000,
+                        'register_link' => 'https://mediplushealthcare.co.id/careers/medical-writer',
+                        'type' => $freelanceId,
+                        'experience' => $midLevelId,
+                        'work_type' => $wfhId,
+                    ],
+                ],
+            ],
+            
+            // Culinary Creations
+            [
+                'company_name' => 'Culinary Creations',
+                'jobs' => [
+                    [
+                        'title' => 'Food Product Developer',
+                        'description' => 'Culinary Creations is looking for a creative Food Product Developer to join our R&D team. You will create innovative food products, develop recipes, and collaborate with culinary experts to bring new concepts to market.',
+                        'requirment' => "- Degree in Food Science, Culinary Arts, or related field\n- 3+ years of experience in food product development\n- Knowledge of food ingredients, processing techniques, and trends\n- Understanding of food safety regulations and quality standards\n- Creative thinking and problem-solving abilities\n- Experience with sensory evaluation and consumer testing",
+                        'salary_range' => 20000000,
+                        'register_link' => 'https://culinarycreations.id/careers/product-developer',
+                        'type' => $fullTimeId,
+                        'experience' => $midLevelId,
+                        'work_type' => $wfoId,
+                    ],
+                    [
+                        'title' => 'Culinary Photography Intern',
+                        'description' => 'We are seeking a passionate Culinary Photography Intern to assist in creating visually appealing images of our food products and dishes for marketing materials, social media, and our website.',
+                        'requirment' => "- Currently pursuing a degree in Photography, Visual Arts, or related field\n- Basic understanding of food styling and photography techniques\n- Proficiency with DSLR cameras and photography equipment\n- Knowledge of Adobe Photoshop and Lightroom\n- Creative eye for composition and detail\n- Portfolio showcasing photography skills",
+                        'salary_range' => 4500000,
+                        'register_link' => 'https://culinarycreations.id/careers/photography-intern',
+                        'type' => $internshipId,
+                        'experience' => $entryLevelId,
+                        'work_type' => $hybridId,
+                    ],
+                    [
+                        'title' => 'Restaurant Consultant',
+                        'description' => 'Join our consulting team as a Restaurant Consultant to provide expert advice to restaurants and food service businesses. You will help clients optimize their menu offerings, improve operational efficiency, and enhance customer experience.',
+                        'requirment' => "- 5+ years of experience in restaurant management or culinary operations\n- Strong understanding of food service business models\n- Knowledge of menu development, pricing strategies, and food costing\n- Experience in kitchen workflow optimization and staff training\n- Excellent communication and presentation skills\n- Ability to analyze business data and provide actionable recommendations",
+                        'salary_range' => 30000000,
+                        'register_link' => 'https://culinarycreations.id/careers/restaurant-consultant',
+                        'type' => $contractId,
+                        'experience' => $seniorId,
+                        'work_type' => $hybridId,
+                    ],
+                ],
+            ],
+        ];
+        
+        // Create jobs for each company
+        foreach ($jobsData as $companyData) {
+            $company = Company::where('name', $companyData['company_name'])->first();
+            
+            if ($company) {
+                foreach ($companyData['jobs'] as $jobData) {
+                    Job::create([
+                        'company_id' => $company->id,
+                        'title' => $jobData['title'],
+                        'description' => $jobData['description'],
+                        'requirment' => $jobData['requirment'],
+                        'salary_range' => $jobData['salary_range'],
+                        'register_link' => $jobData['register_link'],
+                        'type' => $jobData['type'],
+                        'experience' => $jobData['experience'],
+                        'work_type' => $jobData['work_type'],
+                        'read_counter' => rand(0, 200),
+                        'created_at' => now()->subDays(rand(1, 30)),
+                        'updated_at' => now(),
+                    ]);
+                }
+            }
+        }
+        
+        $this->command->info('Jobs seeded successfully!');
     }
 }

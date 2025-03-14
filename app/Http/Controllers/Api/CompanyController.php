@@ -16,109 +16,117 @@ use Illuminate\Support\Facades\Storage;
 
 class CompanyController extends Controller
 {
+    public function __construct()
+    {
+        // Only set the Accept header for API requests
+        if (request()->is('api/*')) {
+            request()->headers->set('Accept', 'application/json');
+        }
+    }
+
     /**
      * @OA\Get(
      *     path="/api/companies",
+     *     summary="Get all companies with pagination",
      *     tags={"Companies"},
-     *     summary="Get all companies including soft deleted ones",
-     *     description="Returns list of all companies including soft deleted records with filters and pagination",
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful operation",
-     *         @OA\JsonContent()
-     *     ),
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="_page",
      *         in="query",
-     *         description="Current page",
+     *         description="Current page number",
      *         required=false,
-     *         @OA\Schema(
-     *             type="integer",
-     *             format="int64",
-     *             example=1
-     *         )
+     *         @OA\Schema(type="integer", example=1)
      *     ),
      *     @OA\Parameter(
      *         name="_limit",
      *         in="query",
-     *         description="Max items in a page",
+     *         description="Number of items per page",
      *         required=false,
-     *         @OA\Schema(
-     *             type="integer",
-     *             format="int64",
-     *             example=10
-     *         )
+     *         @OA\Schema(type="integer", example=10)
      *     ),
      *     @OA\Parameter(
      *         name="_search",
      *         in="query",
-     *         description="Word to search in name, province, or city",
+     *         description="Search by company name or description",
      *         required=false,
-     *         @OA\Schema(
-     *             type="string"
-     *         )
+     *         @OA\Schema(type="string")
      *     ),
      *     @OA\Parameter(
      *         name="province",
      *         in="query",
      *         description="Filter by province",
      *         required=false,
-     *         @OA\Schema(
-     *             type="string"
-     *         )
+     *         @OA\Schema(type="string", example="Jawa Barat")
      *     ),
      *     @OA\Parameter(
      *         name="city",
      *         in="query",
      *         description="Filter by city",
      *         required=false,
-     *         @OA\Schema(
-     *             type="string"
-     *         )
+     *         @OA\Schema(type="string", example="Bandung")
      *     ),
-     *     @OA\Parameter(
-     *         name="_dir",
-     *         in="query",
-     *         description="Order by direction (asc/desc)",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *             example="asc"
-     *         )
-     *     )
+     *     @OA\Response(response=200, description="List of companies with pagination"),
+     *     @OA\Response(response=403, description="Unauthorized")
      * )
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request)
     {
-        $query = Company::query()->withTrashed();
+        $query = Company::query();
 
-        // Filter berdasarkan province dan city
+        // Filter berdasarkan provinsi
         if ($request->has('province')) {
-            $query->where('province', $request->province);
-        }
-        if ($request->has('city')) {
-            $query->where('city', $request->city);
+            $query->where('province', 'like', "%{$request->province}%");
         }
 
-        // Filter berdasarkan pencarian di name, province, atau city
+        // Filter berdasarkan kota
+        if ($request->has('city')) {
+            $query->where('city', 'like', "%{$request->city}%");
+        }
+
+        // Pencarian berdasarkan nama atau deskripsi perusahaan - CASE-INSENSITIVE SEARCH
         if ($request->has('_search')) {
             $search = $request->_search;
             $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%$search%")
-                    ->orWhere('province', 'like', "%$search%")
-                    ->orWhere('city', 'like', "%$search%");
+                $q->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($search) . '%'])
+                  ->orWhereRaw('LOWER(description) LIKE ?', ['%' . strtolower($search) . '%']);
             });
         }
 
-        // Sorting (default: desc)
-        $direction = $request->_dir ?? 'desc';
-        $query->orderBy('created_at', $direction);
-
         // Pagination
-        $perPage = $request->_limit ?? 5;
+        $perPage = $request->_limit ?? 10;
         $companies = $query->paginate($perPage);
 
-        return response()->json($companies, Response::HTTP_OK);
+        // If this is an API request
+        if (request()->is('api/*')) {
+            return response()->json([
+                'data' => $companies->items(),
+                'meta' => [
+                    'current_page' => $companies->currentPage(),
+                    'last_page' => $companies->lastPage(),
+                    'per_page' => $companies->perPage(),
+                    'total' => $companies->total()
+                ]
+            ], Response::HTTP_OK);
+        }
+
+        // For web view
+        // Get unique provinces and cities for filters
+        $provinces = Company::distinct('province')->pluck('province')->filter()->values();
+        $cities = Company::distinct('city')->pluck('city')->filter()->values();
+        
+        // Get cities with their associated provinces
+        $cityProvinceMap = Company::select('city', 'province')
+            ->whereNotNull('city')
+            ->whereNotNull('province')
+            ->distinct()
+            ->get()
+            ->groupBy('province')
+            ->map(function($cities) {
+                return $cities->pluck('city')->filter()->values();
+            })
+            ->toArray();
+
+        return view('companies.index', compact('companies', 'provinces', 'cities', 'cityProvinceMap'));
     }
 
     /**
@@ -240,7 +248,6 @@ class CompanyController extends Controller
         try {
             $data = $request->all();
             
-            // First create the company with a default image path
             $company = new Company([
                 'name' => $data['name'],
                 'description' => $data['description'],
@@ -253,7 +260,6 @@ class CompanyController extends Controller
                 'facebook' => $data['facebook'] ?? null,
                 'x' => $data['x'] ?? null,
                 'read_counter' => 0,
-                'img' => '/storage/companies/images/default.jpg', // Default image path
             ]);
 
             // Handle image upload if provided
@@ -300,19 +306,20 @@ class CompanyController extends Controller
      *     )
      * )
      */
-    public function show(int $id): JsonResponse
+    public function show($id)
     {
-        $company = Company::withTrashed()->find($id);
-
-        if (!$company) {
-            return response()->json(['message' => 'Company not found'], Response::HTTP_NOT_FOUND);
-        }
+        $company = Company::with('jobs')->findOrFail($id);
 
         // Increment read counter
-        $company->read_counter = $company->read_counter + 1;
-        $company->save();
+        $company->increment('read_counter');
 
-        return response()->json($company, Response::HTTP_OK);
+        // Check if it's an API request by URL pattern
+        if (request()->is('api/*')) {
+            return response()->json($company, Response::HTTP_OK);
+        }
+        
+        // For web view requests, explicitly render the view
+        return view('companies.show', compact('company'));
     }
 
     /**

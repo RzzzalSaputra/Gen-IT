@@ -32,8 +32,11 @@ Route::get('/schools/{id}', [SchoolController::class, 'show'])->name('schools.sh
 Route::get('/studies', [StudyController::class, 'index'])->name('studies.index');
 Route::get('/studies/{id}', [StudyController::class, 'show'])->name('studies.show');
 Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');
+Route::get('/companies/{id}', [CompanyController::class, 'show'])->name('companies.show');
 Route::get('/jobs', [JobController::class, 'index'])->name('jobs.index');
-
+Route::get('/jobs/{id}', [JobController::class, 'show'])->name('jobs.show');
+// Added job by company route for web
+Route::get('/companies/{companyId}/jobs', [JobController::class, 'getJobsByCompany'])->name('companies.jobs');
 
 
 Route::get('/dashboard', function () {

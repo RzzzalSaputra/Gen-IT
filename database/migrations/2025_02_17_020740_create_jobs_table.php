@@ -24,6 +24,7 @@ class CreateJobsTable extends Migration
             $table->text('register_link');
             $table->foreignId('type')->constrained('options');
             $table->foreignId('experience')->constrained('options');
+            $table->foreignId('work_type')->constrained('options'); // Added work_type field
             $table->integer('read_counter')->default(0);
             $table->timestamps();
             $table->softDeletes();
