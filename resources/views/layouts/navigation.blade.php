@@ -79,7 +79,7 @@
                     
                     <!-- Community Dropdown -->
                     <div class="relative" x-data="{ open: false }">
-                        <button @click="open = !open" class="{{ request()->routeIs('gallery.index') || request()->is('posts*') || request()->routeIs('contacts.index') ? 'text-blue-400' : 'text-white hover:text-blue-300' }} px-3 py-2 text-sm font-medium transition-colors duration-200 flex items-center">
+                        <button @click="open = !open" class="{{ request()->routeIs('gallery.index') || request()->is('posts*') || request()->routeIs('contacts.*') ? 'text-blue-400' : 'text-white hover:text-blue-300' }} px-3 py-2 text-sm font-medium transition-colors duration-200 flex items-center">
                             {{ __('Community') }}
                             <svg class="ml-1 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -99,11 +99,10 @@
                             <a href="{{ url('/gallery?type=7') }}" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-700">
                                 {{ __('Gallery') }}
                             </a>
-                            </a>
                             <a href="{{ url('/posts') }}" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-700">
                                 {{ __('Posts') }}
                             </a>
-                            <a href="{{ url('/index') }}" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-700">
+                            <a href="{{ route('contacts.index') }}" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-700">
                                 {{ __('Contact Us') }}
                             </a>
                         </div>
@@ -233,13 +232,10 @@
                     <a href="{{ url('/gallery?type=7') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
                         {{ __('Gallery') }}
                     </a>
-                    <a href="{{ route('gallery.index', ['type' => 8]) }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
-                        {{ __('Videos') }}
-                    </a>
                     <a href="{{ url('/posts') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
                         {{ __('Posts') }}
                     </a>
-                    <a href="{{ url('/index') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
+                    <a href="{{ route('contacts.index') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
                         {{ __('Contact Us') }}
                     </a>
                 </div>

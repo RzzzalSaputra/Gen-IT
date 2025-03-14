@@ -11,12 +11,16 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Contracts\View\View;
 
 class ContactController extends Controller
 {
     public function __construct()
     {
-        request()->headers->set('Accept', 'application/json');
+        // Only set the Accept header for API requests
+        if (request()->is('api/*')) {
+            request()->headers->set('Accept', 'application/json');
+        }
     }
 
     /**
@@ -97,27 +101,37 @@ class ContactController extends Controller
      *     )
      * )
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): JsonResponse|View
     {
-        $query = Contact::query()->withTrashed();
+        // For API requests
+        if (request()->is('api/*')) {
+            $query = Contact::query()->withTrashed();
 
-        if ($request->has('respond_by')) {
-            $query->where('respond_by', $request->respond_by);
+            if ($request->has('respond_by')) {
+                $query->where('respond_by', $request->respond_by);
+            }
+            if ($request->has('created_by')) {
+                $query->where('created_by', $request->created_by);
+            }
+            if ($request->has('status')) {
+                $query->where('status', $request->status);
+            }
+
+            $direction = $request->_dir ?? 'desc';
+            $query->orderBy('created_at', $direction);
+
+            $perPage = $request->_limit ?? 10;
+            $contacts = $query->paginate($perPage);
+
+            return response()->json($contacts, 200);
         }
-        if ($request->has('created_by')) {
-            $query->where('created_by', $request->created_by);
-        }
-        if ($request->has('status')) {
-            $query->where('status', $request->status);
-        }
-
-        $direction = $request->_dir ?? 'desc';
-        $query->orderBy('created_at', $direction);
-
-        $perPage = $request->_limit ?? 10;
-        $contacts = $query->paginate($perPage);
-
-        return response()->json($contacts, 200);
+        
+        // For web requests
+        $contacts = Contact::where('created_by', Auth::id())
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+        
+        return view('contact.index', compact('contacts'));
     }
 
     public function create()
@@ -154,7 +168,7 @@ class ContactController extends Controller
         ]);
 
         if ($validator->fails()) {
-            if ($request->ajax()) {
+            if (request()->is('api/*')) {
                 return response()->json(['errors' => $validator->errors()], 422);
             }
             return redirect()->back()->withErrors($validator)->withInput();
@@ -166,7 +180,7 @@ class ContactController extends Controller
             $pendingStatus = Option::where('value', 'pending')->first();
 
             if (!$pendingStatus) {
-                if ($request->ajax()) {
+                if (request()->is('api/*')) {
                     return response()->json(['message' => 'Status "pending" tidak ditemukan'], 500);
                 }
                 return redirect()->back()->with('error', 'Status "pending" tidak ditemukan.');
@@ -182,14 +196,14 @@ class ContactController extends Controller
 
             DB::commit();
 
-            if ($request->ajax()) {
+            if (request()->is('api/*')) {
                 return response()->json(['message' => 'Contact created successfully', 'data' => $contact], 201);
             }
-            return redirect()->route('contacts.create')->with('success', 'Kontak berhasil dibuat!');
+            return redirect()->route('contacts.index')->with('success', 'Pesan anda telah terkirim! Admin akan segera meresponnya.');
         } catch (\Exception $e) {
             DB::rollback();
 
-            if ($request->ajax()) {
+            if (request()->is('api/*')) {
                 return response()->json(['message' => 'Error creating contact', 'error' => $e->getMessage()], 500);
             }
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
@@ -217,7 +231,13 @@ class ContactController extends Controller
     public function show($id)
     {
         $contact = Contact::findOrFail($id);
-        return response()->json(['data' => $contact]);
+        
+        if (request()->is('api/*')) {
+            return response()->json(['data' => $contact]);
+        }
+        
+        // For web view if needed
+        return view('contact.show', compact('contact'));
     }
 
     /**
