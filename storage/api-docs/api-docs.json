@@ -370,36 +370,33 @@
                 "tags": [
                     "Companies"
                 ],
-                "summary": "Get all companies including soft deleted ones",
-                "description": "Returns list of all companies including soft deleted records with filters and pagination",
+                "summary": "Get all companies with pagination",
                 "operationId": "a261a49d113a2af2a5ccb5798c6aae7e",
                 "parameters": [
                     {
                         "name": "_page",
                         "in": "query",
-                        "description": "Current page",
+                        "description": "Current page number",
                         "required": false,
                         "schema": {
                             "type": "integer",
-                            "format": "int64",
                             "example": 1
                         }
                     },
                     {
                         "name": "_limit",
                         "in": "query",
-                        "description": "Max items in a page",
+                        "description": "Number of items per page",
                         "required": false,
                         "schema": {
                             "type": "integer",
-                            "format": "int64",
                             "example": 10
                         }
                     },
                     {
                         "name": "_search",
                         "in": "query",
-                        "description": "Word to search in name, province, or city",
+                        "description": "Search by company name or description",
                         "required": false,
                         "schema": {
                             "type": "string"
@@ -411,7 +408,8 @@
                         "description": "Filter by province",
                         "required": false,
                         "schema": {
-                            "type": "string"
+                            "type": "string",
+                            "example": "Jawa Barat"
                         }
                     },
                     {
@@ -420,30 +418,24 @@
                         "description": "Filter by city",
                         "required": false,
                         "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "_dir",
-                        "in": "query",
-                        "description": "Order by direction (asc/desc)",
-                        "required": false,
-                        "schema": {
                             "type": "string",
-                            "example": "asc"
+                            "example": "Bandung"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successful operation",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
+                        "description": "List of companies with pagination"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -1540,6 +1532,34 @@
                             "type": "integer",
                             "example": 3
                         }
+                    },
+                    {
+                        "name": "work_type",
+                        "in": "query",
+                        "description": "Filter by work type (office/remote/hybrid)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 4
+                        }
+                    },
+                    {
+                        "name": "province",
+                        "in": "query",
+                        "description": "Filter by province",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "city",
+                        "in": "query",
+                        "description": "Filter by city",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {
@@ -1575,7 +1595,8 @@
                                     "salary_range",
                                     "register_link",
                                     "type",
-                                    "experience"
+                                    "experience",
+                                    "work_type"
                                 ],
                                 "properties": {
                                     "company_id": {
@@ -1603,6 +1624,10 @@
                                     },
                                     "experience": {
                                         "description": "ID of the option representing required experience",
+                                        "type": "integer"
+                                    },
+                                    "work_type": {
+                                        "description": "ID of the option representing work type (office/remote/hybrid)",
                                         "type": "integer"
                                     }
                                 },
@@ -1649,6 +1674,9 @@
                                                     "type": "integer"
                                                 },
                                                 "experience": {
+                                                    "type": "integer"
+                                                },
+                                                "work_type": {
                                                     "type": "integer"
                                                 },
                                                 "read_counter": {
@@ -1822,6 +1850,10 @@
                                         "nullable": true
                                     },
                                     "experience": {
+                                        "type": "integer",
+                                        "nullable": true
+                                    },
+                                    "work_type": {
                                         "type": "integer",
                                         "nullable": true
                                     }
@@ -2629,7 +2661,7 @@
                     "Posts"
                 ],
                 "summary": "Get all posts with pagination",
-                "operationId": "3fda362e2e082b5357ac416e7767e435",
+                "operationId": "6a9022ba49a30afa68c7ede54dda91f5",
                 "parameters": [
                     {
                         "name": "_page",
@@ -2732,6 +2764,10 @@
                                         "format": "binary",
                                         "nullable": true
                                     },
+                                    "video_url": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
                                     "layout": {
                                         "type": "integer"
                                     }
@@ -2774,6 +2810,10 @@
                                                 "img": {
                                                     "type": "string",
                                                     "example": "/storage/posts/images/img_1.jpg",
+                                                    "nullable": true
+                                                },
+                                                "video_url": {
+                                                    "type": "string",
                                                     "nullable": true
                                                 },
                                                 "layout": {
@@ -2877,7 +2917,7 @@
                     "Posts"
                 ],
                 "summary": "Get specific post by ID",
-                "operationId": "142b5adb0520cca80cedfe09d9298332",
+                "operationId": "b2965b42b0cdc452e4586cf798a2e8f2",
                 "parameters": [
                     {
                         "name": "id",
@@ -2942,6 +2982,10 @@
                                     "img": {
                                         "type": "string",
                                         "format": "binary",
+                                        "nullable": true
+                                    },
+                                    "video_url": {
+                                        "type": "string",
                                         "nullable": true
                                     },
                                     "layout": {

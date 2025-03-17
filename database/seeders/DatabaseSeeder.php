@@ -64,15 +64,19 @@ class DatabaseSeeder extends Seeder
             ['type' => 'contact_status', 'value' => 'responded'],
             ['type' => 'user_role', 'value' => 'admin'],
             ['type' => 'user_role', 'value' => 'user'],
+            
+            // Post layout options
             ['type' => 'post_layout', 'value' => 'default'],
-            ['type' => 'post_layout', 'value' => 'teks+konten+teks'],
+            ['type' => 'post_layout', 'value' => 'text+gambar'],
+
+            
             ['type' => 'gallery_type', 'value' => 'image'],
             ['type' => 'gallery_type', 'value' => 'video'],
             
             // Layout types
             ['type' => 'layout', 'value' => 'Text Only'],
             ['type' => 'layout', 'value' => 'Text with Image'],
-            ['type' => 'layout', 'value' => 'Video Content'], // Changed from 'Text with File'
+            ['type' => 'layout', 'value' => 'Video Content'],
             ['type' => 'layout', 'value' => 'File Only'],
             // Material types
             
@@ -105,6 +109,12 @@ class DatabaseSeeder extends Seeder
             ['type' => 'work_type', 'value' => 'Work from Office'],
             ['type' => 'work_type', 'value' => 'Work from Home'],
             ['type' => 'work_type', 'value' => 'Hybrid'],
+
+            // post types
+            ['type' => 'post_layout', 'value' => 'Text Only'],
+            ['type' => 'post_layout', 'value' => 'Text with Image'],
+            ['type' => 'post_layout', 'value' => 'Text with Video'],
+            ['type' => 'post_layout', 'value' => 'Text with File'],
         ];
 
         foreach ($options as $option) {
@@ -198,44 +208,115 @@ class DatabaseSeeder extends Seeder
             return;
         }
 
-        // Get layout from options
-        $layout = Option::where('type', 'post_layout')->where('value', 'default')->first();
-        if (!$layout) {
-            $this->command->error('Default post layout option not found!');
+        // Get layout options
+        $textOnlyLayout = Option::where('type', 'post_layout')->where('value', 'Text Only')->first();
+        $textWithImageLayout = Option::where('type', 'post_layout')->where('value', 'Text with Image')->first();
+        $textWithVideoLayout = Option::where('type', 'post_layout')->where('value', 'Text with Video')->first();
+        $textWithFileLayout = Option::where('type', 'post_layout')->where('value', 'Text with File')->first();
+        
+        if (!$textOnlyLayout || !$textWithImageLayout || !$textWithVideoLayout || !$textWithFileLayout) {
+            $this->command->error('Post layout options not found!');
             return;
         }
 
         // Create posts (using random users)
         $posts = [
+            // Text Only post example
             [
-                'title' => 'Judul Post Pertama',
-                'slug' => Str::slug('Judul Post Pertama'),
-                'content' => 'Ini adalah konten dari post pertama.',
-                'file' => null,
-                'img' => 'https://via.placeholder.com/150',
-                'layout' => $layout->id,
-                'created_by' => $users->random()->id,
-                'counter' => 0,
-            ],
-            [
-                'title' => 'Judul Post Kedua',
-                'slug' => Str::slug('Judul Post Kedua'),
-                'content' => 'Ini adalah konten dari post kedua.',
-                'file' => 'https://example.com/file.pdf',
-                'img' => null,
-                'layout' => $layout->id,
-                'created_by' => $users->random()->id,
-                'counter' => 5,
-            ],
-            [
-                'title' => 'Judul Post Ketiga',
-                'slug' => Str::slug('Judul Post Ketiga'),
-                'content' => 'Ini adalah konten dari post ketiga.',
+                'title' => 'Company Updates - March 2025',
+                'slug' => Str::slug('Company Updates - March 2025'),
+                'content' => '<h2>Quarterly Performance</h2><p>We are pleased to announce that our company has exceeded quarterly targets by 15%. This success is attributed to the dedicated work of all departments and strategic initiatives implemented earlier this year.</p><h2>New Office</h2><p>Starting next month, we will begin relocating to our new headquarters. The transition will be gradual, with full migration expected by the end of the quarter. The new location offers improved facilities and better accessibility for all employees.</p><h2>Upcoming Events</h2><p>Mark your calendars for the annual company retreat scheduled for June. This year\'s theme is "Innovation and Collaboration." Registration will open next week, with early bird discounts available.</p>',
                 'file' => null,
                 'img' => null,
-                'layout' => $layout->id,
+                'layout' => $textOnlyLayout->id,
                 'created_by' => $users->random()->id,
-                'counter' => 10,
+                'counter' => rand(10, 100),
+            ],
+            
+            // Text with Image post example
+            [
+                'title' => 'Project Showcase: Modern Office Design',
+                'slug' => Str::slug('Project Showcase: Modern Office Design'),
+                'content' => '<p>Our design team recently completed the renovation of a tech startup\'s headquarters. The project focused on creating a flexible workspace that promotes collaboration while providing quiet areas for focused work.</p><h3>Key Features</h3><ul><li>Open concept main area with modular furniture</li><li>Sound-insulated meeting pods</li><li>Biophilic design elements including living walls</li><li>Energy-efficient lighting system</li><li>Ergonomic workstations</li></ul><p>Client feedback has been overwhelmingly positive, with particular appreciation for the balance between collaborative and private spaces.</p>',
+                'file' => null,
+                'img' => 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80',
+                'layout' => $textWithImageLayout->id,
+                'created_by' => $users->random()->id,
+                'counter' => rand(50, 200),
+            ],
+            
+            // Text with Video post example
+            [
+                'title' => 'Introduction to Our New Product Line',
+                'slug' => Str::slug('Introduction to Our New Product Line'),
+                'content' => '<p>We\'re excited to introduce our latest product line designed to revolutionize how you work. After months of research and development, we\'ve created solutions that address the most common challenges faced by professionals today.</p><h3>Features & Benefits</h3><p>Our new products offer unparalleled flexibility, superior performance, and intuitive interfaces. Watch the video below for a comprehensive overview of what\'s new and how these innovations can enhance your productivity.</p><p>For more information or to schedule a demo, please contact our sales team.</p>',
+                'file' => null,
+                'img' => null,
+                'video_url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                'layout' => $textWithVideoLayout->id,
+                'created_by' => $users->random()->id,
+                'counter' => rand(75, 300),
+            ],
+            
+            // Text with File post example
+            [
+                'title' => 'Annual Report 2024: Financial Performance',
+                'slug' => Str::slug('Annual Report 2024: Financial Performance'),
+                'content' => '<p>We are pleased to share our Annual Financial Report for the fiscal year 2024. This report outlines our financial performance, strategic achievements, and future outlook.</p><h3>Highlights</h3><ul><li>Revenue growth of 18% year-over-year</li><li>Expansion into three new international markets</li><li>Successful launch of two major product lines</li><li>Reduction in operational costs by 12%</li></ul><p>The detailed report is available for download below. For questions regarding this report, please contact our Investor Relations department.</p>',
+                'file' => '/storage/files/annual_report_2024.pdf',
+                'img' => null,
+                'layout' => $textWithFileLayout->id,
+                'created_by' => $users->random()->id,
+                'counter' => rand(30, 150),
+            ],
+            
+            // Additional Text Only post
+            [
+                'title' => 'Employee Recognition Program',
+                'slug' => Str::slug('Employee Recognition Program'),
+                'content' => '<h2>Introducing Our New Recognition Program</h2><p>We\'re proud to announce the launch of our enhanced employee recognition program designed to celebrate the contributions and achievements of our team members.</p><h3>Program Components</h3><ul><li><strong>Monthly Spotlight:</strong> Recognizing outstanding performance in different departments</li><li><strong>Peer Nominations:</strong> Encouraging team members to recognize colleagues\' exceptional work</li><li><strong>Milestone Awards:</strong> Celebrating work anniversaries and career achievements</li><li><strong>Innovation Awards:</strong> Recognizing creative solutions and process improvements</li></ul><p>The program officially begins next month. All employees will receive detailed information about participation and nomination processes via email.</p>',
+                'file' => null,
+                'img' => null,
+                'layout' => $textOnlyLayout->id,
+                'created_by' => $users->random()->id,
+                'counter' => rand(40, 90),
+            ],
+            
+            // Additional Text with Image post
+            [
+                'title' => 'Community Service Day: Building Homes Together',
+                'slug' => Str::slug('Community Service Day: Building Homes Together'),
+                'content' => '<p>Last weekend, our team participated in the annual Community Service Day, partnering with Habitat for Humanity to help build affordable housing in our local community.</p><p>More than 50 employees volunteered their time and skills, working alongside future homeowners to construct two houses. The experience provided not only tangible results for families in need but also strengthened our team bonds outside the workplace.</p><h3>Impact</h3><p>Through our collective efforts, we contributed approximately 400 volunteer hours, helping to accelerate the construction timeline by several weeks. This initiative is part of our broader commitment to social responsibility and community engagement.</p><p>We extend our thanks to everyone who participated and to our community partners for making this event possible.</p>',
+                'file' => null,
+                'img' => 'https://images.unsplash.com/photo-1593113598332-cd288d649433?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80',
+                'layout' => $textWithImageLayout->id,
+                'created_by' => $users->random()->id,
+                'counter' => rand(60, 180),
+            ],
+            
+            // Additional Text with Video post
+            [
+                'title' => 'Expert Interview: Future of Remote Work',
+                'slug' => Str::slug('Expert Interview: Future of Remote Work'),
+                'content' => '<p>We recently sat down with workplace strategy expert Dr. Amanda Chen to discuss the evolving landscape of remote and hybrid work models. Dr. Chen shared insights on how companies can create effective policies that balance flexibility with collaboration needs.</p><h3>Key Topics Covered</h3><ul><li>Sustainable remote work infrastructure</li><li>Measuring productivity in distributed teams</li><li>Maintaining company culture across virtual environments</li><li>Addressing burnout and work-life boundaries</li></ul><p>Watch the full interview below for practical strategies and research-backed recommendations on navigating the future of work.</p>',
+                'file' => null,
+                'img' => null,
+                'video_url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                'layout' => $textWithVideoLayout->id,
+                'created_by' => $users->random()->id,
+                'counter' => rand(85, 250),
+            ],
+            
+            // Additional Text with File post
+            [
+                'title' => 'Updated Employee Handbook 2025',
+                'slug' => Str::slug('Updated Employee Handbook 2025'),
+                'content' => '<p>We have updated our Employee Handbook for 2025 to reflect recent policy changes and provide clearer guidance on company procedures.</p><h3>Major Updates Include:</h3><ul><li>Revised remote work policy with expanded eligibility</li><li>Enhanced parental leave benefits</li><li>Updated health and safety protocols</li><li>New professional development opportunities</li><li>Clarified expense reimbursement procedures</li></ul><p>All employees should review the handbook and complete the acknowledgment form by April 15. The HR team will host information sessions throughout the month to address questions and provide additional context on the changes.</p><p>Please download the handbook below:</p>',
+                'file' => '/storage/files/employee_handbook_2025.pdf',
+                'img' => null,
+                'layout' => $textWithFileLayout->id,
+                'created_by' => $users->random()->id,
+                'counter' => rand(70, 140),
             ],
         ];
 

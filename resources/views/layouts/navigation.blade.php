@@ -99,7 +99,7 @@
                             <a href="{{ url('/gallery?type=7') }}" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-700">
                                 {{ __('Gallery') }}
                             </a>
-                            <a href="{{ url('/posts') }}" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-700">
+                            <a href="{{ route('posts.index') }}" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-700">
                                 {{ __('Posts') }}
                             </a>
                             <a href="{{ route('contacts.index') }}" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-700">
@@ -232,7 +232,7 @@
                     <a href="{{ url('/gallery?type=7') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
                         {{ __('Gallery') }}
                     </a>
-                    <a href="{{ url('/posts') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
+                    <a href="{{ route('posts.index') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
                         {{ __('Posts') }}
                     </a>
                     <a href="{{ route('contacts.index') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">

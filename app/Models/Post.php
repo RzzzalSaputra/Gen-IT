@@ -16,6 +16,7 @@ class Post extends Model
         'content',
         'file',
         'img',
+        'video_url',
         'layout',
         'created_by',
         'counter'

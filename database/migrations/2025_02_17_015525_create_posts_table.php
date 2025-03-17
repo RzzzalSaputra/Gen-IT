@@ -15,6 +15,7 @@ class CreatePostsTable extends Migration
             $table->text('content');
             $table->text('file')->nullable();
             $table->text('img')->nullable();
+            $table->text('video_url')->nullable();
             $table->foreignId('layout')->constrained('options');
             $table->foreignId('created_by')->constrained('users');
             $table->unsignedInteger('counter')->default(0);

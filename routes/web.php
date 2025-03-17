@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\StudyController;
 use App\Http\Controllers\Api\CompanyController;
 use App\Http\Controllers\Api\JobController;
 use App\Http\Controllers\Api\ContactController;
+use App\Http\Controllers\Api\PostController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -21,6 +22,10 @@ Route::get('/', function () {
 Route::get('/gallery', [GalleryController::class, 'index'])->name('gallery.index');
 Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
 Route::get('/articles/{id}', [ArticleController::class, 'show'])->name('articles.show');
+
+// Post Routes
+Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
+Route::get('/posts/{id}', [PostController::class, 'show'])->name('posts.show');
 
 Route::get('/materials={content_type}', [MaterialController::class, 'index'])->name('materials.type');
 

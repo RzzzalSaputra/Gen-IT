@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Log;
@@ -63,9 +64,9 @@ class PostController extends Controller
      *     @OA\Response(response=403, description="Unauthorized")
      * )
      */
-    public function index(Request $request)
+    public function apiIndex(Request $request)
     {
-        $query = Post::query();
+        $query = Post::query()->withTrashed();
 
         // Filter berdasarkan pembuat
         if ($request->has('created_by')) {
@@ -81,16 +82,46 @@ class PostController extends Controller
         if ($request->has('_search')) {
             $search = $request->_search;
             $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', "%$search%")
-                    ->orWhere('content', 'like', "%$search%");
+                $q->whereRaw('LOWER(title) LIKE ?', ['%' . strtolower($search) . '%'])
+                  ->orWhereRaw('LOWER(content) LIKE ?', ['%' . strtolower($search) . '%']);
             });
         }
+
+        // Sorting (default: desc)
+        $direction = $request->_dir ?? 'desc';
+        $query->orderBy('created_at', $direction);
 
         // Pagination
         $perPage = $request->_limit ?? 10;
         $posts = $query->paginate($perPage);
 
         return response()->json($posts);
+    }
+
+    /**
+     * Display a listing of posts in the frontend
+     */
+    public function index(Request $request): View
+    {
+        $query = Post::query()
+            ->with(['option', 'user']);
+
+        // Search functionality with case insensitivity
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->whereRaw('LOWER(title) LIKE ?', ['%' . strtolower($search) . '%'])
+                  ->orWhereRaw('LOWER(content) LIKE ?', ['%' . strtolower($search) . '%']);
+            });
+        }
+
+        // Default ordering
+        $query->orderBy('created_at', 'desc');
+
+        // Get paginated results
+        $posts = $query->paginate(9);
+        
+        return view('post.index', compact('posts'));
     }
 
     /**
@@ -127,6 +158,7 @@ class PostController extends Controller
      *                 @OA\Property(property="content", type="string"),
      *                 @OA\Property(property="file", type="string", format="binary", nullable=true),
      *                 @OA\Property(property="img", type="string", format="binary", nullable=true),
+     *                 @OA\Property(property="video_url", type="string", nullable=true),
      *                 @OA\Property(property="layout", type="integer"),
      *             )
      *         )
@@ -143,6 +175,7 @@ class PostController extends Controller
      *                 @OA\Property(property="content", type="string"),
      *                 @OA\Property(property="file", type="string", nullable=true, example="/storage/posts/files/file_1.pdf"),
      *                 @OA\Property(property="img", type="string", nullable=true, example="/storage/posts/images/img_1.jpg"),
+     *                 @OA\Property(property="video_url", type="string", nullable=true),
      *                 @OA\Property(property="layout", type="integer"),
      *                 @OA\Property(property="created_by", type="integer"),
      *                 @OA\Property(property="created_at", type="string", format="date-time"),
@@ -186,6 +219,7 @@ class PostController extends Controller
             'content' => 'required|string',
             'file' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
             'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'video_url' => 'nullable|string|url',
             'layout' => 'required|exists:options,id',
         ]);
 
@@ -202,6 +236,7 @@ class PostController extends Controller
                 'title' => $data['title'],
                 'slug' => $data['slug'],
                 'content' => $data['content'],
+                'video_url' => $data['video_url'] ?? null,
                 'layout' => $data['layout'],
                 'created_by' => $userId,
             ]);
@@ -252,15 +287,28 @@ class PostController extends Controller
      *     )
      * )
      */
-    public function show(int $id): JsonResponse
+    public function apiShow(int $id): JsonResponse
     {
-        $post = Post::withTrashed()->find($id);
+        $post = Post::with(['option', 'user'])
+            ->findOrFail($id);
+            
+        return response()->json($post);
+    }
 
-        if (!$post) {
-            return response()->json(['message' => 'Post not found'], Response::HTTP_NOT_FOUND);
+    /**
+     * Display the specified post in the frontend
+     */
+    public function show($id): View
+    {
+        $post = Post::with(['option', 'user'])
+            ->findOrFail($id);
+            
+        // Increment counter if it exists
+        if (property_exists($post, 'counter')) {
+            $post->increment('counter', 1);
         }
-
-        return response()->json($post, Response::HTTP_OK);
+            
+        return view('post.show', compact('post'));
     }
 
     /**
@@ -287,6 +335,7 @@ class PostController extends Controller
      *                 @OA\Property(property="content", type="string", nullable=true),
      *                 @OA\Property(property="file", type="string", format="binary", nullable=true),
      *                 @OA\Property(property="img", type="string", format="binary", nullable=true),
+     *                 @OA\Property(property="video_url", type="string", nullable=true),
      *                 @OA\Property(property="layout", type="integer", nullable=true)
      *             )
      *         )
@@ -305,6 +354,7 @@ class PostController extends Controller
             'content' => 'nullable|string',
             'file' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
             'img'     => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'video_url' => 'nullable|string|url',
             'layout'  => 'nullable|exists:options,id',
         ]);
 
@@ -325,6 +375,7 @@ class PostController extends Controller
                 'title'   => $request->title ?? $post->title,
                 'slug'    => $request->slug ?? $post->slug,
                 'content' => $request->content ?? $post->content,
+                'video_url' => $request->video_url ?? $post->video_url,
                 'layout'  => $request->layout ?? $post->layout,
             ]);
 
@@ -395,7 +446,7 @@ class PostController extends Controller
             return response()->json(['message' => 'Post not found'], Response::HTTP_NOT_FOUND);
         }
 
-        Log::info('Soft deleting contact:', ['id' => $post->id]);
+        Log::info('Soft deleting post:', ['id' => $post->id]);
         $post->delete();
 
         return response()->json(['message' => 'Post successfully soft deleted.', 'deleted_at' => $post->deleted_at], Response::HTTP_OK);
@@ -423,6 +474,6 @@ class PostController extends Controller
     {
         $post = Post::withTrashed()->findOrFail($id);
         $post->restore();
-        return response()->json($post, Response::HTTP_OK);
+        return response()->json(['message' => 'Post restored successfully', 'data' => $post], Response::HTTP_OK);
     }
 }
