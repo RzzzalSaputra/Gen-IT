@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 use Carbon\Carbon;
+use Illuminate\View\View;
 
 class ViconController extends Controller
 {
@@ -72,7 +73,7 @@ class ViconController extends Controller
      *     @OA\Response(response=403, description="Unauthorized")
      * )
      */
-    public function index(Request $request)
+    public function apiIndex(Request $request)
     {
         $query = Vicon::query();
 
@@ -95,6 +96,23 @@ class ViconController extends Controller
         $vicons = $query->paginate($perPage);
 
         return response()->json($vicons);
+    }
+
+    /**
+     * Display a listing of vicons in the frontend
+     */
+    public function index(): View
+    {
+        $query = Vicon::query()
+            ->with(['creator']);
+
+        // Default ordering
+        $query->orderBy('created_at', 'desc');
+
+        // Get paginated results
+        $vicons = $query->paginate(9);
+        
+        return view('vicon.index', compact('vicons'));
     }
 
     /**
@@ -244,7 +262,7 @@ class ViconController extends Controller
      *     )
      * )
      */
-    public function show($id)
+    public function apiShow($id)
     {
         $vicon = Vicon::withTrashed()->find($id);
         
@@ -255,6 +273,22 @@ class ViconController extends Controller
         // Increment view count logic could be added here if needed
         
         return response()->json($vicon, Response::HTTP_OK);
+    }
+
+    /**
+     * Display the specified vicon in the frontend
+     */
+    public function show($id): View
+    {
+        $vicon = Vicon::with(['creator'])
+            ->findOrFail($id);
+            
+        // Increment view count if such field exists
+        if (property_exists($vicon, 'view_count')) {
+            $vicon->increment('view_count', 1);
+        }
+            
+        return view('vicon.show', compact('vicon'));
     }
 
     /**

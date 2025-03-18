@@ -4161,8 +4161,7 @@
                                 "required": [
                                     "title",
                                     "content",
-                                    "type",
-                                    "status"
+                                    "type"
                                 ],
                                 "properties": {
                                     "title": {
@@ -4185,9 +4184,6 @@
                                         "nullable": true
                                     },
                                     "type": {
-                                        "type": "integer"
-                                    },
-                                    "status": {
                                         "type": "integer"
                                     }
                                 },
@@ -4215,6 +4211,37 @@
             }
         },
         "/api/submissions/{id}": {
+            "get": {
+                "tags": [
+                    "Submissions"
+                ],
+                "summary": "Get submission by ID",
+                "description": "Display the specified resource.",
+                "operationId": "7fb96c519a0727c782724cee1ed0f62c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Submission details"
+                    },
+                    "404": {
+                        "description": "Submission not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
             "post": {
                 "tags": [
                     "Submissions"
@@ -4372,7 +4399,7 @@
                     "Vicons"
                 ],
                 "summary": "Get all Vicons with pagination",
-                "operationId": "22465994ceb1ecebdf568afb37822cb0",
+                "operationId": "3c6038cc289d7647f7139c36a4f5cc05",
                 "parameters": [
                     {
                         "name": "_page",
@@ -4576,7 +4603,7 @@
                     "Vicons"
                 ],
                 "summary": "Get vicon by ID",
-                "operationId": "17008783c8b929d75b4e1c922a243511",
+                "operationId": "a11f9d1ff5afb1bbd9c299b2eb1a14f7",
                 "parameters": [
                     {
                         "name": "id",

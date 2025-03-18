@@ -105,6 +105,9 @@
                             <a href="{{ route('contacts.index') }}" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-700">
                                 {{ __('Contact Us') }}
                             </a>
+                            <a href="{{ route('vicons.index') }}" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-700">
+                                {{ __('Video Conference') }}
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -114,7 +117,7 @@
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 @auth
                 <!-- Submission Link (Only visible when logged in) -->
-                <a href="{{ url('/submission') }}" class="{{ request()->routeIs('submissions.index') ? 'text-blue-400' : 'text-white hover:text-blue-300' }} px-3 py-2 text-sm font-medium transition-colors duration-200 mr-4">
+                <a href="{{ route('submissions.index') }}" class="{{ request()->routeIs('submissions.index') ? 'text-blue-400' : 'text-white hover:text-blue-300' }} px-3 py-2 text-sm font-medium transition-colors duration-200 mr-4">
                     {{ __('Submissions') }}
                 </a>
                 
@@ -238,12 +241,15 @@
                     <a href="{{ route('contacts.index') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
                         {{ __('Contact Us') }}
                     </a>
+                    <a href="{{ route('vicons.index') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
+                        {{ __('Video Conference') }}
+                    </a>
                 </div>
             </div>
             
             <!-- Submissions link (only for authenticated users) -->
             @auth
-            <a href="{{ url('/submission') }}" class="{{ request()->routeIs('submissions.index') ? 'bg-gray-700 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }} block px-3 py-2 text-base font-medium">
+            <a href="{{ route('submissions.index') }}" class="{{ request()->routeIs('submissions.index') ? 'bg-gray-700 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }} block px-3 py-2 text-base font-medium">
                 {{ __('Submissions') }}
             </a>
             @endauth

@@ -25,6 +25,12 @@ class Submission extends Model
         'created_by'
     ];
 
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'approve_at' => 'datetime', // Add this line to ensure approve_at is a Carbon instance
+    ];
+
     // Relasi ke tabel Option (type)
     public function typeOption()
     {

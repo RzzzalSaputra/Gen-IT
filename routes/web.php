@@ -12,34 +12,47 @@ use App\Http\Controllers\Api\StudyController;
 use App\Http\Controllers\Api\CompanyController;
 use App\Http\Controllers\Api\JobController;
 use App\Http\Controllers\Api\ContactController;
+use App\Http\Controllers\Api\SubmissionController;
 use App\Http\Controllers\Api\PostController;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-// Public Routes
+// Gallery Public Routes
 Route::get('/gallery', [GalleryController::class, 'index'])->name('gallery.index');
 Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
 Route::get('/articles/{id}', [ArticleController::class, 'show'])->name('articles.show');
 
-// Post Routes
+// Vicon Public Routes
+Route::get('/vicons', [ViconController::class, 'index'])->name('vicons.index');
+Route::get('/vicons/{id}', [ViconController::class, 'show'])->name('vicons.show');
+
+
+// Post Public Routes
 Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
 Route::get('/posts/{id}', [PostController::class, 'show'])->name('posts.show');
 
+// Material Public Routes
 Route::get('/materials={content_type}', [MaterialController::class, 'index'])->name('materials.type');
-
 Route::get('/materials', [MaterialController::class, 'index'])->name('materials.index');
 Route::get('/materials/{id}', [MaterialController::class, 'show'])->name('materials.show');
 Route::get('/materials/{material}/download', [MaterialController::class, 'download'])->name('materials.download');
+
+// School Public Routes
 Route::get('/schools', [SchoolController::class, 'index'])->name('schools.index');
 Route::get('/schools/{id}', [SchoolController::class, 'show'])->name('schools.show');
+
+// Studies Public Routes
 Route::get('/studies', [StudyController::class, 'index'])->name('studies.index');
 Route::get('/studies/{id}', [StudyController::class, 'show'])->name('studies.show');
+
+// Company Public Routes
 Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');
 Route::get('/companies/{id}', [CompanyController::class, 'show'])->name('companies.show');
 Route::get('/jobs', [JobController::class, 'index'])->name('jobs.index');
 Route::get('/jobs/{id}', [JobController::class, 'show'])->name('jobs.show');
+
 // Added job by company route for web
 Route::get('/companies/{companyId}/jobs', [JobController::class, 'getJobsByCompany'])->name('companies.jobs');
 
@@ -57,6 +70,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/contacts', [ContactController::class, 'index'])->name('contacts.index');
     Route::get('/contact/create', [ContactController::class, 'create'])->name('contacts.create');
     Route::post('/contact', [ContactController::class, 'store'])->name('contacts.store');
+    // Submission routes
+    Route::get('/submissions', [SubmissionController::class, 'index'])->name('submissions.index');
+    Route::get('/submissions/create', [SubmissionController::class, 'create'])->name('submissions.create');
+    Route::post('/submissions', [SubmissionController::class, 'store'])->name('submissions.store');
+    Route::get('/submissions/{id}', [SubmissionController::class, 'show'])->name('submissions.show');
 });
 
 require __DIR__.'/auth.php';

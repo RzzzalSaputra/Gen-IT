@@ -11,6 +11,7 @@ use App\Models\School;
 use App\Models\Study;
 use App\Models\Company;
 use App\Models\Job;
+use App\Models\Submission;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -51,6 +52,13 @@ class DatabaseSeeder extends Seeder
 
         // ===== JOBS SEEDING =====
         $this->seedJobs();
+
+        // ===== VICON SEEDING =====
+        $this->seedVicons();
+
+        // ===== SUBMISSIONS SEEDING =====
+        $this->seedSubmissions();
+
     }
     
     /**
@@ -115,6 +123,14 @@ class DatabaseSeeder extends Seeder
             ['type' => 'post_layout', 'value' => 'Text with Image'],
             ['type' => 'post_layout', 'value' => 'Text with Video'],
             ['type' => 'post_layout', 'value' => 'Text with File'],
+            
+            // submission types
+            ['type' => 'submission_type', 'value' => 'file'],
+            ['type' => 'submission_type', 'value' => 'video'],
+            ['type' => 'submission_type', 'value' => 'text'],
+            ['type' => 'submission_status', 'value' => 'pending'],
+            ['type' => 'submission_status', 'value' => 'accepted'],
+            ['type' => 'submission_status', 'value' => 'declined'],
         ];
 
         foreach ($options as $option) {
@@ -1601,5 +1617,265 @@ function initializeFeature() {
         }
         
         $this->command->info('Jobs seeded successfully!');
+    }
+
+    /**
+     * Seed the vicons table.
+     */
+    private function seedVicons(): void
+    {
+        // Get users by username for easier reference
+        $ichika = User::where('user_name', 'IchikaNakano')->first();
+        $nino = User::where('user_name', 'NinoNakano')->first();
+        $miku = User::where('user_name', 'MikuNakano')->first();
+        $yotsuba = User::where('user_name', 'YotsubaNakano')->first();
+        $itsuki = User::where('user_name', 'ItsukiNakano')->first();
+        
+        if (!$ichika || !$nino || !$miku || !$yotsuba || !$itsuki) {
+            $this->command->error('Required users not found! Cannot seed vicons.');
+            return;
+        }
+
+        $vicons = [
+            [
+                'title' => 'Introduction to Web Development',
+                'desc' => 'Join us for an interactive session covering the fundamentals of HTML, CSS, and JavaScript. This webinar is perfect for beginners looking to start their journey in web development. We will cover basic concepts, demonstrate practical examples, and answer your questions live.',
+                'img' => 'https://images.unsplash.com/photo-1547658719-da2b51169166?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80',
+                'time' => now()->addDays(7)->setHour(10)->setMinute(0),
+                'link' => 'https://meet.google.com/abc-defg-hij',
+                'download' => 'https://example.com/downloads/web-dev-slides.pdf',
+                'created_by' => $ichika->id,
+            ],
+            [
+                'title' => 'Advanced React Techniques',
+                'desc' => 'This technical deep dive will explore advanced React patterns including context API, custom hooks, and performance optimization strategies. Intended for developers with intermediate React experience who want to take their skills to the next level.',
+                'img' => 'https://images.unsplash.com/photo-1633356122102-3fe601e05bd2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80',
+                'time' => now()->addDays(14)->setHour(15)->setMinute(30),
+                'link' => 'https://zoom.us/j/12345678901',
+                'download' => 'https://example.com/downloads/react-advanced-materials.zip',
+                'created_by' => $nino->id,
+            ],
+            [
+                'title' => 'Database Design Best Practices',
+                'desc' => 'Learn how to design efficient, scalable, and maintainable database structures. We\'ll cover normalization, indexing strategies, and common pitfalls to avoid. Case studies will demonstrate real-world applications of these principles.',
+                'img' => null,
+                'time' => now()->addDays(5)->setHour(13)->setMinute(0),
+                'link' => 'https://teams.microsoft.com/l/meetup-join/12345',
+                'download' => null,
+                'created_by' => $miku->id,
+            ],
+            [
+                'title' => 'UX Research Methods Workshop',
+                'desc' => 'This hands-on workshop will introduce various user research methodologies including user interviews, usability testing, and analytics interpretation. Participants will learn how to gather actionable insights to improve product design and user satisfaction.',
+                'img' => 'https://images.unsplash.com/photo-1553877522-43269d4ea984?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80',
+                'time' => now()->addDays(21)->setHour(9)->setMinute(0),
+                'link' => 'https://meet.google.com/xyz-abcd-efg',
+                'download' => 'https://example.com/downloads/ux-research-toolkit.pdf',
+                'created_by' => $yotsuba->id,
+            ],
+            [
+                'title' => 'Cloud Infrastructure Security',
+                'desc' => 'This technical session focuses on securing cloud-based infrastructure across major platforms (AWS, Azure, GCP). Topics include identity management, network security, encryption best practices, and automated security testing.',
+                'img' => 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80',
+                'time' => now()->addDays(10)->setHour(16)->setMinute(0),
+                'link' => 'https://zoom.us/j/98765432109',
+                'download' => 'https://example.com/downloads/cloud-security-checklist.pdf',
+                'created_by' => $itsuki->id,
+            ],
+            [
+                'title' => 'Mobile App Development with Flutter',
+                'desc' => 'Discover how to build cross-platform mobile applications with Flutter. This session will cover Flutter basics, widget architecture, state management, and deployment strategies for both iOS and Android platforms.',
+                'img' => null,
+                'time' => now()->addDays(18)->setHour(11)->setMinute(30),
+                'link' => 'https://meet.google.com/pqr-stuv-wxy',
+                'download' => null,
+                'created_by' => $ichika->id,
+            ],
+            [
+                'title' => 'DevOps Pipeline Automation',
+                'desc' => 'Learn strategies for automating your development and deployment pipelines. We\'ll cover CI/CD tools, infrastructure as code, automated testing frameworks, and monitoring solutions to streamline your software delivery process.',
+                'img' => 'https://images.unsplash.com/photo-1607743386760-88ac62b89b8a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80',
+                'time' => now()->addDays(25)->setHour(14)->setMinute(0),
+                'link' => 'https://teams.microsoft.com/l/meetup-join/67890',
+                'download' => 'https://example.com/downloads/devops-templates.zip',
+                'created_by' => $nino->id,
+            ],
+            [
+                'title' => 'Data Science for Beginners',
+                'desc' => 'This introductory session will cover the fundamentals of data science including data collection, cleaning, analysis, and visualization. We\'ll use Python and popular libraries like Pandas and Matplotlib to demonstrate practical techniques.',
+                'img' => 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80',
+                'time' => now()->addDays(12)->setHour(17)->setMinute(0),
+                'link' => 'https://zoom.us/j/12398745601',
+                'download' => 'https://example.com/downloads/data-science-starter-kit.zip',
+                'created_by' => $miku->id,
+            ],
+        ];
+
+        foreach ($vicons as $vicon) {
+            \App\Models\Vicon::create($vicon);
+        }
+        
+        $this->command->info('Video conferences seeded successfully!');
+    }
+
+    /**
+     * Seed the submissions table.
+     */
+    private function seedSubmissions(): void
+    {
+        $this->command->info('Seeding submissions...');
+        
+        // Get user IDs
+        $userIds = User::pluck('id')->toArray();
+        if (empty($userIds)) {
+            $this->command->error('No users found! Cannot seed submissions.');
+            return;
+        }
+        
+        // Get submission types
+        $fileType = Option::where('type', 'submission_type')->where('value', 'file')->first()->id;
+        $videoType = Option::where('type', 'submission_type')->where('value', 'video')->first()->id;
+        $textType = Option::where('type', 'submission_type')->where('value', 'text')->first()->id;
+        
+        // Get submission statuses
+        $pendingStatus = Option::where('type', 'submission_status')->where('value', 'pending')->first()->id;
+        $acceptedStatus = Option::where('type', 'submission_status')->where('value', 'accepted')->first()->id;
+        $declinedStatus = Option::where('type', 'submission_status')->where('value', 'declined')->first()->id;
+        
+        // Sample submissions
+        $submissions = [
+            // File submissions
+            [
+                'title' => 'Project Proposal Document',
+                'content' => null,
+                'file' => '/storage/submissions/project_proposal.pdf',
+                'link' => null,
+                'img' => null,
+                'type' => $fileType,
+                'status' => $acceptedStatus,
+                'submitted_at' => now()->subDays(15),
+            ],
+            [
+                'title' => 'UI Design Mockups',
+                'content' => null,
+                'file' => '/storage/submissions/ui_mockups.zip',
+                'link' => null,
+                'img' => null,
+                'type' => $fileType,
+                'status' => $pendingStatus,
+                'submitted_at' => now()->subDays(2),
+            ],
+            [
+                'title' => 'Technical Documentation',
+                'content' => null,
+                'file' => '/storage/submissions/api_documentation.docx',
+                'link' => null,
+                'img' => null,
+                'type' => $fileType,
+                'status' => $declinedStatus,
+                'submitted_at' => now()->subDays(10),
+            ],
+            
+            // Video submissions
+            [
+                'title' => 'Product Demo Video',
+                'content' => null,
+                'file' => null,
+                'link' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                'img' => 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
+                'type' => $videoType,
+                'status' => $acceptedStatus,
+                'submitted_at' => now()->subDays(20),
+            ],
+            [
+                'title' => 'Team Introduction Video',
+                'content' => null,
+                'file' => null,
+                'link' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                'img' => 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
+                'type' => $videoType,
+                'status' => $pendingStatus,
+                'submitted_at' => now()->subDays(3),
+            ],
+            [
+                'title' => 'User Testing Session Recording',
+                'content' => null,
+                'file' => null,
+                'link' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                'img' => 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
+                'type' => $videoType,
+                'status' => $declinedStatus,
+                'submitted_at' => now()->subDays(12),
+            ],
+            
+            // Text submissions
+            [
+                'title' => 'Weekly Progress Report',
+                'content' => 'This week, our team completed the following tasks:\n\n1. Finalized database schema design\n2. Implemented user authentication system\n3. Created initial API endpoints for core functionality\n4. Set up automated testing framework\n\nNext week\'s priorities:\n- Complete front-end integration\n- Perform security audit\n- Begin user acceptance testing\n- Prepare deployment documentation',
+                'file' => null,
+                'link' => null,
+                'img' => null,
+                'type' => $textType,
+                'status' => $acceptedStatus,
+                'submitted_at' => now()->subDays(7),
+            ],
+            [
+                'title' => 'Feature Request',
+                'content' => 'Feature: Advanced Analytics Dashboard\n\nPurpose: To provide users with deeper insights into their data through customizable visualizations and metrics.\n\nKey Components:\n- Customizable widget-based interface\n- Real-time data processing\n- Export capabilities (PDF, CSV, Excel)\n- Role-based access control\n- Saved report templates\n\nBusiness Value:\n- Improve decision-making through better data visibility\n- Increase user engagement with interactive visualizations\n\nEstimated Development Effort: 4-6 weeks',
+                'file' => null,
+                'link' => null,
+                'img' => null,
+                'type' => $textType,
+                'status' => $pendingStatus,
+                'submitted_at' => now()->subDays(1),
+            ],
+            [
+                'title' => 'Bug Report',
+                'content' => 'Issue: Payment Processing Failure\n\nDescription: International customers are experiencing payment failures when using Visa cards. The transaction appears to be processed but then fails with error code E-4029.\n\nSteps to Reproduce:\n1. Add item to cart\n2. Proceed to checkout\n3. Enter shipping information for international address\n4. Enter Visa card details\n5. Submit payment\n\nExpected Behavior: Payment processes successfully\n\nActual Behavior: Error message "Transaction declined (E-4029)" appears',
+                'file' => null,
+                'link' => null,
+                'img' => null,
+                'type' => $textType,
+                'status' => $declinedStatus,
+                'submitted_at' => now()->subDays(5),
+            ],
+        ];
+        
+        // Create submissions
+        foreach ($submissions as $submission) {
+            // For each submission, we'll assign random users
+            $createdBy = $userIds[array_rand($userIds)];
+            $approveBy = null;
+            $approveAt = null;
+            
+            // If the status is accepted or declined, set approval info
+            if ($submission['status'] == $acceptedStatus || $submission['status'] == $declinedStatus) {
+                $approveBy = $userIds[array_rand($userIds)];
+                $approveAt = $submission['submitted_at']->addDays(rand(1, 3));
+            }
+            
+            // Create random read and download counters
+            $readCounter = rand(0, 100);
+            $downloadCounter = $submission['file'] ? rand(0, 50) : 0;
+            
+            Submission::create([
+                'title' => $submission['title'],
+                'content' => $submission['content'],
+                'file' => $submission['file'],
+                'link' => $submission['link'],
+                'img' => $submission['img'],
+                'type' => $submission['type'],
+                'status' => $submission['status'],
+                'read_counter' => $readCounter,
+                'download_counter' => $downloadCounter,
+                'approve_at' => $approveAt,
+                'approve_by' => $approveBy,
+                'created_by' => $createdBy,
+                'created_at' => $submission['submitted_at'],
+                'updated_at' => now(),
+            ]);
+        }
+        
+        $this->command->info('Submissions seeded successfully!');
     }
 }

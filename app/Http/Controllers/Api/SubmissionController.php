@@ -8,9 +8,21 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use App\Models\Submission;
+use App\Models\Option;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Contracts\View\View;
+use Symfony\Component\HttpFoundation\Response;
 
 class SubmissionController extends Controller
 {
+    public function __construct()
+    {
+        // Only set the Accept header for API requests
+        if (request()->is('api/*')) {
+            request()->headers->set('Accept', 'application/json');
+        }
+    }
+
     /**
      * @OA\Get(
      *     path="/api/submissions",
@@ -56,32 +68,53 @@ class SubmissionController extends Controller
      *     @OA\Response(response=403, description="Unauthorized")
      * )
      */
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse|View
     {
-        $query = Submission::query();
+        // For API requests
+        if (request()->is('api/*')) {
+            $query = Submission::query();
 
-        // Filter berdasarkan status dan type
-        if ($request->has('status')) {
-            $query->where('status', $request->status);
+            // Filter berdasarkan status dan type
+            if ($request->has('status')) {
+                $query->where('status', $request->status);
+            }
+            if ($request->has('type')) {
+                $query->where('type', $request->type);
+            }
+
+            // Pencarian berdasarkan title atau content
+            if ($request->has('_search')) {
+                $search = $request->_search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('title', 'like', "%$search%")
+                        ->orWhere('content', 'like', "%$search%");
+                });
+            }
+
+            // Pagination
+            $perPage = $request->_limit ?? 10;
+            $submissions = $query->paginate($perPage);
+
+            return response()->json($submissions);
         }
-        if ($request->has('type')) {
-            $query->where('type', $request->type);
-        }
+        
+        // For web requests
+        $submissions = Submission::where('created_by', Auth::id())
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+        
+        return view('submission.index', compact('submissions'));
+    }
 
-        // Pencarian berdasarkan title atau content
-        if ($request->has('_search')) {
-            $search = $request->_search;
-            $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', "%$search%")
-                    ->orWhere('content', 'like', "%$search%");
-            });
-        }
-
-        // Pagination
-        $perPage = $request->_limit ?? 10;
-        $submissions = $query->paginate($perPage);
-
-        return response()->json($submissions);
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create(): View
+    {
+        // Get submission types from options table - using 'type' instead of 'group'
+        $types = Option::where('type', 'submission_type')->get();
+        
+        return view('submission.create', compact('types'));
     }
 
     /**
@@ -95,14 +128,13 @@ class SubmissionController extends Controller
      *         @OA\MediaType(
      *             mediaType="multipart/form-data",
      *             @OA\Schema(
-     *                 required={"title", "content", "type", "status"},
+     *                 required={"title", "content", "type"},
      *                 @OA\Property(property="title", type="string"),
      *                 @OA\Property(property="content", type="string"),
      *                 @OA\Property(property="file", type="string", format="binary", nullable=true),
      *                 @OA\Property(property="link", type="string"),
      *                 @OA\Property(property="img", type="string", format="binary", nullable=true),
-     *                 @OA\Property(property="type", type="integer"),
-     *                 @OA\Property(property="status", type="integer")
+     *                 @OA\Property(property="type", type="integer")
      *             )
      *         )
      *     ),
@@ -111,34 +143,67 @@ class SubmissionController extends Controller
      *     @OA\Response(response=500, description="Error creating submission")
      * )
      */
-
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'title'   => 'required|string|max:255',
-            'content' => 'required|string',
-            'file'    => 'nullable|file|mimes:pdf,doc,docx|max:5120',
-            'link'    => 'nullable|string',
-            'img'     => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'type'    => 'required|integer|exists:options,id',
-            'status'  => 'required|integer|exists:options,id',
-        ]);
+        // Validate based on request type
+        if (request()->is('api/*')) {
+            $validator = Validator::make($request->all(), [
+                'title'   => 'required|string|max:255',
+                'content' => 'required|string',
+                'file'    => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+                'link'    => 'nullable|string',
+                'img'     => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'type'    => 'required|integer|exists:options,id',
+                'status'  => 'required|integer|exists:options,id',
+            ]);
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], 422);
+            }
+        } else {
+            $validator = Validator::make($request->all(), [
+                'title'   => 'required|string|max:255',
+                'content' => 'required|string',
+                'file'    => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+                'link'    => 'nullable|string|url',
+                'img'     => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'type'    => 'required|integer|exists:options,id',
+            ]);
+
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
         }
 
         DB::beginTransaction();
         try {
+            // For web requests, get pending status ID
+            $statusId = $request->status ?? null;
+            
+            if (!request()->is('api/*')) {
+                $pendingStatus = Option::where('value', 'pending')
+                    ->where('type', 'submission_status') // Changed from 'group' to 'type'
+                    ->first();
+                
+                if (!$pendingStatus) {
+                    if (request()->is('api/*')) {
+                        return response()->json(['message' => 'Status "pending" not found in options'], 500);
+                    }
+                    return redirect()->back()->with('error', 'Status "pending" not found in options.')->withInput();
+                }
+                
+                $statusId = $pendingStatus->id;
+            }
+
             $submission = Submission::create([
-                'title'            => $request->title,
-                'content'          => $request->content,
-                'file'             => null,
-                'link'             => $request->link,
-                'img'              => null,
-                'type'             => $request->type,
-                'status'           => $request->status,
-                'created_by'       => Auth::id(),
+                'title'      => $request->title,
+                'content'    => $request->content,
+                'file'       => null,
+                'link'       => $request->link,
+                'img'        => null,
+                'type'       => $request->type,
+                'status'     => $statusId,
+                'created_by' => Auth::id(),
             ]);
 
             $timestamp = now()->format('Ymd_His');
@@ -162,11 +227,54 @@ class SubmissionController extends Controller
             $submission->save();
             DB::commit();
 
-            return response()->json(['message' => 'Submission created successfully', 'data' => $submission], 201);
+            if (request()->is('api/*')) {
+                return response()->json(['message' => 'Submission created successfully', 'data' => $submission], 201);
+            }
+            
+            return redirect()->route('submissions.index')->with('success', 'Your submission has been sent for approval.');
         } catch (\Exception $e) {
             DB::rollback();
-            return response()->json(['message' => 'Error creating submission', 'error' => $e->getMessage()], 500);
+            
+            if (request()->is('api/*')) {
+                return response()->json(['message' => 'Error creating submission', 'error' => $e->getMessage()], 500);
+            }
+            
+            return redirect()->back()->with('error', 'Error creating submission: ' . $e->getMessage())->withInput();
         }
+    }
+
+    /**
+     * Display the specified resource.
+     * 
+     * @OA\Get(
+     *     path="/api/submissions/{id}",
+     *     summary="Get submission by ID",
+     *     tags={"Submissions"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Submission details"),
+     *     @OA\Response(response=404, description="Submission not found")
+     * )
+     */
+    public function show($id)
+    {
+        $submission = Submission::findOrFail($id);
+        
+        if (request()->is('api/*')) {
+            return response()->json(['data' => $submission]);
+        }
+        
+        // For web view - only allow creators to view their own submissions
+        if ($submission->created_by !== Auth::id()) {
+            return redirect()->route('submissions.index')->with('error', 'You do not have permission to view this submission.');
+        }
+        
+        return view('submission.show', compact('submission'));
     }
 
     /**
@@ -233,7 +341,6 @@ class SubmissionController extends Controller
                 'link'       => $request->link ?? $submission->link,
                 'type'       => $request->type ?? $submission->type,
                 'status'     => $request->status ?? $submission->status,
-                'created_by' => Auth::id(),
             ]);
 
             $timestamp = now()->format('Ymd_His');

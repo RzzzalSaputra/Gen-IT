@@ -11,7 +11,7 @@ class CreateSubmissionsTable extends Migration
         Schema::create('submissions', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->text('content');
+            $table->text('content')->nullable();
             $table->string('file')->nullable();
             $table->text('link')->nullable();
             $table->string('img')->nullable();

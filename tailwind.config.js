@@ -9,6 +9,13 @@ export default {
         './resources/views/**/*.blade.php',
     ],
 
+    safelist: [
+        'bg-green-500',
+        'hover:bg-green-400',
+        'shadow-green-900/30',
+        'border-green-400/30'
+    ],
+
     theme: {
         extend: {
             fontFamily: {
