@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\JobController;
 use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\SubmissionController;
 use App\Http\Controllers\Api\PostController;
+use App\Http\Controllers\PreviewController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -56,6 +57,12 @@ Route::get('/jobs/{id}', [JobController::class, 'show'])->name('jobs.show');
 // Added job by company route for web
 Route::get('/companies/{companyId}/jobs', [JobController::class, 'getJobsByCompany'])->name('companies.jobs');
 
+Route::get('/preview/{id}', [PreviewController::class, 'preview'])->name('preview.show');
+Route::get('/preview/view/{id}', [PreviewController::class, 'viewPreview'])->name('preview.view');
+
+// Add this to your routes/web.php file
+Route::get('/convert-docx/{id}', [App\Http\Controllers\PreviewController::class, 'convertDocxToPdf'])->name('convert.docx.pdf');
+Route::get('/serve-pdf/{id}', [App\Http\Controllers\PreviewController::class, 'servePdf'])->name('serve.pdf');
 
 Route::get('/dashboard', function () {
     return view('dashboard');

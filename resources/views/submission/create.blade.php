@@ -58,20 +58,22 @@
                             <select name="type" id="type" required
                                 class="w-full rounded-lg bg-gray-900/50 border border-gray-700 text-gray-200 px-4 py-2.5 focus:border-blue-500 focus:ring focus:ring-blue-500/30 focus:outline-none transition-colors duration-200">
                                 <option value="">Select a type</option>
-                                @foreach($types as $type)
-                                    <option value="{{ $type->id }}" {{ old('type') == $type->id ? 'selected' : '' }}>
-                                        {{ ucfirst($type->value) }}
-                                    </option>
-                                @endforeach
+                                <option value="1" data-type-value="document">Document</option>
+                                <option value="2" data-type-value="image">Image</option>
+                                <option value="3" data-type-value="video">Video</option>
+                                <option value="5" data-type-value="link">Link</option>
                             </select>
                             @error('type')
                                 <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
                             @enderror
                         </div>
 
+                        <!-- Hidden field to track real submission_type -->
+                        <input type="hidden" name="submission_type" id="submission_type" value="">
+
                         <!-- Upload File -->
-                        <div>
-                            <label for="file" class="block text-sm font-medium text-gray-300 mb-1">Upload Document (Optional)</label>
+                        <div id="fileUploadField" class="form-field" style="display: none;">
+                            <label for="file" class="block text-sm font-medium text-gray-300 mb-1">Upload Document</label>
                             <div class="mt-1 flex items-center">
                                 <label class="w-full flex items-center justify-center px-4 py-2.5 bg-gray-900/50 border border-dashed border-gray-600 rounded-lg cursor-pointer hover:border-blue-500 transition-colors duration-200">
                                     <svg class="w-6 h-6 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -87,8 +89,8 @@
                         </div>
 
                         <!-- Upload Image -->
-                        <div>
-                            <label for="img" class="block text-sm font-medium text-gray-300 mb-1">Upload Image (Optional)</label>
+                        <div id="imageUploadField" class="form-field" style="display: none;">
+                            <label for="img" class="block text-sm font-medium text-gray-300 mb-1">Upload Image</label>
                             <div class="mt-1 flex items-center">
                                 <label class="w-full flex items-center justify-center px-4 py-2.5 bg-gray-900/50 border border-dashed border-gray-600 rounded-lg cursor-pointer hover:border-blue-500 transition-colors duration-200">
                                     <svg class="w-6 h-6 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -104,8 +106,8 @@
                         </div>
 
                         <!-- Link -->
-                        <div>
-                            <label for="link" class="block text-sm font-medium text-gray-300 mb-1">External Link (Optional)</label>
+                        <div id="linkField" class="form-field" style="display: none;">
+                            <label for="link" class="block text-sm font-medium text-gray-300 mb-1">External Link</label>
                             <input type="url" name="link" id="link" value="{{ old('link') }}"
                                 class="w-full rounded-lg bg-gray-900/50 border border-gray-700 text-gray-200 px-4 py-2.5 focus:border-blue-500 focus:ring focus:ring-blue-500/30 focus:outline-none transition-colors duration-200"
                                 placeholder="https://example.com">
@@ -129,157 +131,323 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <script>
-        // File input change handlers
-        document.getElementById('file').onchange = function() {
-            document.getElementById('file-name').textContent = this.files.length > 0 ? this.files[0].name : 'Choose a file (PDF, DOC, DOCX)';
-            
-            // Check file type and size
-            if (this.files.length > 0) {
-                const file = this.files[0];
-                const validTypes = ['.pdf', '.doc', '.docx', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-                const isValidType = validTypes.some(type => {
-                    if (type.startsWith('.')) {
-                        return file.name.toLowerCase().endsWith(type);
-                    }
-                    return file.type === type;
-                });
-                
-                if (!isValidType) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Invalid File Type',
-                        text: 'Please upload a PDF, DOC, or DOCX file only.',
-                        confirmButtonColor: '#3085d6'
-                    });
-                    this.value = '';
-                    document.getElementById('file-name').textContent = 'Choose a file (PDF, DOC, DOCX)';
-                    return;
-                }
-                
-                // Check file size (max 5MB)
-                const maxSize = 5 * 1024 * 1024; // 5MB in bytes
-                if (file.size > maxSize) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'File Too Large',
-                        text: 'Document file size should not exceed 5MB.',
-                        confirmButtonColor: '#3085d6'
-                    });
-                    this.value = '';
-                    document.getElementById('file-name').textContent = 'Choose a file (PDF, DOC, DOCX)';
-                }
-            }
+    document.addEventListener('DOMContentLoaded', function() {
+        // Define field mapping - which fields show for which submission type
+        const fieldMapping = {
+            'document': ['fileUploadField'],
+            'image': ['imageUploadField'],
+            'video': ['linkField'],
+            'link': ['linkField']
         };
-
-        document.getElementById('img').onchange = function() {
-            document.getElementById('img-name').textContent = this.files.length > 0 ? this.files[0].name : 'Choose an image (JPEG, PNG, JPG, GIF)';
-            
-            // Check image type and size
-            if (this.files.length > 0) {
-                const file = this.files[0];
-                const validTypes = ['image/jpeg', 'image/png', 'image/gif', '.jpg', '.jpeg', '.png', '.gif'];
-                const isValidType = validTypes.some(type => {
-                    if (type.startsWith('.')) {
-                        return file.name.toLowerCase().endsWith(type);
-                    }
-                    return file.type === type;
-                });
-                
-                if (!isValidType) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Invalid Image Type',
-                        text: 'Please upload a JPEG, PNG, or GIF image only.',
-                        confirmButtonColor: '#3085d6'
-                    });
-                    this.value = '';
-                    document.getElementById('img-name').textContent = 'Choose an image (JPEG, PNG, JPG, GIF)';
-                    return;
-                }
-                
-                // Check image size (max 2MB)
-                const maxSize = 2 * 1024 * 1024; // 2MB in bytes
-                if (file.size > maxSize) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Image Too Large',
-                        text: 'Image file size should not exceed 2MB.',
-                        confirmButtonColor: '#3085d6'
-                    });
-                    this.value = '';
-                    document.getElementById('img-name').textContent = 'Choose an image (JPEG, PNG, JPG, GIF)';
-                }
-            }
-        };
-
-        // Form submission validation
-        document.getElementById('submissionForm').addEventListener('submit', function(event) {
-            let isValid = true;
-            let errorMessage = '';
-            
-            // Validate title
-            const title = document.getElementById('title').value.trim();
-            if (!title) {
-                isValid = false;
-                errorMessage = 'Please enter a title for your submission.';
-            }
-            
-            // Validate content
-            const content = document.getElementById('content').value.trim();
-            if (!content) {
-                isValid = false;
-                errorMessage = errorMessage ? errorMessage : 'Please enter content for your submission.';
-            } else if (content.length < 10) {
-                isValid = false;
-                errorMessage = 'Content is too short. Please provide more details.';
-            }
-            
-            // Validate submission type
-            const type = document.getElementById('type').value;
-            if (!type) {
-                isValid = false;
-                errorMessage = errorMessage ? errorMessage : 'Please select a submission type.';
-            }
-            
-            // Validate URL format if provided
-            const link = document.getElementById('link').value.trim();
-            if (link && !isValidUrl(link)) {
-                isValid = false;
-                errorMessage = 'Please enter a valid URL starting with http:// or https://';
-            }
-            
-            // Show error and prevent form submission if validation fails
-            if (!isValid) {
-                event.preventDefault();
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Validation Error',
-                    text: errorMessage,
-                    confirmButtonColor: '#3085d6'
-                });
-            } else {
-                // Show loading state
-                Swal.fire({
-                    title: 'Submitting...',
-                    text: 'Please wait while we process your submission',
-                    allowOutsideClick: false,
-                    allowEscapeKey: false,
-                    showConfirmButton: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
-            }
-        });
         
-        // URL validation helper function
-        function isValidUrl(url) {
-            try {
-                const parsedUrl = new URL(url);
-                return parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:';
-            } catch (error) {
-                return false;
+        const typeSelect = document.getElementById('type');
+        const allFormFields = document.querySelectorAll('.form-field');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        if (!submitBtn.textContent.trim()) {
+            submitBtn.textContent = 'Submit';
+        }
+
+        // Function to update visible form fields based on selected type
+        function updateVisibleFields() {
+            // First hide all fields
+            allFormFields.forEach(field => {
+                field.style.display = 'none';
+            });
+            
+            // Show fields based on selected type
+            const selectedOption = typeSelect.options[typeSelect.selectedIndex];
+            
+            if (selectedOption && selectedOption.value) {
+                const typeValue = selectedOption.getAttribute('data-type-value');
+                console.log('Selected type:', typeValue);
+                
+                if (typeValue && fieldMapping[typeValue]) {
+                    fieldMapping[typeValue].forEach(fieldId => {
+                        const field = document.getElementById(fieldId);
+                        if (field) {
+                            field.style.display = 'block';
+                            console.log('Showing field:', fieldId);
+                        } else {
+                            console.error('Field not found:', fieldId);
+                        }
+                    });
+                }
             }
         }
-    </script>
+        
+        // Add event listener to type select
+        typeSelect.addEventListener('change', updateVisibleFields);
+        
+        // Handle file upload UI
+        const fileInput = document.getElementById('file');
+        const fileNameLabel = document.getElementById('file-name');
+        if (fileInput && fileNameLabel) {
+            fileInput.addEventListener('change', function() {
+                fileNameLabel.textContent = this.files.length > 0 
+                    ? this.files[0].name 
+                    : 'Choose a file (PDF, DOC, DOCX)';
+                    
+                // File validation
+                if (this.files.length > 0) {
+                    const file = this.files[0];
+                    const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+                    const maxSize = 5 * 1024 * 1024; // 5MB
+                    
+                    if (!validTypes.includes(file.type)) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Invalid File Type',
+                            text: 'Please upload a PDF, DOC, or DOCX file only.',
+                            background: '#1f2937',
+                            color: '#f3f4f6',
+                            confirmButtonColor: '#3b82f6'
+                        });
+                        this.value = '';
+                        fileNameLabel.textContent = 'Choose a file (PDF, DOC, DOCX)';
+                    } else if (file.size > maxSize) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'File Too Large',
+                            text: 'Document file size should not exceed 5MB.',
+                            background: '#1f2937',
+                            color: '#f3f4f6',
+                            confirmButtonColor: '#3b82f6'
+                        });
+                        this.value = '';
+                        fileNameLabel.textContent = 'Choose a file (PDF, DOC, DOCX)';
+                    }
+                }
+            });
+        }
+        
+        // Handle image upload UI
+        const imgInput = document.getElementById('img');
+        const imgNameLabel = document.getElementById('img-name');
+        const imgPreviewContainer = document.createElement('div');
+        imgPreviewContainer.className = 'mt-3';
+        
+        if (imgInput && imgNameLabel) {
+            // Insert the preview container after the file input
+            if (imgInput.parentNode && imgInput.parentNode.parentNode) {
+                imgInput.parentNode.parentNode.appendChild(imgPreviewContainer);
+            }
+            
+            imgInput.addEventListener('change', function() {
+                imgNameLabel.textContent = this.files.length > 0 
+                    ? this.files[0].name 
+                    : 'Choose an image (JPEG, PNG, JPG, GIF)';
+                    
+                // Image validation and preview
+                if (this.files.length > 0) {
+                    const file = this.files[0];
+                    const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                    const maxSize = 2 * 1024 * 1024; // 2MB
+                    
+                    if (!validTypes.includes(file.type)) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Invalid Image Type',
+                            text: 'Please upload a JPEG, PNG, or GIF image only.',
+                            background: '#1f2937',
+                            color: '#f3f4f6',
+                            confirmButtonColor: '#3b82f6'
+                        });
+                        this.value = '';
+                        imgNameLabel.textContent = 'Choose an image (JPEG, PNG, JPG, GIF)';
+                        imgPreviewContainer.innerHTML = '';
+                    } else if (file.size > maxSize) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Image Too Large',
+                            text: 'Image file size should not exceed 2MB.',
+                            background: '#1f2937',
+                            color: '#f3f4f6',
+                            confirmButtonColor: '#3b82f6'
+                        });
+                        this.value = '';
+                        imgNameLabel.textContent = 'Choose an image (JPEG, PNG, JPG, GIF)';
+                        imgPreviewContainer.innerHTML = '';
+                    } else {
+                        // Show image preview
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            imgPreviewContainer.innerHTML = `
+                                <div class="relative mt-4 rounded-lg overflow-hidden border border-gray-700 shadow-lg">
+                                    <img src="${e.target.result}" alt="Image Preview" class="w-full max-h-64 object-contain bg-gray-900/50" />
+                                    <button type="button" class="absolute top-2 right-2 bg-red-500/80 hover:bg-red-600 text-white rounded-full p-1 transition-colors duration-200" onclick="removeImagePreview()">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            `;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                } else {
+                    imgPreviewContainer.innerHTML = '';
+                }
+            });
+        }
+        
+        // Function to remove image preview
+        window.removeImagePreview = function() {
+            imgInput.value = '';
+            imgNameLabel.textContent = 'Choose an image (JPEG, PNG, JPG, GIF)';
+            imgPreviewContainer.innerHTML = '';
+        };
+        
+        // Form validation
+        const form = document.getElementById('submissionForm');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault(); // Prevent default submission
+                
+                let valid = true;
+                let errorMessage = '';
+                
+                // Check title
+                const title = document.getElementById('title').value.trim();
+                if (!title) {
+                    valid = false;
+                    errorMessage = 'Title is required';
+                }
+                
+                // Check content
+                const content = document.getElementById('content').value.trim();
+                if (!content) {
+                    valid = false;
+                    errorMessage = errorMessage || 'Content is required';
+                }
+                
+                // Check type
+                if (!typeSelect.value) {
+                    valid = false;
+                    errorMessage = errorMessage || 'Please select a submission type';
+                }
+                
+                // Check visible field requirements based on type
+                const selectedOption = typeSelect.options[typeSelect.selectedIndex];
+                if (selectedOption && selectedOption.value) {
+                    const typeValue = selectedOption.getAttribute('data-type-value');
+                    
+                    // Link validation for video and link types
+                    if ((typeValue === 'video' || typeValue === 'link') && 
+                        document.getElementById('linkField').style.display !== 'none') {
+                        const link = document.getElementById('link').value.trim();
+                        if (!link) {
+                            valid = false;
+                            errorMessage = errorMessage || 'Please enter a valid link';
+                        } else {
+                            try {
+                                new URL(link);
+                            } catch (err) {
+                                valid = false;
+                                errorMessage = errorMessage || 'Please enter a valid URL including http:// or https://';
+                            }
+                        }
+                    }
+                    
+                    // File validation
+                    if (typeValue === 'document' && document.getElementById('file').files.length === 0) {
+                        valid = false;
+                        errorMessage = errorMessage || 'Please upload a document';
+                    }
+                    
+                    // Image validation
+                    if (typeValue === 'image' && document.getElementById('img').files.length === 0) {
+                        valid = false;
+                        errorMessage = errorMessage || 'Please upload an image';
+                    }
+                }
+                
+                if (!valid) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Validation Error',
+                        text: errorMessage,
+                        background: '#1f2937',
+                        color: '#f3f4f6',
+                        confirmButtonColor: '#3b82f6'
+                    });
+                } else {
+                    // Show confirmation dialog
+                    Swal.fire({
+                        title: 'Submit Confirmation',
+                        text: 'Are you sure you want to submit this content?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, submit it!',
+                        cancelButtonText: 'Cancel',
+                        background: '#1f2937',
+                        color: '#f3f4f6',
+                        confirmButtonColor: '#3b82f6',
+                        cancelButtonColor: '#4b5563',
+                        reverseButtons: true,
+                        focusCancel: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Show loading while form submits
+                            Swal.fire({
+                                title: 'Submitting...',
+                                html: 'Please wait while we process your submission.',
+                                allowOutsideClick: false,
+                                showConfirmButton: false,
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                },
+                                background: '#1f2937',
+                                color: '#f3f4f6'
+                            });
+                            
+                            // Set submission type before submitting
+                            setSubmissionType();
+                            form.submit();
+                        }
+                    });
+                }
+            });
+        }
+        
+        // Initialize form fields based on any existing selection
+        updateVisibleFields();
+        
+        // Function to determine and set submission type
+        function setSubmissionType() {
+            const selectedOption = typeSelect.options[typeSelect.selectedIndex];
+            const submissionTypeField = document.getElementById('submission_type');
+            
+            if (selectedOption && selectedOption.value) {
+                const typeValue = selectedOption.getAttribute('data-type-value');
+                
+                // Set submission_type based on selection according to the allowed values
+                if (typeValue === 'document' || typeValue === 'image') {
+                    submissionTypeField.value = 'file'; // For document or image uploads
+                } else if (typeValue === 'video') {
+                    submissionTypeField.value = 'video'; // For video links
+                } else {
+                    submissionTypeField.value = 'text'; // For external links and fallback
+                }
+            } else {
+                // Default to text if no selection
+                submissionTypeField.value = 'text';
+            }
+            console.log('Set submission_type to:', submissionTypeField.value);
+        }
+        
+        // Update submission type when type changes
+        typeSelect.addEventListener('change', function() {
+            updateVisibleFields();
+            setSubmissionType();
+        });
+        
+        // Initialize submission type if a type is already selected
+        if (typeSelect.value) {
+            setSubmissionType();
+        }
+        
+        console.log('Form setup complete');
+    });
+</script>
 </x-app-layout>

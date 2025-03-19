@@ -143,105 +143,98 @@ class SubmissionController extends Controller
      *     @OA\Response(response=500, description="Error creating submission")
      * )
      */
-    public function store(Request $request)
-    {
-        // Validate based on request type
-        if (request()->is('api/*')) {
-            $validator = Validator::make($request->all(), [
-                'title'   => 'required|string|max:255',
-                'content' => 'required|string',
-                'file'    => 'nullable|file|mimes:pdf,doc,docx|max:5120',
-                'link'    => 'nullable|string',
-                'img'     => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-                'type'    => 'required|integer|exists:options,id',
-                'status'  => 'required|integer|exists:options,id',
-            ]);
 
-            if ($validator->fails()) {
-                return response()->json(['errors' => $validator->errors()], 422);
-            }
-        } else {
-            $validator = Validator::make($request->all(), [
-                'title'   => 'required|string|max:255',
-                'content' => 'required|string',
-                'file'    => 'nullable|file|mimes:pdf,doc,docx|max:5120',
-                'link'    => 'nullable|string|url',
-                'img'     => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-                'type'    => 'required|integer|exists:options,id',
-            ]);
+/**
+ * Store a newly created resource in storage.
+ */
+public function store(Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        'title'   => 'required|string|max:255',
+        'content' => 'required|string',
+        'file'    => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+        'link'    => 'nullable|string|url',
+        'img'     => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'type'    => 'required|exists:options,id',
+    ]);
 
-            if ($validator->fails()) {
-                return redirect()->back()->withErrors($validator)->withInput();
-            }
-        }
-
-        DB::beginTransaction();
-        try {
-            // For web requests, get pending status ID
-            $statusId = $request->status ?? null;
-            
-            if (!request()->is('api/*')) {
-                $pendingStatus = Option::where('value', 'pending')
-                    ->where('type', 'submission_status') // Changed from 'group' to 'type'
-                    ->first();
-                
-                if (!$pendingStatus) {
-                    if (request()->is('api/*')) {
-                        return response()->json(['message' => 'Status "pending" not found in options'], 500);
-                    }
-                    return redirect()->back()->with('error', 'Status "pending" not found in options.')->withInput();
-                }
-                
-                $statusId = $pendingStatus->id;
-            }
-
-            $submission = Submission::create([
-                'title'      => $request->title,
-                'content'    => $request->content,
-                'file'       => null,
-                'link'       => $request->link,
-                'img'        => null,
-                'type'       => $request->type,
-                'status'     => $statusId,
-                'created_by' => Auth::id(),
-            ]);
-
-            $timestamp = now()->format('Ymd_His');
-
-            if ($request->hasFile('file')) {
-                $file = $request->file('file');
-                $ext = $file->getClientOriginalExtension();
-                $filename = "{$submission->id}_{$timestamp}.{$ext}";
-                $path = $file->storeAs('submissions/files', $filename, 'public');
-                $submission->file = '/storage/' . $path;
-            }
-
-            if ($request->hasFile('img')) {
-                $img = $request->file('img');
-                $imgExt = $img->getClientOriginalExtension();
-                $imgName = "{$submission->id}_{$timestamp}.{$imgExt}";
-                $imgPath = $img->storeAs('submissions/images', $imgName, 'public');
-                $submission->img = '/storage/' . $imgPath;
-            }
-
-            $submission->save();
-            DB::commit();
-
-            if (request()->is('api/*')) {
-                return response()->json(['message' => 'Submission created successfully', 'data' => $submission], 201);
-            }
-            
-            return redirect()->route('submissions.index')->with('success', 'Your submission has been sent for approval.');
-        } catch (\Exception $e) {
-            DB::rollback();
-            
-            if (request()->is('api/*')) {
-                return response()->json(['message' => 'Error creating submission', 'error' => $e->getMessage()], 500);
-            }
-            
-            return redirect()->back()->with('error', 'Error creating submission: ' . $e->getMessage())->withInput();
-        }
+    if ($validator->fails()) {
+        return redirect()->back()->withErrors($validator)->withInput();
     }
+
+    DB::beginTransaction();
+    try {
+        // Get the submission type option based on what was uploaded
+        $submissionType = null;
+        
+        if ($request->hasFile('file') || $request->hasFile('img')) {
+            // If document or image is uploaded, use 'file' type
+            $submissionType = Option::where('type', 'submission_type')
+                ->where('value', 'file')
+                ->first();
+        } else if ($request->filled('link') && str_contains(strtolower($request->link), 'youtube')) {
+            // If it's a YouTube link, use 'video' type
+            $submissionType = Option::where('type', 'submission_type')
+                ->where('value', 'video')
+                ->first();
+        } else {
+            // Otherwise use 'text' type
+            $submissionType = Option::where('type', 'submission_type')
+                ->where('value', 'text')
+                ->first();
+        }
+        
+        if (!$submissionType) {
+            return redirect()->back()->with('error', 'Submission type not found in options.')->withInput();
+        }
+
+        // Get pending status
+        $pendingStatus = Option::where('value', 'pending')
+            ->where('type', 'submission_status')
+            ->first();
+        
+        if (!$pendingStatus) {
+            return redirect()->back()->with('error', 'Status "pending" not found in options.')->withInput();
+        }
+
+        $submission = Submission::create([
+            'title'      => $request->title,
+            'content'    => $request->content,
+            'file'       => null,
+            'link'       => $request->link,
+            'img'        => null,
+            'type'       => $submissionType->id, // Use the determined submission type
+            'status'     => $pendingStatus->id,
+            'created_by' => Auth::id(),
+        ]);
+
+        $timestamp = now()->format('Ymd_His');
+
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $ext = $file->getClientOriginalExtension();
+            $filename = "{$submission->id}_{$timestamp}.{$ext}";
+            $path = $file->storeAs('submissions/files', $filename, 'public');
+            $submission->file = '/storage/' . $path;
+        }
+
+        if ($request->hasFile('img')) {
+            $img = $request->file('img');
+            $imgExt = $img->getClientOriginalExtension();
+            $imgName = "{$submission->id}_{$timestamp}.{$imgExt}";
+            $imgPath = $img->storeAs('submissions/images', $imgName, 'public');
+            $submission->img = '/storage/' . $imgPath;
+        }
+
+        $submission->save();
+        DB::commit();
+        
+        return redirect()->route('submissions.index')->with('success', 'Your submission has been sent for approval.');
+    } catch (\Exception $e) {
+        DB::rollback();
+        return redirect()->back()->with('error', 'Error creating submission: ' . $e->getMessage())->withInput();
+    }
+}
 
     /**
      * Display the specified resource.
