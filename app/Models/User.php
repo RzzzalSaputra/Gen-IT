@@ -2,16 +2,16 @@
 
 namespace App\Models;
 
-
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-
-
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
     use HasFactory, Notifiable, SoftDeletes;
 
@@ -37,15 +37,32 @@ class User extends Authenticatable
         'birthdate' => 'date',
     ];
 
+    // Implementing the required method from FilamentUser interface
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function getNameAttribute()
+    {
+        return $this->user_name;
+    }
+
+
     // Relationships
-    public function contactResponses()
+    public function contactResponses(): HasMany
     {
         return $this->hasMany(Contact::class, 'respond_by');
     }
 
-    public function contactCreated()
+    public function contactCreated(): HasMany
     {
         return $this->hasMany(Contact::class, 'created_by');
+    }
+
+    public function roleOption(): BelongsTo
+    {
+        return $this->belongsTo(Option::class, 'role', 'id')->withDefault();
     }
 
     // Scope for admin users
@@ -55,13 +72,8 @@ class User extends Authenticatable
     }
 
     // Check if user is admin
-    public function isAdmin()
+    public function isAdmin(): bool
     {
         return $this->role === 'admin';
-    }
-
-    public function roleOption(): BelongsTo
-    {
-        return $this->belongsTo(Option::class, 'role', 'id');
     }
 }

@@ -147,9 +147,7 @@ class DatabaseSeeder extends Seeder
      * Seed the users table.
      */
     private function seedUsers(): void
-    {
-        // Get user role from options
-        $roleUser = Option::where('type', 'user_role')->where('value', 'user')->first();
+    {        
         
         // Create users
         $users = [
@@ -161,7 +159,7 @@ class DatabaseSeeder extends Seeder
                 'password' => Hash::make('password123'),
                 'phone' => '081234567890',
                 'birthdate' => '2000-05-05',
-                'role' => $roleUser->id,
+                'role' => 'user',
             ],
             [
                 'user_name' => 'NinoNakano',
@@ -171,7 +169,7 @@ class DatabaseSeeder extends Seeder
                 'password' => Hash::make('password123'),
                 'phone' => '081234567891',
                 'birthdate' => '2000-05-05',
-                'role' => $roleUser->id,
+                'role' => 'user',
             ],
             [
                 'user_name' => 'MikuNakano',
@@ -181,7 +179,7 @@ class DatabaseSeeder extends Seeder
                 'password' => Hash::make('password123'),
                 'phone' => '081234567892',
                 'birthdate' => '2000-05-05',
-                'role' => $roleUser->id,
+                'role' => 'user',
             ],
             [
                 'user_name' => 'YotsubaNakano',
@@ -191,17 +189,17 @@ class DatabaseSeeder extends Seeder
                 'password' => Hash::make('password123'),
                 'phone' => '081234567893',
                 'birthdate' => '2000-05-05',
-                'role' => $roleUser->id,
+                'role' => 'user',
             ],
             [
                 'user_name' => 'ItsukiNakano',
                 'first_name' => 'Itsuki',
                 'last_name' => 'Nakano',
                 'email' => 'itsuki@example.com',
-                'password' => Hash::make('Password123!'),
+                'password' => Hash::make('manis123'),
                 'phone' => '081234567894',
                 'birthdate' => '2000-05-05',
-                'role' => 3,
+                'role' => 'admin',
             ],
         ];
 
