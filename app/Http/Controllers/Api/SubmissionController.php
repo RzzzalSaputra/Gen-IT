@@ -451,4 +451,75 @@ public function store(Request $request)
             return response()->json(['message' => 'Error deleting submission', 'error' => $e->getMessage()], 500);
         }
     }
+
+    public function publicIndex(Request $request)
+    {
+        $query = Submission::whereHas('statusOption', function ($query) {
+            $query->where('value', 'accepted');
+        });
+        
+        // Handle search functionality
+        if ($request->has('search') && !empty($request->search)) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%$search%")
+                  ->orWhere('content', 'like', "%$search%");
+            });
+        }
+
+        $submissions = $query->orderBy('created_at', 'desc')
+                            ->paginate(10);
+
+        // Process submissions to add file preview information
+        foreach ($submissions as $submission) {
+            // Check if submission has a file
+            if ($submission->file) {
+                $fileExtension = strtolower(pathinfo($submission->file, PATHINFO_EXTENSION));
+                
+                // Determine if file is previewable
+                $submission->filePreviewable = in_array($fileExtension, ['pdf', 'doc', 'docx']);
+                
+                // Add file extension info for UI display
+                $submission->fileExtension = strtoupper($fileExtension);
+                $submission->fileName = basename($submission->file);
+                
+                // Add file type category for display logic
+                if (in_array($fileExtension, ['pdf'])) {
+                    $submission->fileType = 'pdf';
+                } elseif (in_array($fileExtension, ['doc', 'docx'])) {
+                    $submission->fileType = 'word';
+                } else {
+                    $submission->fileType = 'other';
+                }
+            }
+            
+            // Check if submission has a YouTube video link
+            if ($submission->link && str_contains(strtolower($submission->link), 'youtube')) {
+                if (preg_match('/(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/', $submission->link, $match)) {
+                    $submission->videoId = $match[1];
+                }
+            }
+            
+            // Set default icon for submissions without image
+            if (!$submission->img) {
+                // Determine placeholder icon based on submission type
+                if ($submission->file) {
+                    $fileExtension = strtolower(pathinfo($submission->file, PATHINFO_EXTENSION));
+                    if (in_array($fileExtension, ['pdf'])) {
+                        $submission->placeholderIcon = 'document-pdf';
+                    } elseif (in_array($fileExtension, ['doc', 'docx'])) {
+                        $submission->placeholderIcon = 'document-word';
+                    } else {
+                        $submission->placeholderIcon = 'document-generic';
+                    }
+                } elseif ($submission->link && isset($submission->videoId)) {
+                    $submission->placeholderIcon = 'video';
+                } else {
+                    $submission->placeholderIcon = 'text';
+                }
+            }
+        }
+
+        return view('submission.public', compact('submissions'));
+    }
 }

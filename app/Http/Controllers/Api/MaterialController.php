@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use App\Models\Material;
-
+use App\Models\Activity;
 
 class MaterialController extends Controller
 {
@@ -381,6 +381,17 @@ class MaterialController extends Controller
         
         // Increment read counter
         $material->increment('read_counter');
+        
+        // Record view activity if user is logged in
+        if (Auth::check()) {
+            Activity::create([
+                'user_id' => Auth::id(),
+                'type' => 'view',
+                'description' => 'Viewed material: ' . $material->title,
+                'subject_type' => 'App\Models\Material',
+                'subject_id' => $material->id
+            ]);
+        }
         
         // If this is an API request
         if (request()->is('api/*')) {

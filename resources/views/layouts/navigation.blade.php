@@ -15,13 +15,13 @@
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:ms-10 sm:flex items-center">
                     <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'text-blue-400' : 'text-white hover:text-blue-300' }} px-3 py-2 text-sm font-medium transition-colors duration-200">
-                        {{ __('Home') }}
+                        {{ __('Beranda') }}
                     </a>
                     
-                    <!-- Learning Resources Dropdown -->
+                    <!-- Pembelajaran Dropdown -->
                     <div class="relative" x-data="{ open: false }">
                         <button @click="open = !open" class="{{ request()->routeIs('materials.index') || request()->routeIs('articles.index') || request()->routeIs('schools.index') ? 'text-blue-400' : 'text-white hover:text-blue-300' }} px-3 py-2 text-sm font-medium transition-colors duration-200 flex items-center">
-                            {{ __('Learning') }}
+                            {{ __('Pembelajaran') }}
                             <svg class="ml-1 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                             </svg>
@@ -38,21 +38,21 @@
                              class="absolute mt-2 w-48 rounded-md shadow-lg py-1 bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none"
                              style="display: none;">
                             <a href="{{ url('/materials=text') }}" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-700">
-                                {{ __('Materials') }}
+                                {{ __('Materi') }}
                             </a>
                             <a href="{{ route('articles.index') }}" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-700">
-                                {{ __('Articles') }}
+                                {{ __('Artikel') }}
                             </a>
                             <a href="{{ route('schools.index', ['active' => 1]) }}" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-700">
-                                {{ __('Schools') }}
+                                {{ __('Sekolah') }}
                             </a>
                         </div>
                     </div>
                     
-                    <!-- Career Dropdown -->
+                    <!-- Karir Dropdown -->
                     <div class="relative" x-data="{ open: false }">
                         <button @click="open = !open" class="{{ request()->routeIs('companies.index') || request()->routeIs('jobs.index') ? 'text-blue-400' : 'text-white hover:text-blue-300' }} px-3 py-2 text-sm font-medium transition-colors duration-200 flex items-center">
-                            {{ __('Career') }}
+                            {{ __('Karir') }}
                             <svg class="ml-1 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                             </svg>
@@ -69,18 +69,18 @@
                              class="absolute mt-2 w-48 rounded-md shadow-lg py-1 bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none"
                              style="display: none;">
                             <a href="{{ route('companies.index', ['active' => 1]) }}" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-700">
-                                {{ __('Companies') }}
+                                {{ __('Perusahaan') }}
                             </a>
                             <a href="{{ route('jobs.index', ['active' => 1]) }}" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-700">
-                                {{ __('Jobs') }}
+                                {{ __('Lowongan') }}
                             </a>
                         </div>
                     </div>
                     
-                    <!-- Community Dropdown -->
+                    <!-- Komunitas Dropdown -->
                     <div class="relative" x-data="{ open: false }">
-                        <button @click="open = !open" class="{{ request()->routeIs('gallery.index') || request()->is('posts*') || request()->routeIs('contacts.*') ? 'text-blue-400' : 'text-white hover:text-blue-300' }} px-3 py-2 text-sm font-medium transition-colors duration-200 flex items-center">
-                            {{ __('Community') }}
+                        <button @click="open = !open" class="{{ request()->routeIs('gallery.index') || request()->is('posts*') || request()->is('vicons*') || request()->routeIs('submissions.public') ? 'text-blue-400' : 'text-white hover:text-blue-300' }} px-3 py-2 text-sm font-medium transition-colors duration-200 flex items-center">
+                            {{ __('Komunitas') }}
                             <svg class="ml-1 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                             </svg>
@@ -96,20 +96,25 @@
                              x-transition:leave-end="transform opacity-0 scale-95"
                              class="absolute mt-2 w-48 rounded-md shadow-lg py-1 bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none"
                              style="display: none;">
-                            <a href="{{ url('/gallery?type=7') }}" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-700">
-                                {{ __('Gallery') }}
-                            </a>
                             <a href="{{ route('posts.index') }}" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-700">
-                                {{ __('Posts') }}
+                                {{ __('Postingan') }}
                             </a>
-                            <a href="{{ route('contacts.index') }}" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-700">
-                                {{ __('Contact Us') }}
+                            <a href="{{ url('/gallery?type=7') }}" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-700">
+                                {{ __('Galeri') }}
                             </a>
                             <a href="{{ route('vicons.index') }}" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-700">
-                                {{ __('Video Conference') }}
+                                {{ __('Konferensi Video') }}
+                            </a>
+                            <a href="{{ route('submissions.public') }}" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-700">
+                                {{ __('Submission Komunitas') }}
                             </a>
                         </div>
                     </div>
+                    
+                    <!-- Hubungi Kami -->
+                    <a href="{{ route('contacts.index') }}" class="{{ request()->routeIs('contacts.*') ? 'text-blue-400' : 'text-white hover:text-blue-300' }} px-3 py-2 text-sm font-medium transition-colors duration-200">
+                        {{ __('Hubungi Kami') }}
+                    </a>
                 </div>
             </div>
 
@@ -118,7 +123,7 @@
                 @auth
                 <!-- Submission Link (Only visible when logged in) -->
                 <a href="{{ route('submissions.index') }}" class="{{ request()->routeIs('submissions.index') ? 'text-blue-400' : 'text-white hover:text-blue-300' }} px-3 py-2 text-sm font-medium transition-colors duration-200 mr-4">
-                    {{ __('Submissions') }}
+                    {{ __('Submission') }}
                 </a>
                 
                 <div class="relative" x-data="{ open: false }">
@@ -143,23 +148,23 @@
                         class="absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none"
                         style="display: none;">
                         <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-700">
-                            {{ __('Profile') }}
+                            {{ __('Profil') }}
                         </a>
 
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit" class="w-full text-left block px-4 py-2 text-sm text-gray-200 hover:bg-gray-700">
-                                {{ __('Log Out') }}
+                                {{ __('Keluar') }}
                             </button>
                         </form>
                     </div>
                 </div>
                 @else
                 <div class="space-x-4">
-                    <a href="{{ route('login') }}" class="text-sm text-white hover:text-blue-300 transition-colors">Log in</a>
+                    <a href="{{ route('login') }}" class="text-sm text-white hover:text-blue-300 transition-colors">Masuk</a>
                     @if (Route::has('register'))
-                        <a href="{{ route('register') }}" class="ml-4 text-sm bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors">Register</a>
+                        <a href="{{ route('register') }}" class="ml-4 text-sm bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors">Daftar</a>
                     @endif
                 </div>
                 @endauth
@@ -181,26 +186,26 @@
     <div :class="{'block': open, 'hidden': !open}" class="hidden sm:hidden bg-gray-800/90 backdrop-blur-lg">
         <div class="pt-2 pb-3 space-y-1">
             <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'bg-gray-700 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }} block px-3 py-2 text-base font-medium">
-                {{ __('Home') }}
+                {{ __('Beranda') }}
             </a>
             
             <!-- Learning Section for Mobile -->
             <div x-data="{ openLearning: false }">
                 <button @click="openLearning = !openLearning" class="text-gray-300 hover:bg-gray-700 hover:text-white w-full text-left flex justify-between items-center px-3 py-2 text-base font-medium">
-                    {{ __('Learning') }}
+                    {{ __('Pembelajaran') }}
                     <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                     </svg>
                 </button>
                 <div x-show="openLearning" class="pl-4 bg-gray-700/50">
                     <a href="{{ url('/materials=text') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
-                        {{ __('Materials') }}
+                        {{ __('Materi') }}
                     </a>
                     <a href="{{ route('articles.index') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
-                        {{ __('Articles') }}
+                        {{ __('Artikel') }}
                     </a>
                     <a href="{{ route('schools.index', ['active' => 1]) }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
-                        {{ __('Schools') }}
+                        {{ __('Sekolah') }}
                     </a>
                 </div>
             </div>
@@ -208,17 +213,17 @@
             <!-- Career Section for Mobile -->
             <div x-data="{ openCareer: false }">
                 <button @click="openCareer = !openCareer" class="text-gray-300 hover:bg-gray-700 hover:text-white w-full text-left flex justify-between items-center px-3 py-2 text-base font-medium">
-                    {{ __('Career') }}
+                    {{ __('Karir') }}
                     <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                     </svg>
                 </button>
                 <div x-show="openCareer" class="pl-4 bg-gray-700/50">
                     <a href="{{ route('companies.index', ['active' => 1]) }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
-                        {{ __('Companies') }}
+                        {{ __('Perusahaan') }}
                     </a>
                     <a href="{{ route('jobs.index', ['active' => 1]) }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
-                        {{ __('Jobs') }}
+                        {{ __('Lowongan') }}
                     </a>
                 </div>
             </div>
@@ -226,31 +231,36 @@
             <!-- Community Section for Mobile -->
             <div x-data="{ openCommunity: false }">
                 <button @click="openCommunity = !openCommunity" class="text-gray-300 hover:bg-gray-700 hover:text-white w-full text-left flex justify-between items-center px-3 py-2 text-base font-medium">
-                    {{ __('Community') }}
+                    {{ __('Komunitas') }}
                     <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                     </svg>
                 </button>
                 <div x-show="openCommunity" class="pl-4 bg-gray-700/50">
-                    <a href="{{ url('/gallery?type=7') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
-                        {{ __('Gallery') }}
-                    </a>
                     <a href="{{ route('posts.index') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
-                        {{ __('Posts') }}
+                        {{ __('Postingan') }}
                     </a>
-                    <a href="{{ route('contacts.index') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
-                        {{ __('Contact Us') }}
+                    <a href="{{ url('/gallery?type=7') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
+                        {{ __('Galeri') }}
                     </a>
                     <a href="{{ route('vicons.index') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
-                        {{ __('Video Conference') }}
+                        {{ __('Konferensi Video') }}
+                    </a>
+                    <a href="{{ route('submissions.public') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
+                        {{ __('Pengajuan Publik') }}
                     </a>
                 </div>
             </div>
             
+            <!-- Hubungi Kami (moved outside of dropdown for mobile) -->
+            <a href="{{ route('contacts.index') }}" class="{{ request()->routeIs('contacts.*') ? 'bg-gray-700 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }} block px-3 py-2 text-base font-medium">
+                {{ __('Hubungi Kami') }}
+            </a>
+            
             <!-- Submissions link (only for authenticated users) -->
             @auth
             <a href="{{ route('submissions.index') }}" class="{{ request()->routeIs('submissions.index') ? 'bg-gray-700 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }} block px-3 py-2 text-base font-medium">
-                {{ __('Submissions') }}
+                {{ __('Submission') }}
             </a>
             @endauth
         </div>
@@ -271,12 +281,12 @@
             </div>
             <div class="mt-3 space-y-1 px-2">
                 <a href="{{ route('profile.edit') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
-                    {{ __('Profile') }}
+                    {{ __('Profil') }}
                 </a>
                 <form method="POST" action="{{ route('logout') }}" class="w-full">
                     @csrf
                     <button type="submit" class="w-full text-left block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
-                        {{ __('Log Out') }}
+                        {{ __('Keluar') }}
                     </button>
                 </form>
             </div>
@@ -284,11 +294,11 @@
         @else
         <div class="pt-4 pb-3 border-t border-gray-700 px-5 space-y-3">
             <a href="{{ route('login') }}" class="block text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2">
-                {{ __('Log In') }}
+                {{ __('Masuk') }}
             </a>
             @if (Route::has('register'))
                 <a href="{{ route('register') }}" class="block text-base font-medium text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded-md">
-                    {{ __('Register') }}
+                    {{ __('Daftar') }}
                 </a>
             @endif
         </div>

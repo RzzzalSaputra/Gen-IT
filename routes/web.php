@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\SubmissionController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\PreviewController;
+use App\Http\Controllers\DashboardController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -64,9 +65,7 @@ Route::get('/preview/view/{id}', [PreviewController::class, 'viewPreview'])->nam
 Route::get('/convert-docx/{id}', [App\Http\Controllers\PreviewController::class, 'convertDocxToPdf'])->name('convert.docx.pdf');
 Route::get('/serve-pdf/{id}', [App\Http\Controllers\PreviewController::class, 'servePdf'])->name('serve.pdf');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -77,10 +76,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/contacts', [ContactController::class, 'index'])->name('contacts.index');
     Route::get('/contact/create', [ContactController::class, 'create'])->name('contacts.create');
     Route::post('/contact', [ContactController::class, 'store'])->name('contacts.store');
+    
     // Submission routes
     Route::get('/submissions', [SubmissionController::class, 'index'])->name('submissions.index');
     Route::get('/submissions/create', [SubmissionController::class, 'create'])->name('submissions.create');
     Route::post('/submissions', [SubmissionController::class, 'store'])->name('submissions.store');
+    
+    // Move this route before the {id} route to avoid conflicts
+    Route::get('/submissions/public', [SubmissionController::class, 'publicIndex'])->name('submissions.public');
+    
+    // This should come after the /public route
     Route::get('/submissions/{id}', [SubmissionController::class, 'show'])->name('submissions.show');
 });
 
