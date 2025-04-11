@@ -32,11 +32,24 @@ class ViconResource extends Resource
                     ->label('Description')
                     ->required(),
 
-                Forms\Components\FileUpload::make('img')
-                    ->label('Image')
-                    ->image()
-                    ->nullable()
-                    ->directory('vicons/images'),
+            Forms\Components\FileUpload::make('img')
+                ->label('Thumbnail Image')
+                ->image()
+                ->directory('vicon/images')
+                ->visibility('public')
+                ->nullable()
+                ->getUploadedFileNameForStorageUsing(function ($file) {
+                    $timestamp = now()->format('Ymd_His');
+                    $random = mt_rand(100, 999);
+                    return "{$random}_{$timestamp}.{$file->getClientOriginalExtension()}";
+                })
+                ->deleteUploadedFileUsing(function ($record) {
+                    $filePath = storage_path('app/public/' . $record?->img);
+
+                    if (file_exists($filePath)) {
+                        unlink($filePath);
+                    }
+                }),
 
                 Forms\Components\DateTimePicker::make('time')
                     ->label('Scheduled Time')
@@ -47,16 +60,29 @@ class ViconResource extends Resource
                     ->url()
                     ->required(),
 
-                Forms\Components\FileUpload::make('download')
-                    ->label('Downloadable File')
-                    ->nullable()
-                    ->directory('vicons/files'),
+            Forms\Components\FileUpload::make('file')
+                ->label('File (PDF, DOC, etc.)')
+                ->nullable()
+                ->directory('vicon/files')
+                ->visibility('public')
+                ->getUploadedFileNameForStorageUsing(function ($file) {
+                    $timestamp = now()->format('Ymd_His');
+                    $random = mt_rand(100, 999);
+                    return "{$random}_{$timestamp}.{$file->getClientOriginalExtension()}";
+                })
+                ->deleteUploadedFileUsing(function ($record) {
+                    $filePath = storage_path('app/public/' . $record?->file);
+                    if (file_exists($filePath)) {
+                        unlink($filePath);
+                    }
+                }),
 
-                Forms\Components\Select::make('created_by')
-                    ->label('Created By')
-                    ->default(Auth::id())
+
+            Forms\Components\Hidden::make('created_by')
+                    ->default(fn() => Auth::id())
                     ->required(),
-            ]);
+
+        ]);
     }
 
     public static function table(Table $table): Table

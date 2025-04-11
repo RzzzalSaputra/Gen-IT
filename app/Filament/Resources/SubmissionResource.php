@@ -42,6 +42,9 @@ class SubmissionResource extends Resource
                     ->disabled(fn(?Submission $record) => $record !== null)
                     ->hint(fn(?Submission $record) => $record ? 'File tidak bisa diubah setelah dibuat' : null),
 
+                Forms\Components\View::make('components.file-preview-button')
+                    ->visible(fn($get) => filled($get('file'))),
+
                 Forms\Components\TextInput::make('link')
                     ->label('External Link')
                     ->url()
@@ -98,9 +101,8 @@ class SubmissionResource extends Resource
                     ->label('File')
                     ->formatStateUsing(function ($state) {
                         if (!$state) return '-';
-                        $cleanPath = ltrim(str_replace('storage/', '', $state), '/');
-                        $url = asset('storage/' . $cleanPath);
-                        return "<a href=\"{$url}\" target=\"_blank\" class=\"text-primary underline\">Watch</a>";
+                        $url = asset('storage/' . ltrim($state, '/'));
+                        return "<a href=\"{$url}\" target=\"_blank\" class=\"text-primary underline\">📄</a>";
                     })
                     ->html()
                     ->sortable(),
@@ -108,12 +110,12 @@ class SubmissionResource extends Resource
                 Tables\Columns\TextColumn::make('type')
                     ->label('Type')
                     ->sortable()
-                    ->formatStateUsing(fn($state) => Option::find($state)?->value),
+                    ->formatStateUsing(fn($state) => Option::find($state)?->value ?? '-'),
 
                 Tables\Columns\TextColumn::make('status')
                     ->label('Status')
                     ->sortable()
-                    ->formatStateUsing(fn($state) => Option::find($state)?->value),
+                    ->formatStateUsing(fn($state) => Option::find($state)?->value ?? '-'),
 
                 Tables\Columns\TextColumn::make('approve_by')
                     ->label('Approved By')
