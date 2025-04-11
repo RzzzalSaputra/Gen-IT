@@ -20,18 +20,27 @@
                             $dueDate = \Carbon\Carbon::parse($assignment->due_date);
                             $isOverdue = $now->isAfter($dueDate);
                             
-                            // Correct the submission variable - get from classroom_submission
-                            $submission = $assignment->classroom_submission ?? $assignment->submission ?? null;
+                            // Ensure we're getting the correct submission - fixed retrieval logic
+                            if (isset($assignment->classroom_submission)) {
+                                $submission = $assignment->classroom_submission;
+                            } elseif (isset($assignment->submission)) {
+                                $submission = $assignment->submission;
+                            } elseif (isset($assignment->submissions) && $assignment->submissions->count() > 0) {
+                                // If there's a submissions collection, get the authenticated user's submission
+                                $submission = $assignment->submissions->where('user_id', auth()->id())->first();
+                            } else {
+                                $submission = null;
+                            }
                             
                             if($submission) {
                                 if($submission->graded) {
                                     $statusClass = "bg-green-900/30 text-green-300 border-green-500/30";
-                                    $statusText = "Graded: {$submission->grade}/100";
+                                    $statusText = "Graded";
                                     $statusIcon = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />';
                                 } else {
                                     $statusClass = "bg-blue-900/30 text-blue-300 border-blue-500/30";
                                     $statusText = "Submitted";
-                                    $statusIcon = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m-6-8h6M5 5a2 2 0 00-2 2v12a2 2 0 002 2h14a2 2 0 002-2V7a2 2 0 00-2-2H5z" />';
+                                    $statusIcon = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />';
                                 }
                             } elseif($isOverdue) {
                                 $statusClass = "bg-red-900/30 text-red-300 border-red-500/30";
@@ -108,117 +117,171 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                             </svg>
                             Your Submission
-                        </h2>
+                        </h2>e
 
                         @if($submission)
-                            <!-- Existing Submission Display -->
-                            <div class="mb-6 bg-gray-900/40 rounded-lg p-5 border border-gray-700/50">
-                                <div class="flex items-center justify-between mb-4">
-                                    <div class="flex items-center">
-                                        <div class="bg-blue-900/40 p-2 rounded-lg mr-3">
-                                            <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                            </svg>
-                                        </div>
-                                        <div>
-                                            <h4 class="font-medium text-white">Submitted {{ $submission->created_at->format('M d, Y, h:i A') }}</h4>
-                                            <p class="text-sm text-gray-400">{{ $submission->file ? basename($submission->file) : 'No file attached' }}</p>
-                                        </div>
+                            <!-- Shows existing submission details -->
+                            <div id="submission-display" class="mb-6 bg-gray-900/40 rounded-lg p-5 border border-gray-700/50">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <p class="text-gray-300">Submitted: {{ Carbon\Carbon::parse($submission->submitted_at)->format('M d, Y, h:i A') }}</p>
+                                        @if($submission->graded)
+                                            <p class="text-green-400 mt-1 flex items-center">
+                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                                Grade: {{ $submission->grade }}/{{ $assignment->max_points ?? 100 }}
+                                            </p>
+                                            <p class="text-xs text-gray-400 mt-1">Graded submissions cannot be edited</p>
+                                        @else
+                                            <p class="text-yellow-400 mt-1">Not graded yet</p>
+                                        @endif
                                     </div>
                                     
-                                    @if($submission->file)
-                                        <a href="{{ route('student.classrooms.assignments.submissions.download', ['classroom_id' => $classroom->id, 'assignment_id' => $assignment->id, 'id' => $submission->id]) }}" class="bg-blue-700 hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg transition-colors duration-200 text-sm">
-                                            Download
-                                        </a>
+                                    @if(!$isOverdue && !$submission->graded)
+                                    <button type="button" id="edit-submission-btn" class="px-3 py-1 bg-blue-600/70 hover:bg-blue-500/70 text-white text-sm rounded-lg transition-colors duration-200">
+                                        <div class="flex items-center">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                            </svg>
+                                            Edit Submission
+                                        </div>
+                                    </button>
+                                    @elseif($isOverdue)
+                                    <div class="px-3 py-1 bg-red-900/30 text-red-300 text-sm rounded-lg border border-red-700/50">
+                                        <div class="flex items-center">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            Overdue
+                                        </div>
+                                    </div>
                                     @endif
                                 </div>
                                 
                                 @if($submission->content)
-                                    <div class="bg-gray-900/60 rounded-lg p-4 mb-4 text-gray-300">
-                                        {!! $submission->content !!}
+                                    <div class="bg-gray-900/30 rounded-lg p-4 mb-4">
+                                        <h4 class="text-white text-sm font-medium mb-2">Your Notes:</h4>
+                                        <p class="text-gray-300">{{ $submission->content }}</p>
                                     </div>
                                 @endif
                                 
-                                @if($submission->graded)
-                                    <div class="mt-6 border-t border-gray-700/50 pt-4">
-                                        <h4 class="text-lg font-medium text-white mb-2 flex items-center">
-                                            <svg class="w-5 h-5 mr-2 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                @if($submission->file)
+                                    <div class="bg-gray-900/30 rounded-lg p-4">
+                                        <h4 class="text-white text-sm font-medium mb-2">Your File:</h4>
+                                        <div class="flex items-center">
+                                            <svg class="w-5 h-5 text-blue-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                             </svg>
-                                            Graded
-                                        </h4>
-                                        <div class="flex justify-between items-center mb-2">
-                                            <span class="text-gray-400">Score:</span>
-                                            <span class="text-lg font-bold text-green-400">{{ $submission->grade }}/{{ $assignment->max_points ?? 100 }}</span>
+                                            <span class="text-gray-300">{{ basename($submission->file) }}</span>
+                                            <a href="{{ route('student.classrooms.assignments.submissions.download', ['classroom_id' => $classroom->id, 'assignment_id' => $assignment->id, 'id' => $submission->id]) }}" class="ml-auto text-blue-400 hover:text-blue-300">
+                                                Download
+                                            </a>
                                         </div>
-                                        
-                                        @if($submission->feedback)
-                                            <div class="mt-4">
-                                                <h5 class="text-gray-300 font-medium mb-2">Feedback:</h5>
-                                                <div class="bg-gray-900/60 rounded-lg p-4 text-gray-300">
-                                                    {!! $submission->feedback !!}
-                                                </div>
-                                            </div>
-                                        @endif
                                     </div>
                                 @endif
                             </div>
-                        @else
-                            <!-- No Submission Yet -->
-                            @if(!$isOverdue)
-                                <!-- Submission Form -->
-                                <form action="{{ route('student.classrooms.submissions.store', ['classroom_id' => $classroom->id, 'assignment_id' => $assignment->id]) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+                            
+                            <!-- Edit form is hidden initially -->
+                            @if(!$isOverdue && !$submission->graded)
+                            <div id="edit-submission-form" class="hidden">
+                                <form method="POST" action="{{ route('student.classrooms.assignments.submissions.store', ['classroom_id' => $classroom->id, 'assignment_id' => $assignment->id]) }}" enctype="multipart/form-data" class="space-y-4">
                                     @csrf
-                                    
                                     <div>
-                                        <label for="content" class="block text-sm font-medium text-gray-300 mb-2">Submission Text (Optional)</label>
-                                        <textarea id="content" name="content" rows="5" class="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-3 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors" placeholder="Write your answer or comments here..."></textarea>
+                                        <label for="content" class="block text-sm font-medium text-gray-300 mb-1">Submission Notes</label>
+                                        <textarea id="content" name="content" rows="4" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg p-3 text-gray-200 focus:ring-blue-500 focus:border-blue-500">{{ $submission->content }}</textarea>
                                     </div>
                                     
                                     <div>
-                                        <label for="file" class="block text-sm font-medium text-gray-300 mb-2">Attachment (Optional)</label>
-                                        <div class="relative border-2 border-dashed border-gray-600 rounded-lg px-6 py-8 text-center hover:border-gray-500 transition-colors duration-200">
-                                            <input id="file" name="file" type="file" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-                                            <div class="text-center">
-                                                <svg class="mx-auto h-12 w-12 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                                                </svg>
-                                                <p class="mt-2 text-sm text-gray-400">
-                                                    <span class="font-medium text-blue-400">Click to upload</span> or drag and drop
-                                                </p>
-                                                <p class="mt-1 text-xs text-gray-500">
-                                                    PDF, DOC, DOCX, ZIP, etc. (Max 10MB)
-                                                </p>
-                                            </div>
-                                            <div id="file-info" class="hidden mt-4 text-left">
-                                                <div class="flex items-center space-x-2">
-                                                    <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                        <label for="file" class="block text-sm font-medium text-gray-300 mb-1">Upload File (Optional)</label>
+                                        <div class="flex items-center justify-center w-full">
+                                            <label for="file" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-600 border-dashed rounded-lg cursor-pointer bg-gray-700/30 hover:bg-gray-700/50">
+                                                <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                                    <svg class="w-8 h-8 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                                                     </svg>
-                                                    <span id="file-name" class="text-sm text-gray-300"></span>
+                                                    <p class="mb-2 text-sm text-gray-400">
+                                                        @if($submission->file)
+                                                            Replace current file or leave empty to keep existing
+                                                        @else
+                                                            Click to upload or drag and drop
+                                                        @endif
+                                                    </p>
                                                 </div>
-                                            </div>
+                                                <input id="file" name="file" type="file" class="hidden" />
+                                            </label>
+                                        </div>
+                                        <div id="file-info" class="mt-2 {{ $submission->file ? '' : 'hidden' }}">
+                                            <p class="text-sm text-gray-300">
+                                                @if($submission->file)
+                                                    Current file: <span class="font-medium">{{ basename($submission->file) }}</span>
+                                                @else
+                                                    Selected file: <span id="file-name" class="font-medium"></span>
+                                                @endif
+                                            </p>
                                         </div>
                                     </div>
                                     
-                                    <div class="flex justify-end">
-                                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors duration-200 font-medium flex items-center">
+                                    <div class="flex items-center space-x-3 pt-4">
+                                        <button type="submit" class="flex-1 inline-flex justify-center items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg">
                                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0l-4 4m4-4v12" />
+                                            </svg>
+                                            Update Submission
+                                        </button>
+                                        <button type="button" id="cancel-edit-btn" class="inline-flex justify-center items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg">
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                            @endif
+                        @else
+                            <!-- First-time submission form -->
+                            @if(!$isOverdue)
+                                <!-- Submission Form -->
+                                <form method="POST" action="{{ route('student.classrooms.assignments.submissions.store', ['classroom_id' => $classroom->id, 'assignment_id' => $assignment->id]) }}" enctype="multipart/form-data" class="space-y-4">
+                                    @csrf
+                                    <div>
+                                        <label for="content" class="block text-sm font-medium text-gray-300 mb-1">Submission Notes</label>
+                                        <textarea id="content" name="content" rows="4" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg p-3 text-gray-200 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                    </div>
+                                    
+                                    <div>
+                                        <label for="file" class="block text-sm font-medium text-gray-300 mb-1">Upload File (Optional)</label>
+                                        <div class="flex items-center justify-center w-full">
+                                            <label for="file" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-600 border-dashed rounded-lg cursor-pointer bg-gray-700/30 hover:bg-gray-700/50">
+                                                <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                                    <svg class="w-8 h-8 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                                    </svg>
+                                                    <p class="mb-2 text-sm text-gray-400">Click to upload or drag and drop</p>
+                                                </div>
+                                                <input id="file" name="file" type="file" class="hidden" />
+                                            </label>
+                                        </div>
+                                        <div id="file-info" class="mt-2 hidden">
+                                            <p class="text-sm text-gray-300">Selected file: <span id="file-name" class="font-medium"></span></p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="pt-4">
+                                        <button type="submit" class="w-full inline-flex justify-center items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg">
+                                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                                             </svg>
                                             Submit Assignment
                                         </button>
                                     </div>
                                 </form>
                             @else
-                                <!-- Assignment is overdue message -->
-                                <div class="bg-red-900/20 backdrop-blur-sm border border-red-500/30 rounded-lg p-4 text-center">
-                                    <svg class="w-12 h-12 text-red-500/70 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    <h3 class="text-lg font-medium text-red-300 mb-1">Assignment Overdue</h3>
-                                    <p class="text-gray-400">This assignment was due on {{ $dueDate->format('M d, Y, h:i A') }}.</p>
-                                    <p class="text-gray-400 mt-2">Contact your instructor if you need to submit late work.</p>
+                                <div class="bg-red-900/20 text-red-300 p-4 rounded-lg border border-red-800/30">
+                                    <p class="flex items-center">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        The deadline for this assignment has passed and submissions are no longer accepted.
+                                    </p>
                                 </div>
                             @endif
                         @endif
@@ -229,8 +292,9 @@
     </div>
 
     <script>
-        // File upload preview
+        // File upload preview and form toggling
         document.addEventListener('DOMContentLoaded', function() {
+            // File upload preview
             const fileInput = document.getElementById('file');
             if (fileInput) {
                 fileInput.addEventListener('change', function(e) {
@@ -238,11 +302,31 @@
                     const fileName = document.getElementById('file-name');
                     
                     if (this.files.length > 0) {
-                        fileName.textContent = this.files[0].name;
+                        if (fileName) {
+                            fileName.textContent = this.files[0].name;
+                        }
                         fileInfo.classList.remove('hidden');
                     } else {
                         fileInfo.classList.add('hidden');
                     }
+                });
+            }
+            
+            // Toggle between view and edit submission
+            const editBtn = document.getElementById('edit-submission-btn');
+            const cancelBtn = document.getElementById('cancel-edit-btn');
+            const submissionDisplay = document.getElementById('submission-display');
+            const editSubmissionForm = document.getElementById('edit-submission-form');
+            
+            if (editBtn && cancelBtn && submissionDisplay && editSubmissionForm) {
+                editBtn.addEventListener('click', function() {
+                    submissionDisplay.classList.add('hidden');
+                    editSubmissionForm.classList.remove('hidden');
+                });
+                
+                cancelBtn.addEventListener('click', function() {
+                    editSubmissionForm.classList.add('hidden');
+                    submissionDisplay.classList.remove('hidden');
                 });
             }
         });

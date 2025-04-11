@@ -106,6 +106,57 @@ Route::middleware('auth')->group(function () {
         Route::get('/{classroom_id}/assignments/{assignment_id}/submissions/{id}', [App\Http\Controllers\Api\ClassroomSubmissionController::class, 'showForStudent'])->name('submissions.show');
         Route::get('/{classroom_id}/assignments/{assignment_id}/submissions/{id}/download', [App\Http\Controllers\Api\ClassroomSubmissionController::class, 'downloadForStudent'])->name('assignments.submissions.download');
     });
+    Route::post('/{classroom_id}/assignments/{assignment_id}/submissions', 
+        [App\Http\Controllers\Api\ClassroomSubmissionController::class, 'storeForStudent'])
+        ->name('student.classrooms.assignments.submissions.store');
 });
+
+// Teacher Dashboard Routes
+Route::prefix('teacher')->middleware(['auth', 'App\Http\Middleware\RoleMiddleware:teacher'])->name('teacher.')->group(function () {
+    // Dashboard - the main teacher page
+    Route::get('/', [App\Http\Controllers\TeacherController::class, 'dashboard'])->name('dashboard');
+    
+    // Classrooms management
+    Route::get('/classrooms', [App\Http\Controllers\TeacherController::class, 'classrooms'])->name('classrooms.index');
+    Route::get('/classrooms/create', [App\Http\Controllers\TeacherController::class, 'createClassroom'])->name('classrooms.create');
+    Route::post('/classrooms', [App\Http\Controllers\TeacherController::class, 'storeClassroom'])->name('classrooms.store');
+    Route::get('/classrooms/{id}', [App\Http\Controllers\TeacherController::class, 'showClassroom'])->name('classrooms.show');
+    Route::get('/classrooms/{id}/edit', [App\Http\Controllers\TeacherController::class, 'editClassroom'])->name('classrooms.edit');
+    Route::put('/classrooms/{id}', [App\Http\Controllers\TeacherController::class, 'updateClassroom'])->name('classrooms.update');
+    Route::delete('/classrooms/{id}', [App\Http\Controllers\TeacherController::class, 'destroyClassroom'])->name('teacher.classrooms.destroy');
+    Route::delete('/classrooms/{id}', [App\Http\Controllers\TeacherController::class, 'destroyClassroom'])->name('classrooms.destroy');
+    
+    // Materials management
+    Route::get('/classrooms/{classroom_id}/materials', [App\Http\Controllers\TeacherController::class, 'materials'])->name('materials.index');
+    Route::get('/classrooms/{classroom_id}/materials/create', [App\Http\Controllers\TeacherController::class, 'createMaterial'])->name('materials.create');
+    Route::post('/classrooms/{classroom_id}/materials', [App\Http\Controllers\TeacherController::class, 'storeMaterial'])->name('materials.store');
+    Route::get('/classrooms/{classroom_id}/materials/{id}/edit', [App\Http\Controllers\TeacherController::class, 'editMaterial'])->name('materials.edit');
+    Route::put('/classrooms/{classroom_id}/materials/{id}', [App\Http\Controllers\TeacherController::class, 'updateMaterial'])->name('materials.update');
+    Route::get('/classrooms/{classroom_id}/materials/{id}', [App\Http\Controllers\TeacherController::class, 'showMaterial'])->name('materials.show');
+    Route::delete('/classrooms/{classroom_id}/materials/{id}', [App\Http\Controllers\TeacherController::class, 'destroyMaterial'])->name('materials.destroy');
+    
+    // Assignments management
+    Route::get('/classrooms/{classroom_id}/assignments', [App\Http\Controllers\TeacherController::class, 'assignments'])->name('assignments.index');
+    Route::get('/classrooms/{classroom_id}/assignments/create', [App\Http\Controllers\TeacherController::class, 'createAssignment'])->name('assignments.create');
+    Route::post('/classrooms/{classroom_id}/assignments', [App\Http\Controllers\TeacherController::class, 'storeAssignment'])->name('assignments.store');
+    Route::get('/classrooms/{classroom_id}/assignments/{id}/edit', [App\Http\Controllers\TeacherController::class, 'editAssignment'])->name('assignments.edit');
+    Route::put('/classrooms/{classroom_id}/assignments/{id}', [App\Http\Controllers\TeacherController::class, 'updateAssignment'])->name('assignments.update');
+    Route::get('/classrooms/{classroom_id}/assignments/{id}', [App\Http\Controllers\TeacherController::class, 'showAssignment'])->name('assignments.show');
+    Route::delete('/classrooms/{classroom_id}/assignments/{id}', [App\Http\Controllers\TeacherController::class, 'destroyAssignment'])->name('assignments.destroy');
+    
+    // Submissions/grading
+    Route::get('/classrooms/{classroom_id}/assignments/{assignment_id}/submissions', [App\Http\Controllers\TeacherController::class, 'submissions'])->name('submissions.index');
+    Route::get('/classrooms/{classroom_id}/assignments/{assignment_id}/submissions/{id}', [App\Http\Controllers\TeacherController::class, 'showSubmission'])->name('submissions.show');
+    Route::post('/classrooms/{classroom_id}/assignments/{assignment_id}/submissions/{id}/grade', [App\Http\Controllers\TeacherController::class, 'gradeSubmission'])->name('submissions.grade');
+    
+    // Students management
+    Route::get('/classrooms/{classroom_id}/students', [App\Http\Controllers\TeacherController::class, 'students'])->name('students.index');
+    
+    // Members/Students management
+    Route::post('/classrooms/{classroom_id}/members', [App\Http\Controllers\TeacherController::class, 'storeMember'])->name('members.store');
+    Route::put('/classrooms/{classroom_id}/members/{id}/role', [App\Http\Controllers\TeacherController::class, 'updateMemberRole'])->name('members.update.role');
+    Route::delete('/classrooms/{classroom_id}/members/{id}', [App\Http\Controllers\TeacherController::class, 'destroyMember'])->name('members.remove');
+});
+
 
 require __DIR__.'/auth.php';

@@ -240,7 +240,7 @@ class ClassroomSubmissionController extends Controller
         // Validate the request
         $validator = Validator::make($request->all(), [
             'content' => 'required|string',
-            'file' => 'required|file|max:10240', // 10MB max
+            'file' => 'nullable|file|max:10240', // 10MB max - now optional
         ]);
 
         if ($validator->fails()) {
@@ -600,76 +600,80 @@ class ClassroomSubmissionController extends Controller
     }
 
     /**
-     * Store a student submission
+     * Store a student's submission for an assignment.
      */
     public function storeForStudent(Request $request, $classroomId, $assignmentId)
     {
-        if (!Auth::check()) {
-            return redirect()->route('login');
+        // Log the submission attempt for debugging
+        Log::info('Student submission attempt', [
+            'classroom_id' => $classroomId,
+            'assignment_id' => $assignmentId,
+            'user_id' => Auth::id()
+        ]);
+        
+        // Find the classroom
+        $classroom = Classroom::find($classroomId);
+        if (!$classroom) {
+            return back()->with('error', 'Classroom not found.');
         }
-        
-        $classroom = Classroom::findOrFail($classroomId);
-        
-        // Check if user is a member
-        $userId = Auth::id();
-        $isMember = $classroom->members()->where('user_id', $userId)->exists();
-                    
-        if (!$isMember) {
-            return redirect()->route('student.classrooms.index')
-                ->with('error', 'You are not a member of this classroom.');
-        }
-        
+
         // Find the assignment
         $assignment = ClassroomAssignment::where('id', $assignmentId)
-                                       ->where('classroom_id', $classroomId)
-                                       ->whereNull('delete_at')
-                                       ->firstOrFail();
+            ->where('classroom_id', $classroomId)
+            ->first();
         
+        if (!$assignment) {
+            return back()->with('error', 'Assignment not found.');
+        }
+
+        // Verify user is a student in this classroom
+        $userId = Auth::id();
+        $isStudent = $classroom->members()->where('user_id', $userId)->exists();
+        
+        if (!$isStudent && $classroom->create_by != $userId) {
+            return back()->with('error', 'You are not authorized to submit to this assignment.');
+        }
+
         // Check if assignment is past due date
         $now = now();
         $dueDate = Carbon::parse($assignment->due_date);
         
         if ($now->isAfter($dueDate)) {
-            return redirect()->back()
-                ->with('error', 'This assignment is past its due date. You cannot submit.');
+            return back()->with('error', 'This assignment is past the due date.');
         }
-        
+
         // Validate the request
         $validator = Validator::make($request->all(), [
-            'content' => 'required|string',
-            'file' => 'required|file|max:10240', // 10MB max
+            'content' => 'nullable|string',
+            'file' => 'nullable|file|max:10240', // 10MB max - optional
         ]);
-        
+
         if ($validator->fails()) {
-            return redirect()->back()
+            return back()
                 ->withErrors($validator)
                 ->withInput();
         }
-        
+
         DB::beginTransaction();
         try {
-            // Check if submission already exists for this user and assignment
+            // Check if user already has a submission
             $submission = ClassroomSubmission::where('assignment_id', $assignmentId)
-                                          ->where('user_id', $userId)
-                                          ->first();
+                ->where('user_id', $userId)
+                ->first();
             
             $isNew = !$submission;
-            
             if ($isNew) {
-                // Create new submission
-                $submission = new ClassroomSubmission([
-                    'assignment_id' => $assignmentId,
-                    'user_id' => $userId,
-                    'content' => $request->content,
-                    'submitted_at' => now(),
-                    'graded' => false,
-                ]);
+                $submission = new ClassroomSubmission();
+                $submission->assignment_id = $assignmentId;
+                $submission->user_id = $userId;
+                $successMessage = 'Assignment submitted successfully!';
             } else {
-                // Update existing submission
+                $successMessage = 'Your submission has been updated!';
+            }
+            
+            // Update content
+            if ($request->has('content')) {
                 $submission->content = $request->content;
-                $submission->submitted_at = now();
-                $submission->graded = false; // Reset graded status on resubmission
-                $submission->grade = null; // Clear previous grade
             }
             
             // Handle file upload
@@ -686,18 +690,32 @@ class ClassroomSubmissionController extends Controller
                 $submission->file = $filePath;
             }
             
+            $submission->submitted_at = Carbon::now();
+            $submission->graded = false; // Reset graded status on resubmission
+            $submission->grade = null;   // Reset grade on resubmission
             $submission->save();
             
             DB::commit();
             
-            $successMessage = $isNew ? 'Assignment submitted successfully!' : 'Assignment updated successfully!';
-            return redirect()->route('student.classrooms.assignments.show', ['classroom_id' => $classroomId, 'id' => $assignmentId])
-                ->with('success', $successMessage);
+            Log::info('Submission successful', [
+                'submission_id' => $submission->id,
+                'user_id' => $userId,
+                'assignment_id' => $assignmentId
+            ]);
+            
+            return redirect()->route('student.classrooms.assignments.show', [
+                'classroom_id' => $classroomId,
+                'id' => $assignmentId
+            ])->with('success', $successMessage);
         } catch (\Exception $e) {
-            DB::rollback();
-            Log::error('Error submitting assignment: ' . $e->getMessage());
-            return redirect()->back()
-                ->with('error', 'Error submitting assignment. Please try again.');
+            DB::rollBack();
+            Log::error('Submission error: ' . $e->getMessage(), [
+                'exception' => $e,
+                'user_id' => $userId,
+                'assignment_id' => $assignmentId
+            ]);
+            
+            return back()->with('error', 'There was a problem with your submission. Please try again.');
         }
     }
 
@@ -735,5 +753,50 @@ class ClassroomSubmissionController extends Controller
         }
         
         return redirect()->back()->with('error', 'File not found.');
+    }
+
+    /**
+     * Download a student's submission file
+     */
+    public function downloadForStudent($classroomId, $assignmentId, $id)
+    {
+        Log::info('Student attempting to download submission', [
+            'classroom_id' => $classroomId,
+            'assignment_id' => $assignmentId,
+            'submission_id' => $id,
+            'user_id' => Auth::id()
+        ]);
+        
+        // Find the classroom
+        $classroom = Classroom::find($classroomId);
+        if (!$classroom) {
+            return back()->with('error', 'Classroom not found.');
+        }
+
+        // Find the submission
+        $submission = ClassroomSubmission::where('id', $id)
+            ->where('assignment_id', $assignmentId)
+            ->first();
+        
+        if (!$submission) {
+            return back()->with('error', 'Submission not found.');
+        }
+
+        // Verify user is authorized to download this submission
+        $userId = Auth::id();
+        $isOwner = $submission->user_id == $userId;
+        $isTeacher = $classroom->create_by == $userId || 
+                     $classroom->teachers()->where('user_id', $userId)->exists();
+        
+        if (!$isOwner && !$isTeacher) {
+            return back()->with('error', 'You are not authorized to download this submission.');
+        }
+
+        // Check if file exists
+        if (!$submission->file || !Storage::disk('public')->exists($submission->file)) {
+            return back()->with('error', 'Submission file not found.');
+        }
+
+        return Storage::disk('public')->download($submission->file);
     }
 }

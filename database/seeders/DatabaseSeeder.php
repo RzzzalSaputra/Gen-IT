@@ -131,6 +131,9 @@ class DatabaseSeeder extends Seeder
             ['type' => 'submission_status', 'value' => 'pending'],
             ['type' => 'submission_status', 'value' => 'accepted'],
             ['type' => 'submission_status', 'value' => 'declined'],
+
+            // classroom types
+            ['type' => 'classroom', 'value' => 'classroom'],
         ];
 
         foreach ($options as $option) {
@@ -159,7 +162,7 @@ class DatabaseSeeder extends Seeder
                 'password' => Hash::make('password123'),
                 'phone' => '081234567890',
                 'birthdate' => '2000-05-05',
-                'role' => 'user',
+                'role' => 'teacher',
             ],
             [
                 'user_name' => 'NinoNakano',

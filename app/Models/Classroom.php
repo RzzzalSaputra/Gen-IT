@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Classroom extends Model
 {
@@ -42,7 +43,7 @@ class Classroom extends Model
     ];
     
     /**
-     * Get the user that created the classroom.
+     * Get the user that created the classroom (teacher).
      */
     public function creator(): BelongsTo
     {
@@ -55,6 +56,22 @@ class Classroom extends Model
     public function members(): HasMany
     {
         return $this->hasMany(ClassroomMember::class);
+    }
+    
+    /**
+     * Get the students for the classroom.
+     * Returns users who are members of this classroom with the student role.
+     */
+    public function students()
+    {
+        return $this->hasManyThrough(
+            User::class,
+            ClassroomMember::class,
+            'classroom_id', // Foreign key on ClassroomMember table
+            'id', // Foreign key on User table
+            'id', // Local key on Classroom table
+            'user_id' // Local key on ClassroomMember table
+        )->where('classroom_members.role', 'student');
     }
     
     /**
