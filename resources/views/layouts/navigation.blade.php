@@ -121,9 +121,9 @@
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 @auth
-                <!-- Submission Link (Only visible when logged in) -->
-                <a href="{{ route('submissions.index') }}" class="{{ request()->routeIs('submissions.index') ? 'text-blue-400' : 'text-white hover:text-blue-300' }} px-3 py-2 text-sm font-medium transition-colors duration-200 mr-4">
-                    {{ __('Submission') }}
+                <!-- Classroom link placed directly next to profile -->
+                <a href="{{ route('student.classrooms.index') }}" class="{{ request()->routeIs('student.classrooms.*') ? 'text-blue-400' : 'text-white hover:text-blue-300' }} px-3 py-2 text-sm font-medium transition-colors duration-200 mr-4">
+                    {{ __('Classroom') }}
                 </a>
                 
                 <div class="relative" x-data="{ open: false }">
@@ -257,12 +257,11 @@
                 {{ __('Hubungi Kami') }}
             </a>
             
-            <!-- Submissions link (only for authenticated users) -->
-            @auth
-            <a href="{{ route('submissions.index') }}" class="{{ request()->routeIs('submissions.index') ? 'bg-gray-700 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }} block px-3 py-2 text-base font-medium">
-                {{ __('Submission') }}
+            <!-- Classroom (added in the mobile menu section) -->
+            <a href="{{ route('student.classrooms.index') }}" class="{{ request()->routeIs('student.classrooms.*') ? 'bg-gray-700 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }} block px-3 py-2 text-base font-medium">
+                {{ __('Classroom') }}
             </a>
-            @endauth
+            
         </div>
         
         @auth

@@ -16,6 +16,11 @@ use App\Http\Controllers\Api\StudyController;
 use App\Http\Controllers\Api\CompanyController;
 use App\Http\Controllers\Api\JobController;
 use App\Http\Controllers\Api\SubmissionController;
+use App\Http\Controllers\Api\ClassroomController;
+use App\Http\Controllers\Api\ClassroomMemberController;
+use App\Http\Controllers\Api\ClassroomMaterialController;
+use App\Http\Controllers\Api\ClassroomAssignmentController;
+use App\Http\Controllers\Api\ClassroomSubmissionController;
 use App\Http\Middleware\ValidateRememberToken;
 use App\Http\Middleware\RoleMiddleware;
 
@@ -217,6 +222,62 @@ Route::middleware('api')->group(function () {
         // Admin only routes
         Route::middleware([ValidateRememberToken::class, RoleMiddleware::class . ':Admin'])->group(function () {
             Route::post('/{id}/restore', [SubmissionController::class, 'restore']);
+        });
+    });
+
+    // Classroom Routes
+    Route::prefix('classrooms')->group(function () {
+        // Public Routes
+        Route::get('/', [ClassroomController::class, 'index']);
+        Route::get('/active', [ClassroomController::class, 'active']);
+        Route::get('/{id}', [ClassroomController::class, 'show']);
+
+        // Protected Routes (requires authentication)
+        Route::middleware([ValidateRememberToken::class])->group(function () {
+            Route::post('/', [ClassroomController::class, 'store']);
+            Route::post('/join', [ClassroomController::class, 'join']);  // Move this UP, before parameterized routes
+            Route::post('/{id}', [ClassroomController::class, 'update']);
+            Route::delete('/{id}', [ClassroomController::class, 'destroy']);
+            Route::post('/{id}/restore', [ClassroomController::class, 'restore']);
+            
+            // Classroom Members Routes (nested)
+            Route::prefix('{classroom_id}/members')->group(function () {
+                Route::get('/', [ClassroomMemberController::class, 'index']);
+                Route::post('/', [ClassroomMemberController::class, 'store']);
+                Route::get('/{id}', [ClassroomMemberController::class, 'show']);
+                Route::post('/{id}', [ClassroomMemberController::class, 'update']);
+                Route::delete('/{id}', [ClassroomMemberController::class, 'destroy']);
+            });
+            Route::post('{classroom_id}/leave', [ClassroomMemberController::class, 'leaveClassroom']);
+            
+            // Classroom Materials Routes (nested)
+            Route::prefix('{classroom_id}/materials')->group(function () {
+                Route::get('/', [ClassroomMaterialController::class, 'index']);
+                Route::post('/', [ClassroomMaterialController::class, 'store']);
+                Route::get('/{id}', [ClassroomMaterialController::class, 'show']);
+                Route::post('/{id}', [ClassroomMaterialController::class, 'update']);
+                Route::delete('/{id}', [ClassroomMaterialController::class, 'destroy']);
+                Route::post('/{id}/restore', [ClassroomMaterialController::class, 'restore']);
+            });
+            
+            // Classroom Assignments Routes (nested)
+            Route::prefix('{classroom_id}/assignments')->group(function () {
+                Route::get('/', [ClassroomAssignmentController::class, 'index']);
+                Route::post('/', [ClassroomAssignmentController::class, 'store']);
+                Route::get('/{id}', [ClassroomAssignmentController::class, 'show']);
+                Route::post('/{id}', [ClassroomAssignmentController::class, 'update']);
+                Route::delete('/{id}', [ClassroomAssignmentController::class, 'destroy']);
+                Route::post('/{id}/restore', [ClassroomAssignmentController::class, 'restore']);
+                
+                // Submissions for assignments (nested)
+                Route::prefix('{assignment_id}/submissions')->group(function () {
+                    Route::get('/', [ClassroomSubmissionController::class, 'index']);
+                    Route::post('/', [ClassroomSubmissionController::class, 'store']);
+                    Route::get('/{id}', [ClassroomSubmissionController::class, 'show']);
+                    Route::post('/{id}/grade', [ClassroomSubmissionController::class, 'grade']);
+                    Route::get('/download/{id}', [ClassroomSubmissionController::class, 'download']);
+                });
+            });
         });
     });
 });

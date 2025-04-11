@@ -365,6 +365,1956 @@
                 ]
             }
         },
+        "/api/classrooms/{classroom_id}/assignments": {
+            "get": {
+                "tags": [
+                    "Classroom Assignments"
+                ],
+                "summary": "Get all assignments for a classroom with pagination",
+                "operationId": "fc5bf84bcb6997d4406eee32a60142ad",
+                "parameters": [
+                    {
+                        "name": "classroom_id",
+                        "in": "path",
+                        "description": "Classroom ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "_page",
+                        "in": "query",
+                        "description": "Current page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "_limit",
+                        "in": "query",
+                        "description": "Number of items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "_search",
+                        "in": "query",
+                        "description": "Search by assignment title",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "due_date_from",
+                        "in": "query",
+                        "description": "Filter by due date (from)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "due_date_to",
+                        "in": "query",
+                        "description": "Filter by due date (to)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "create_by",
+                        "in": "query",
+                        "description": "Filter by creator ID",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of classroom assignments"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Classroom not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Classroom Assignments"
+                ],
+                "summary": "Create a new classroom assignment",
+                "operationId": "b32679a2ea2b91699f7b35fc72b54ec9",
+                "parameters": [
+                    {
+                        "name": "classroom_id",
+                        "in": "path",
+                        "description": "Classroom ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "description",
+                                    "due_date"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "description": "Assignment title",
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "description": "Assignment description",
+                                        "type": "string"
+                                    },
+                                    "due_date": {
+                                        "description": "Assignment due date",
+                                        "type": "string",
+                                        "format": "date-time"
+                                    },
+                                    "file": {
+                                        "description": "Assignment file",
+                                        "type": "string",
+                                        "format": "binary",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Assignment created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Assignment created successfully"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "403": {
+                        "description": "Not authorized to create assignments"
+                    },
+                    "404": {
+                        "description": "Classroom not found"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/classrooms/{classroom_id}/assignments/{id}": {
+            "get": {
+                "tags": [
+                    "Classroom Assignments"
+                ],
+                "summary": "Get specific classroom assignment by ID",
+                "operationId": "60c541da4309792f5309ec790bfe0d2d",
+                "parameters": [
+                    {
+                        "name": "classroom_id",
+                        "in": "path",
+                        "description": "Classroom ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Assignment ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Assignment not found"
+                    },
+                    "403": {
+                        "description": "Not authorized to view"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Classroom Assignments"
+                ],
+                "summary": "Update an existing classroom assignment",
+                "operationId": "a7d435cdd2787b0ea6d6d5b030fa302f",
+                "parameters": [
+                    {
+                        "name": "classroom_id",
+                        "in": "path",
+                        "description": "Classroom ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Assignment ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "due_date": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "nullable": true
+                                    },
+                                    "file": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Assignment updated successfully"
+                    },
+                    "404": {
+                        "description": "Assignment not found"
+                    },
+                    "403": {
+                        "description": "Not authorized to update"
+                    },
+                    "422": {
+                        "description": "Validation errors"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Classroom Assignments"
+                ],
+                "summary": "Soft delete a classroom assignment",
+                "operationId": "bf5a4f2444bd7b880f78486b67f530c5",
+                "parameters": [
+                    {
+                        "name": "classroom_id",
+                        "in": "path",
+                        "description": "Classroom ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Assignment ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Assignment deleted successfully"
+                    },
+                    "404": {
+                        "description": "Assignment not found"
+                    },
+                    "403": {
+                        "description": "Not authorized to delete"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/classrooms/{classroom_id}/assignments/{id}/restore": {
+            "post": {
+                "tags": [
+                    "Classroom Assignments"
+                ],
+                "summary": "Restore a soft-deleted classroom assignment",
+                "operationId": "826b2e1b5081c4f592083626c382aabc",
+                "parameters": [
+                    {
+                        "name": "classroom_id",
+                        "in": "path",
+                        "description": "Classroom ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Assignment ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Assignment restored successfully"
+                    },
+                    "404": {
+                        "description": "Assignment not found"
+                    },
+                    "403": {
+                        "description": "Not authorized to restore"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/classrooms": {
+            "get": {
+                "tags": [
+                    "Classrooms"
+                ],
+                "summary": "Get all classrooms with pagination",
+                "operationId": "7af3f495ab9afea861d667828bdfeb98",
+                "parameters": [
+                    {
+                        "name": "_page",
+                        "in": "query",
+                        "description": "Current page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "_limit",
+                        "in": "query",
+                        "description": "Number of items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "_search",
+                        "in": "query",
+                        "description": "Search by classroom name",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "create_by",
+                        "in": "query",
+                        "description": "Filter by creator ID",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of classrooms with pagination"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Classrooms"
+                ],
+                "summary": "Create a new classroom",
+                "operationId": "6b770721cf0195f7dfcc0c6cbb5f4225",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "description"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "description": "Classroom name",
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "description": "Classroom description",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Classroom created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Classroom created successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer"
+                                                },
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "code": {
+                                                    "type": "string"
+                                                },
+                                                "description": {
+                                                    "type": "string"
+                                                },
+                                                "create_by": {
+                                                    "type": "integer"
+                                                },
+                                                "create_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "update_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/classrooms/active": {
+            "get": {
+                "tags": [
+                    "Classrooms"
+                ],
+                "summary": "Get all active classrooms",
+                "description": "Returns list of active (not soft deleted) classrooms",
+                "operationId": "21ec7d4f8cb01e6df2b52832f3aebefa",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/classrooms/{id}": {
+            "get": {
+                "tags": [
+                    "Classrooms"
+                ],
+                "summary": "Get specific classroom by ID",
+                "operationId": "9b7a0ffad9125bf729a89b3b1eabe440",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Classroom ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Classroom not found"
+                    },
+                    "403": {
+                        "description": "Forbidden - Not a member of this classroom"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Classrooms"
+                ],
+                "summary": "Update an existing classroom",
+                "operationId": "489107328c0adf76891b2f22891d433d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Classroom ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Classroom updated successfully"
+                    },
+                    "404": {
+                        "description": "Classroom not found"
+                    },
+                    "403": {
+                        "description": "Forbidden - Not authorized to update"
+                    },
+                    "422": {
+                        "description": "Validation errors"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Classrooms"
+                ],
+                "summary": "Soft delete a classroom",
+                "operationId": "50a626b4143216d19b5da2e4fe399a3e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Classroom ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Classroom deleted successfully"
+                    },
+                    "404": {
+                        "description": "Classroom not found"
+                    },
+                    "403": {
+                        "description": "Not authorized to delete"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/classrooms/{id}/restore": {
+            "post": {
+                "tags": [
+                    "Classrooms"
+                ],
+                "summary": "Restore a soft-deleted classroom",
+                "operationId": "2f5b43e7a0e4f32c4b6a4e38b4b3a2d0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Classroom ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Classroom restored successfully"
+                    },
+                    "404": {
+                        "description": "Classroom not found"
+                    },
+                    "403": {
+                        "description": "Not authorized to restore"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/classrooms/join": {
+            "post": {
+                "tags": [
+                    "Classrooms"
+                ],
+                "summary": "Join a classroom using invite code",
+                "operationId": "2cea4205a873486720a008a8ebdd1246",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "code"
+                                ],
+                                "properties": {
+                                    "code": {
+                                        "description": "Classroom invite code",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successfully joined the classroom"
+                    },
+                    "404": {
+                        "description": "Classroom not found"
+                    },
+                    "400": {
+                        "description": "Already a member of this classroom"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/classrooms/{classroom_id}/materials": {
+            "get": {
+                "tags": [
+                    "Classroom Materials"
+                ],
+                "summary": "Get all materials for a classroom with pagination",
+                "operationId": "c7f05b31024110a9712d95b8c01bfbcd",
+                "parameters": [
+                    {
+                        "name": "classroom_id",
+                        "in": "path",
+                        "description": "Classroom ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "_page",
+                        "in": "query",
+                        "description": "Current page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "_limit",
+                        "in": "query",
+                        "description": "Number of items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "_search",
+                        "in": "query",
+                        "description": "Search by material title",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "description": "Filter by material type",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "create_by",
+                        "in": "query",
+                        "description": "Filter by creator ID",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of classroom materials"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Classroom not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Classroom Materials"
+                ],
+                "summary": "Create a new classroom material",
+                "operationId": "40c6fdf2d5e184ad320f1f3498c4d559",
+                "parameters": [
+                    {
+                        "name": "classroom_id",
+                        "in": "path",
+                        "description": "Classroom ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "content",
+                                    "type"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "description": "Material title",
+                                        "type": "string"
+                                    },
+                                    "content": {
+                                        "description": "Material content",
+                                        "type": "string"
+                                    },
+                                    "file": {
+                                        "description": "Material file",
+                                        "type": "string",
+                                        "format": "binary",
+                                        "nullable": true
+                                    },
+                                    "link": {
+                                        "description": "External link",
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "img": {
+                                        "description": "Material image",
+                                        "type": "string",
+                                        "format": "binary",
+                                        "nullable": true
+                                    },
+                                    "type": {
+                                        "description": "Material type option ID",
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Material created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Material created successfully"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "403": {
+                        "description": "Not authorized to add materials"
+                    },
+                    "404": {
+                        "description": "Classroom not found"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/classrooms/{classroom_id}/materials/{id}": {
+            "get": {
+                "tags": [
+                    "Classroom Materials"
+                ],
+                "summary": "Get specific classroom material by ID",
+                "operationId": "30ffbaafa650bf0d770e29d16a80c5f0",
+                "parameters": [
+                    {
+                        "name": "classroom_id",
+                        "in": "path",
+                        "description": "Classroom ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Material ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Material not found"
+                    },
+                    "403": {
+                        "description": "Not authorized to view"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Classroom Materials"
+                ],
+                "summary": "Update an existing classroom material",
+                "operationId": "449c49f282d6917c585cd559402ff1d1",
+                "parameters": [
+                    {
+                        "name": "classroom_id",
+                        "in": "path",
+                        "description": "Classroom ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Material ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "content": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "file": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "nullable": true
+                                    },
+                                    "link": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "img": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "nullable": true
+                                    },
+                                    "type": {
+                                        "type": "integer",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Material updated successfully"
+                    },
+                    "404": {
+                        "description": "Material not found"
+                    },
+                    "403": {
+                        "description": "Not authorized to update"
+                    },
+                    "422": {
+                        "description": "Validation errors"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Classroom Materials"
+                ],
+                "summary": "Soft delete a classroom material",
+                "operationId": "1e35499ccb1256c59d9e5ceebfbaa13f",
+                "parameters": [
+                    {
+                        "name": "classroom_id",
+                        "in": "path",
+                        "description": "Classroom ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Material ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Material deleted successfully"
+                    },
+                    "404": {
+                        "description": "Material not found"
+                    },
+                    "403": {
+                        "description": "Not authorized to delete"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/classrooms/{classroom_id}/materials/{id}/restore": {
+            "post": {
+                "tags": [
+                    "Classroom Materials"
+                ],
+                "summary": "Restore a soft-deleted classroom material",
+                "operationId": "f1b716414f5530e34268f0563683a06e",
+                "parameters": [
+                    {
+                        "name": "classroom_id",
+                        "in": "path",
+                        "description": "Classroom ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Material ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Material restored successfully"
+                    },
+                    "404": {
+                        "description": "Material not found"
+                    },
+                    "403": {
+                        "description": "Not authorized to restore"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/classrooms/{classroom_id}/members": {
+            "get": {
+                "tags": [
+                    "Classroom Members"
+                ],
+                "summary": "Get all members of a classroom with pagination",
+                "operationId": "7da1c8b02e81dbbc87be3875dd33f1b2",
+                "parameters": [
+                    {
+                        "name": "classroom_id",
+                        "in": "path",
+                        "description": "Classroom ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "_page",
+                        "in": "query",
+                        "description": "Current page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "_limit",
+                        "in": "query",
+                        "description": "Number of items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "_search",
+                        "in": "query",
+                        "description": "Search by user name or email",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "role",
+                        "in": "query",
+                        "description": "Filter by role (teacher/student)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "student"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of classroom members with pagination"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Classroom not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Classroom Members"
+                ],
+                "summary": "Add a new member to classroom",
+                "operationId": "87fc203cf536b552d0529d70bb55d46a",
+                "parameters": [
+                    {
+                        "name": "classroom_id",
+                        "in": "path",
+                        "description": "Classroom ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "user_id",
+                                    "role"
+                                ],
+                                "properties": {
+                                    "user_id": {
+                                        "description": "User ID",
+                                        "type": "integer"
+                                    },
+                                    "role": {
+                                        "description": "Member role (teacher, student)",
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "description": "Email of user to invite (alternative to user_id)",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Member added successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Member added successfully"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Classroom or user not found"
+                    },
+                    "403": {
+                        "description": "Not authorized to add members"
+                    },
+                    "409": {
+                        "description": "User is already a member"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/classrooms/{classroom_id}/members/{id}": {
+            "get": {
+                "tags": [
+                    "Classroom Members"
+                ],
+                "summary": "Get specific classroom member by ID",
+                "operationId": "8221d69118284e9ef9eb953cc2b5730f",
+                "parameters": [
+                    {
+                        "name": "classroom_id",
+                        "in": "path",
+                        "description": "Classroom ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Classroom Member ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Member not found"
+                    },
+                    "403": {
+                        "description": "Not authorized to view"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Classroom Members"
+                ],
+                "summary": "Update an existing classroom member (e.g., change role)",
+                "operationId": "63cd57b87b45f67e78da8640ec0a6b40",
+                "parameters": [
+                    {
+                        "name": "classroom_id",
+                        "in": "path",
+                        "description": "Classroom ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Classroom Member ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "role"
+                                ],
+                                "properties": {
+                                    "role": {
+                                        "description": "Member role (teacher, student)",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Member updated successfully"
+                    },
+                    "404": {
+                        "description": "Member not found"
+                    },
+                    "422": {
+                        "description": "Validation errors"
+                    },
+                    "403": {
+                        "description": "Not authorized to update"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Classroom Members"
+                ],
+                "summary": "Remove a member from classroom",
+                "operationId": "f592823239d20a5f7df5ba57fb0cea25",
+                "parameters": [
+                    {
+                        "name": "classroom_id",
+                        "in": "path",
+                        "description": "Classroom ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Classroom Member ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Member removed successfully"
+                    },
+                    "404": {
+                        "description": "Member not found"
+                    },
+                    "403": {
+                        "description": "Not authorized to remove"
+                    },
+                    "400": {
+                        "description": "Cannot remove classroom creator"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/classrooms/{classroom_id}/leave": {
+            "post": {
+                "tags": [
+                    "Classroom Members"
+                ],
+                "summary": "Leave a classroom (remove self as member)",
+                "operationId": "ff720fdcd91fa6f95a2f6ce088a575eb",
+                "parameters": [
+                    {
+                        "name": "classroom_id",
+                        "in": "path",
+                        "description": "Classroom ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully left the classroom"
+                    },
+                    "404": {
+                        "description": "Classroom not found or you are not a member"
+                    },
+                    "400": {
+                        "description": "Cannot leave as classroom creator"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/classrooms/{classroom_id}/assignments/{assignment_id}/submissions": {
+            "get": {
+                "tags": [
+                    "Classroom Submissions"
+                ],
+                "summary": "Get all submissions for an assignment with pagination",
+                "operationId": "1ba516d9d1364b5c1e4e8227426dcde9",
+                "parameters": [
+                    {
+                        "name": "classroom_id",
+                        "in": "path",
+                        "description": "Classroom ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "assignment_id",
+                        "in": "path",
+                        "description": "Assignment ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "_page",
+                        "in": "query",
+                        "description": "Current page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "_limit",
+                        "in": "query",
+                        "description": "Number of items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "user_id",
+                        "in": "query",
+                        "description": "Filter by user ID",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "graded",
+                        "in": "query",
+                        "description": "Filter by graded status (true/false)",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of assignment submissions"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Assignment not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Classroom Submissions"
+                ],
+                "summary": "Create or update a submission for an assignment",
+                "operationId": "26829800c462f20ea9407a198d7a8054",
+                "parameters": [
+                    {
+                        "name": "classroom_id",
+                        "in": "path",
+                        "description": "Classroom ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "assignment_id",
+                        "in": "path",
+                        "description": "Assignment ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "content",
+                                    "file"
+                                ],
+                                "properties": {
+                                    "content": {
+                                        "description": "Submission content/notes",
+                                        "type": "string"
+                                    },
+                                    "file": {
+                                        "description": "Submission file",
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Submission created/updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Submission successful"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "403": {
+                        "description": "Unauthorized or past due date"
+                    },
+                    "404": {
+                        "description": "Assignment not found"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/classrooms/{classroom_id}/assignments/{assignment_id}/submissions/{id}": {
+            "get": {
+                "tags": [
+                    "Classroom Submissions"
+                ],
+                "summary": "Get specific submission by ID",
+                "operationId": "468a1e21bcd560aab474de60117b6c91",
+                "parameters": [
+                    {
+                        "name": "classroom_id",
+                        "in": "path",
+                        "description": "Classroom ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "assignment_id",
+                        "in": "path",
+                        "description": "Assignment ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Submission ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Submission not found"
+                    },
+                    "403": {
+                        "description": "Not authorized to view"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/classrooms/{classroom_id}/assignments/{assignment_id}/submissions/{id}/grade": {
+            "post": {
+                "tags": [
+                    "Classroom Submissions"
+                ],
+                "summary": "Grade a submission (teachers only)",
+                "operationId": "d95eab09dee1a23eee3e3d6887e14027",
+                "parameters": [
+                    {
+                        "name": "classroom_id",
+                        "in": "path",
+                        "description": "Classroom ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "assignment_id",
+                        "in": "path",
+                        "description": "Assignment ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Submission ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "grade"
+                                ],
+                                "properties": {
+                                    "grade": {
+                                        "description": "Grade value (0-100)",
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Submission graded successfully"
+                    },
+                    "404": {
+                        "description": "Submission not found"
+                    },
+                    "403": {
+                        "description": "Not authorized to grade"
+                    },
+                    "422": {
+                        "description": "Validation errors"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/classrooms/{classroom_id}/assignments/{assignment_id}/submissions/download/{id}": {
+            "get": {
+                "tags": [
+                    "Classroom Submissions"
+                ],
+                "summary": "Download a submission file",
+                "operationId": "56688fb86b638c2f718b883c53373636",
+                "parameters": [
+                    {
+                        "name": "classroom_id",
+                        "in": "path",
+                        "description": "Classroom ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "assignment_id",
+                        "in": "path",
+                        "description": "Assignment ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Submission ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "File download"
+                    },
+                    "404": {
+                        "description": "File not found"
+                    },
+                    "403": {
+                        "description": "Not authorized to download"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/companies": {
             "get": {
                 "tags": [
@@ -4146,68 +6096,6 @@
                         "bearerAuth": []
                     }
                 ]
-            },
-            "post": {
-                "tags": [
-                    "Submissions"
-                ],
-                "summary": "Store a newly created submission",
-                "operationId": "86842154f1dffa008adb43a94e7c19a5",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "multipart/form-data": {
-                            "schema": {
-                                "required": [
-                                    "title",
-                                    "content",
-                                    "type"
-                                ],
-                                "properties": {
-                                    "title": {
-                                        "type": "string"
-                                    },
-                                    "content": {
-                                        "type": "string"
-                                    },
-                                    "file": {
-                                        "type": "string",
-                                        "format": "binary",
-                                        "nullable": true
-                                    },
-                                    "link": {
-                                        "type": "string"
-                                    },
-                                    "img": {
-                                        "type": "string",
-                                        "format": "binary",
-                                        "nullable": true
-                                    },
-                                    "type": {
-                                        "type": "integer"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Submission created successfully"
-                    },
-                    "422": {
-                        "description": "Validation errors"
-                    },
-                    "500": {
-                        "description": "Error creating submission"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
             }
         },
         "/api/submissions/{id}": {
@@ -4767,6 +6655,26 @@
         {
             "name": "Articles",
             "description": "Articles"
+        },
+        {
+            "name": "Classroom Assignments",
+            "description": "Classroom Assignments"
+        },
+        {
+            "name": "Classrooms",
+            "description": "Classrooms"
+        },
+        {
+            "name": "Classroom Materials",
+            "description": "Classroom Materials"
+        },
+        {
+            "name": "Classroom Members",
+            "description": "Classroom Members"
+        },
+        {
+            "name": "Classroom Submissions",
+            "description": "Classroom Submissions"
         },
         {
             "name": "Companies",

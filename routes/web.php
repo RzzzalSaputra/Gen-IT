@@ -87,6 +87,25 @@ Route::middleware('auth')->group(function () {
     
     // This should come after the /public route
     Route::get('/submissions/{id}', [SubmissionController::class, 'show'])->name('submissions.show');
+    
+    // Student Classroom Routes - add to web.php
+    Route::prefix('student/classrooms')->middleware(['auth'])->name('student.classrooms.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\ClassroomController::class, 'studentDashboard'])->name('index');
+        Route::get('/join', [App\Http\Controllers\Api\ClassroomController::class, 'joinForm'])->name('join');
+        Route::post('/join', [App\Http\Controllers\Api\ClassroomController::class, 'processJoin'])->name('process-join');
+        Route::get('/{id}', [App\Http\Controllers\Api\ClassroomController::class, 'showForStudent'])->name('show');
+        Route::get('/{classroom_id}/materials/{id}', [App\Http\Controllers\Api\ClassroomMaterialController::class, 'showForStudent'])->name('materials.show');
+        
+        // Assignment routes
+        Route::get('/{classroom_id}/assignments', [App\Http\Controllers\Api\ClassroomAssignmentController::class, 'indexForStudent'])->name('assignments.index');
+        Route::get('/{classroom_id}/assignments/{id}', [App\Http\Controllers\Api\ClassroomAssignmentController::class, 'showForStudent'])->name('assignments.show');
+        Route::get('/{classroom_id}/assignments/{id}/download', [App\Http\Controllers\Api\ClassroomAssignmentController::class, 'downloadForStudent'])->name('assignments.download');
+        
+        // Submission routes
+        Route::post('/{classroom_id}/assignments/{assignment_id}/submissions', [App\Http\Controllers\Api\ClassroomSubmissionController::class, 'storeForStudent'])->name('submissions.store');
+        Route::get('/{classroom_id}/assignments/{assignment_id}/submissions/{id}', [App\Http\Controllers\Api\ClassroomSubmissionController::class, 'showForStudent'])->name('submissions.show');
+        Route::get('/{classroom_id}/assignments/{assignment_id}/submissions/{id}/download', [App\Http\Controllers\Api\ClassroomSubmissionController::class, 'downloadForStudent'])->name('assignments.submissions.download');
+    });
 });
 
 require __DIR__.'/auth.php';

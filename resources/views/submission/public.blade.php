@@ -4,8 +4,10 @@
             <h2 class="font-semibold text-2xl text-gray-800 dark:text-gray-200 leading-tight">
                 {{ __('Community Submissions') }}
             </h2>
-            <div class="text-sm text-gray-500 dark:text-gray-400">
-                {{ $submissions->total() }} {{ Str::plural('submission', $submissions->total()) }} available
+            <div class="flex items-center gap-4">
+                <div class="text-sm text-gray-500 dark:text-gray-400">
+                    {{ $submissions->total() }} {{ Str::plural('submission', $submissions->total()) }} available
+                </div>
             </div>
         </div>
     </x-slot>
@@ -63,6 +65,18 @@
 
     <div class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 pt-16 sm:pt-24">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <!-- My Submissions Button - Positioned above search form -->
+            @if(Auth::check())
+            <div class="flex justify-end mb-6">
+                <a href="{{ route('submissions.index') }}" class="inline-flex items-center px-5 py-3 bg-gradient-to-r from-blue-600 to-blue-700 border border-transparent rounded-md font-semibold text-sm text-white uppercase tracking-widest hover:from-blue-700 hover:to-blue-800 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-200 shadow-md">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                    </svg>
+                    {{ __('My Submissions') }}
+                </a>
+            </div>
+            @endif
+            
             <!-- Search Form -->
             <div class="mb-8">
                 <form action="{{ route('submissions.public') }}" method="GET" class="flex items-center gap-3">
