@@ -9,8 +9,6 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
 
 class ArticleResource extends Resource
@@ -24,36 +22,28 @@ class ArticleResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Grid::make(columns: 3)
+                Forms\Components\Grid::make(columns: 2)
                     ->schema([
                         Forms\Components\TextInput::make('title')
                             ->required()
-                            ->maxLength(255)
-                            ->afterStateUpdated(
-                                fn($state, callable $set, callable $get) =>
-                                // Pastikan slug hanya di-generate jika auto_slug aktif
-                                $get('auto_slug') ? $set('slug', Str::slug($state)) : null
-                            ),
+                            ->maxLength(255),
 
-                        Forms\Components\TextInput::make('slug')
-                            ->required()
-                            ->unique(ignoreRecord: true)
-                            ->disabled(fn(callable $get) => $get('auto_slug'))  // Disable slug jika auto_slug aktif
-                            ->helperText('Klik tombol "Generate Slug" untuk membuat slug otomatis.'),
-
-                        // Gunakan Actions sebagai wadah untuk tombol
-                        Forms\Components\Actions::make([
-                            Forms\Components\Actions\Action::make('generate_slug')
-                                ->label('Generate Slug')
-                                ->action(function (callable $set, callable $get) {
-                                    // Ambil nilai title dan generate slug
-                                    $title = $get('title');
-                                    if ($title) {
-                                        $set('slug', Str::slug($title));
-                                    }
-                                })
-                                ->color('primary'),
-                        ])
+                Forms\Components\TextInput::make('slug')
+                    ->label('Slug')
+                    ->unique(Article::class, 'slug', ignoreRecord: true)
+                    ->required()
+                    ->suffixAction(
+                        Forms\Components\Actions\Action::make('generate_slug')
+                            ->label('Generate')
+                            ->color('primary')
+                            ->icon('heroicon-o-arrow-path')
+                            ->action(function (callable $set, callable $get) {
+                                $title = $get('title');
+                                if ($title) {
+                                    $set('slug', Str::slug($title));
+                                }
+                            })
+                        ),
                     ]),
 
                 Forms\Components\RichEditor::make('content')
@@ -61,7 +51,8 @@ class ArticleResource extends Resource
 
                 Forms\Components\Textarea::make('summary')
                     ->maxLength(500)
-                    ->nullable(),
+                    ->nullable()
+                    ->required(),
 
                 Forms\Components\TextInput::make('writer')
                     ->required()
@@ -70,9 +61,7 @@ class ArticleResource extends Resource
                 Forms\Components\DateTimePicker::make('post_time')
                     ->required(),
 
-                Forms\Components\Select::make('created_by')
-                    ->relationship('creator', 'user_name')
-                    ->required(),
+                // Tidak perlu tampilkan created_by dan updated_by di form
             ]);
     }
 
@@ -80,20 +69,13 @@ class ArticleResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('title')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('writer')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('post_time')
-                    ->dateTime()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('creator.user_name')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('title')->searchable(),
+                Tables\Columns\TextColumn::make('writer')->searchable(),
+                Tables\Columns\TextColumn::make('post_time')->dateTime()->sortable(),
+                Tables\Columns\TextColumn::make('creator.user_name')->label('Dibuat Oleh')->sortable(),
+                Tables\Columns\TextColumn::make('created_at')->dateTime()->sortable(),
             ])
-            ->filters([/* Filter jika diperlukan */])
+            ->filters([])
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),

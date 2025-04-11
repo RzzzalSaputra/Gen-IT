@@ -42,10 +42,13 @@ class CompanyResource extends Resource
                     fn($state, callable $set) =>
                     is_string($state) && !empty($state) ? $set('img', "/storage/companies/{$state}") : null
                 )
-                ->deleteUploadedFileUsing(
-                    fn($record) =>
-                    $record && method_exists($record, 'deleteImage') ? ($record->deleteImage() ?? true) : null
-                )
+                ->deleteUploadedFileUsing(function ($record) {
+                    $filePath = storage_path('app/public/' . $record?->img);
+
+                    if (file_exists($filePath)) {
+                        unlink($filePath);
+                    }
+                })
                 ->nullable(),
 
             Forms\Components\TextInput::make('gmap')
