@@ -27,6 +27,7 @@ class ClassroomSubmission extends Model
         'submitted_at',
         'graded',
         'grade',
+        'feedback', 
     ];
     
     /**

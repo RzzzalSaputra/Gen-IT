@@ -1,4 +1,8 @@
 <x-app-layout>
+    <!-- SweetAlert CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
+    
     <div class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 pt-16 sm:pt-24">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div class="bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-700/50 overflow-hidden shadow-xl mb-8">
@@ -117,7 +121,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                             </svg>
                             Your Submission
-                        </h2>e
+                        </h2>
 
                         @if($submission)
                             <!-- Shows existing submission details -->
@@ -174,9 +178,16 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                             </svg>
                                             <span class="text-gray-300">{{ basename($submission->file) }}</span>
-                                            <a href="{{ route('student.classrooms.assignments.submissions.download', ['classroom_id' => $classroom->id, 'assignment_id' => $assignment->id, 'id' => $submission->id]) }}" class="ml-auto text-blue-400 hover:text-blue-300">
-                                                Download
-                                            </a>
+                                            <div class="ml-auto flex">
+                                                <a href="{{ route('student.classrooms.assignments.submissions.download', ['classroom_id' => $classroom->id, 'assignment_id' => $assignment->id, 'id' => $submission->id]) }}" class="text-blue-400 hover:text-blue-300 mr-3">
+                                                    Download
+                                                </a>
+                                                @if(!$isOverdue && !$submission->graded)
+                                                <button type="button" class="text-red-400 hover:text-red-300 remove-file-btn">
+                                                    Remove
+                                                </button>
+                                                @endif
+                                            </div>
                                         </div>
                                     </div>
                                 @endif
@@ -187,39 +198,68 @@
                             <div id="edit-submission-form" class="hidden">
                                 <form method="POST" action="{{ route('student.classrooms.assignments.submissions.store', ['classroom_id' => $classroom->id, 'assignment_id' => $assignment->id]) }}" enctype="multipart/form-data" class="space-y-4">
                                     @csrf
+                                    <!-- Hidden field to track file removal -->
+                                    <input type="hidden" name="remove_file" id="remove_file" value="0">
+                                    
                                     <div>
                                         <label for="content" class="block text-sm font-medium text-gray-300 mb-1">Submission Notes</label>
                                         <textarea id="content" name="content" rows="4" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg p-3 text-gray-200 focus:ring-blue-500 focus:border-blue-500">{{ $submission->content }}</textarea>
                                     </div>
                                     
-                                    <div>
-                                        <label for="file" class="block text-sm font-medium text-gray-300 mb-1">Upload File (Optional)</label>
-                                        <div class="flex items-center justify-center w-full">
-                                            <label for="file" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-600 border-dashed rounded-lg cursor-pointer bg-gray-700/30 hover:bg-gray-700/50">
-                                                <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                                                    <svg class="w-8 h-8 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                    <!-- File Upload Section in the form -->
+                                    <div class="mt-4">
+                                        <label class="block text-sm font-medium text-gray-300 mb-2">
+                                            Submission File
+                                        </label>
+                                        
+                                        @if($submission->file)
+                                            <div class="flex items-center p-4 bg-gray-900/40 rounded-lg border border-gray-700/50 mb-3">
+                                                <div class="flex-shrink-0 mr-3">
+                                                    <svg class="w-8 h-8 text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                                     </svg>
-                                                    <p class="mb-2 text-sm text-gray-400">
-                                                        @if($submission->file)
-                                                            Replace current file or leave empty to keep existing
-                                                        @else
-                                                            Click to upload or drag and drop
-                                                        @endif
+                                                </div>
+                                                <div class="flex-1 min-w-0">
+                                                    <p class="text-sm font-medium text-gray-200 truncate">
+                                                        Current file: {{ basename($submission->file) }}
                                                     </p>
                                                 </div>
-                                                <input id="file" name="file" type="file" class="hidden" />
+                                                <button type="button" id="remove-current-file" class="text-red-400 hover:text-red-300 text-sm">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            
+                                            <div id="new-file-preview" class="hidden flex items-center p-4 bg-indigo-900/30 rounded-lg border border-indigo-700/50 mb-3 transform transition-all duration-300 ease-in-out">
+                                                <div class="flex-shrink-0 mr-3">
+                                                    <svg class="w-8 h-8 text-indigo-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                    </svg>
+                                                </div>
+                                                <div class="flex-1 min-w-0">
+                                                    <p class="text-sm font-medium text-indigo-200 truncate">
+                                                        New file selected: <span id="new-file-name"></span>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        @endif
+                                        
+                                        <div class="relative">
+                                            <label for="file" class="flex justify-center items-center px-4 py-3 bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 rounded-lg border border-dashed border-gray-600 cursor-pointer transition duration-200">
+                                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                                </svg>
+                                                <span id="upload-label">{{ $submission->file ? 'Replace file' : 'Choose file' }}</span>
                                             </label>
+                                            <input id="file" name="file" type="file" class="hidden">
                                         </div>
-                                        <div id="file-info" class="mt-2 {{ $submission->file ? '' : 'hidden' }}">
-                                            <p class="text-sm text-gray-300">
-                                                @if($submission->file)
-                                                    Current file: <span class="font-medium">{{ basename($submission->file) }}</span>
-                                                @else
-                                                    Selected file: <span id="file-name" class="font-medium"></span>
-                                                @endif
+                                        
+                                        @if($submission->file)
+                                            <p class="mt-2 text-xs text-gray-400 italic">
+                                                Leave empty to keep existing file
                                             </p>
-                                        </div>
+                                        @endif
                                     </div>
                                     
                                     <div class="flex items-center space-x-3 pt-4">
@@ -299,6 +339,8 @@
             if (fileInput) {
                 fileInput.addEventListener('change', function(e) {
                     const fileInfo = document.getElementById('file-info');
+                    const currentFileInfo = document.getElementById('current-file-info');
+                    const newFileInfo = document.getElementById('new-file-info');
                     const fileName = document.getElementById('file-name');
                     
                     if (this.files.length > 0) {
@@ -306,8 +348,20 @@
                             fileName.textContent = this.files[0].name;
                         }
                         fileInfo.classList.remove('hidden');
+                        
+                        // When replacing an existing file
+                        if (currentFileInfo) {
+                            currentFileInfo.classList.add('hidden');
+                            newFileInfo.classList.remove('hidden');
+                        }
                     } else {
-                        fileInfo.classList.add('hidden');
+                        // If file selection is cancelled
+                        if (currentFileInfo && currentFileInfo.classList.contains('hidden')) {
+                            currentFileInfo.classList.remove('hidden');
+                            newFileInfo.classList.add('hidden');
+                        } else {
+                            fileInfo.classList.add('hidden');
+                        }
                     }
                 });
             }
@@ -327,11 +381,199 @@
                 cancelBtn.addEventListener('click', function() {
                     editSubmissionForm.classList.add('hidden');
                     submissionDisplay.classList.remove('hidden');
+                    // Reset the remove_file value when canceling
+                    if (document.getElementById('remove_file')) {
+                        document.getElementById('remove_file').value = "0";
+                    }
                 });
             }
+
+            // File upload preview in the script section
+            // Using the already defined fileInput variable
+            if (fileInput) {
+                fileInput.addEventListener('change', function(e) {
+                    const newFilePreview = document.getElementById('new-file-preview');
+                    const newFileName = document.getElementById('new-file-name');
+                    const uploadLabel = document.getElementById('upload-label');
+                    
+                    if (this.files.length > 0) {
+                        // Show the new file preview with transition
+                        if (newFilePreview) {
+                            newFileName.textContent = this.files[0].name;
+                            newFilePreview.classList.remove('hidden');
+                            // Add a small delay for the transition to take effect after removing 'hidden'
+                            setTimeout(() => {
+                                newFilePreview.classList.add('opacity-100');
+                                newFilePreview.classList.remove('opacity-0', '-translate-y-2');
+                            }, 10);
+                        }
+                        
+                        // Update the upload button text
+                        if (uploadLabel) {
+                            uploadLabel.textContent = 'Change file';
+                        }
+                        
+                        // Reset remove_file flag if new file is uploaded
+                        if (document.getElementById('remove_file')) {
+                            document.getElementById('remove_file').value = "0";
+                        }
+                    } else {
+                        // If file selection is cancelled
+                        if (newFilePreview) {
+                            newFilePreview.classList.add('opacity-0', '-translate-y-2');
+                            setTimeout(() => {
+                                newFilePreview.classList.add('hidden');
+                            }, 300); // Match duration with CSS transition
+                        }
+                        
+                        // Reset the upload button text
+                        if (uploadLabel) {
+                            uploadLabel.textContent = 'Replace file';
+                        }
+                    }
+                });
+            }
+            
+            // Handle file removal - in edit form
+            const removeCurrentFileBtn = document.getElementById('remove-current-file');
+            if (removeCurrentFileBtn) {
+                removeCurrentFileBtn.addEventListener('click', function() {
+                    Swal.fire({
+                        title: 'Remove File?',
+                        text: 'Are you sure you want to remove this file?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        background: '#1f2937',
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Yes, remove it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Set the hidden field to indicate file removal
+                            document.getElementById('remove_file').value = "1";
+                            
+                            // Hide the current file info
+                            const currentFileContainer = this.closest('.flex.items-center');
+                            if (currentFileContainer) {
+                                currentFileContainer.style.display = 'none';
+                            }
+                            
+                            Swal.fire(
+                                'File Marked for Removal',
+                                'The file will be removed when you save your changes.',
+                                'success'
+                            );
+                        }
+                    });
+                });
+            }
+            
+            // Handle remove button in submission display view
+            const removeFileBtns = document.querySelectorAll('.remove-file-btn');
+            removeFileBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    Swal.fire({
+                        title: 'Remove File?',
+                        text: 'This will switch to edit mode. Are you sure?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        background: '#1f2937',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Yes, remove it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Switch to edit mode
+                            if (editBtn) {
+                                editBtn.click();
+                                
+                                // Set the hidden field to indicate file removal
+                                document.getElementById('remove_file').value = "1";
+                                
+                                // Hide the current file info
+                                const currentFileContainer = document.querySelector('.flex.items-center.p-4.bg-gray-900\\/40');
+                                if (currentFileContainer) {
+                                    currentFileContainer.style.display = 'none';
+                                }
+                                
+                                Swal.fire(
+                                    'Edit Mode',
+                                    'You can now submit your changes to remove the file.',
+                                    'info'
+                                );
+                            }
+                        }
+                    });
+                });
+            });
+            
+            // Show success messages with SweetAlert if present in the session
+            if(session('success'))
+                Swal.fire({
+                    title: 'Success!',
+                    text: "{{ session('success') }}",
+                    icon: 'success',
+                    background: '#1f2937',
+                    confirmButtonColor: '#3085d6'
+                });
+            endif
+
+            if(session('error'))
+                Swal.fire({
+                    title: 'Error!',
+                    text: "{{ session('error') }}",
+                    icon: 'error',
+                    background: '#1f2937',
+                    confirmButtonColor: '#3085d6'
+                });
+            endif
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // File removal confirmation
+            const removeFileBtns = document.querySelectorAll('.remove-file-btn');
+            removeFileBtns.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    Swal.fire({
+                        title: 'Remove File?',
+                        text: 'This will switch to edit mode. Are you sure?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        background: '#1f2937',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Yes, remove it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            console.log('File removal confirmed');
+                            // Additional logic here
+                        }
+                    });
+                });
+            });
+
+            // Success and error messages
+            @if(session('success'))
+                Swal.fire({
+                    title: 'Success!',
+                    text: "{{ session('success') }}",
+                    icon: 'success',
+                    background: '#1f2937',
+                    confirmButtonColor: '#3085d6'
+                });
+            @endif
+
+            @if(session('error'))
+                Swal.fire({
+                    title: 'Error!',
+                    text: "{{ session('error') }}",
+                    icon: 'error',
+                    background: '#1f2937',
+                    confirmButtonColor: '#3085d6'
+                });
+            @endif
         });
     </script>
-
     <style>
         /* Improved content readability for assignment description */
         .prose p, .prose li, .prose blockquote {
@@ -377,6 +619,61 @@
         
         .prose ul, .prose ol {
             margin-left: 1.25rem;
+        }
+
+        /* Transitions for file preview */
+        #new-file-preview {
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(-0.5rem);
+        }
+        
+        #new-file-preview.opacity-100 {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* SweetAlert Dark Theme Overrides */
+        .swal2-popup {
+            border-radius: 0.75rem !important;
+            border: 1px solid rgba(75, 85, 99, 0.3) !important;
+        }
+        
+        .swal2-title {
+            color: #f3f4f6 !important;
+        }
+        
+        .swal2-html-container {
+            color: #d1d5db !important;
+        }
+        
+        .swal2-confirm, .swal2-cancel {
+            border-radius: 0.5rem !important;
+            font-weight: 500 !important;
+        }
+        
+        .swal2-icon {
+            border-color: rgba(96, 165, 250, 0.3) !important;
+        }
+        
+        .swal2-icon.swal2-warning {
+            border-color: rgba(251, 191, 36, 0.3) !important;
+            color: #fbbf24 !important;
+        }
+        
+        .swal2-icon.swal2-error {
+            border-color: rgba(239, 68, 68, 0.3) !important;
+            color: #ef4444 !important;
+        }
+        
+        .swal2-icon.swal2-success {
+            border-color: rgba(34, 197, 94, 0.3) !important;
+            color: #22c55e !important;
+        }
+        
+        .swal2-icon.swal2-info {
+            border-color: rgba(14, 165, 233, 0.3) !important;
+            color: #0ea5e9 !important;
         }
     </style>
 </x-app-layout>

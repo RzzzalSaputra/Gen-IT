@@ -24,7 +24,7 @@
     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
         <div class="border-b border-gray-200 dark:border-gray-700">
             <nav class="-mb-px flex" aria-label="Tabs">
-                <button id="materials-tab" class="border-blue-500 text-blue-600 dark:text-blue-500 whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm">
+                <button id="materials-tab" class="border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                     </svg>
@@ -142,13 +142,63 @@
                                     </div>
                                     <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">{{ Str::limit($assignment->description, 100) }}</p>
                                     <div class="mt-3 flex justify-between items-center text-xs">
-                                        <span class="text-orange-600 dark:text-orange-400">Due: {{ $assignment->due_date ? $assignment->due_date->format('M d, Y, g:i A') : 'No due date' }}</span>
+                                        <div>
+                                            <span class="text-orange-600 dark:text-orange-400">Due: {{ $assignment->due_date ? $assignment->due_date->format('M d, Y, g:i A') : 'No due date' }}</span>
+                                            @if($assignment->due_date)
+                                                <div class="mt-1">
+                                                    @php
+                                                        $now = \Carbon\Carbon::now();
+                                                        $due = \Carbon\Carbon::parse($assignment->due_date);
+                                                        
+                                                        if ($now->gt($due)) {
+                                                            // Overdue
+                                                            $totalDiffSeconds = $now->diffInSeconds($due);
+                                                            $status = 'Overdue by ';
+                                                            $colorClass = 'text-red-600 dark:text-red-400';
+                                                        } else {
+                                                            // Still time remaining
+                                                            $totalDiffSeconds = $due->diffInSeconds($now);
+                                                            $status = '';
+                                                            $colorClass = $now->diffInDays($due) > 0 ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400';
+                                                        }
+                                                        
+                                                        // Calculate days, hours, minutes from total seconds
+                                                        $diffDays = floor($totalDiffSeconds / 86400); // 86400 seconds in a day
+                                                        $remainingSeconds = $totalDiffSeconds % 86400;
+                                                        $diffHours = floor($remainingSeconds / 3600); // 3600 seconds in an hour
+                                                        $remainingSeconds = $remainingSeconds % 3600;
+                                                        $diffMinutes = floor($remainingSeconds / 60);
+                                                        
+                                                        // Make sure all values are positive
+                                                        $diffDays = abs($diffDays);
+                                                        $diffHours = abs($diffHours);
+                                                        $diffMinutes = abs($diffMinutes);
+                                                        
+                                                        $timeDisplay = '';
+                                                        if ($diffDays > 0) {
+                                                            // More than 1 day - show days and hours only
+                                                            $timeDisplay = $diffDays . ' day' . ($diffDays > 1 ? 's' : '') . ', ' . $diffHours . ' hour' . ($diffHours > 1 || $diffHours == 0 ? 's' : '');
+                                                        } else {
+                                                            // Less than 1 day - show hours and minutes only
+                                                            $timeDisplay = $diffHours . ' hour' . ($diffHours > 1 || $diffHours == 0 ? 's' : '') . ', ' . $diffMinutes . ' minute' . ($diffMinutes > 1 || $diffMinutes == 0 ? 's' : '');
+                                                        }
+                                                        
+                                                        // Handle edge cases
+                                                        if ($diffDays == 0 && $diffHours == 0 && $diffMinutes == 0) {
+                                                            $timeDisplay = 'less than a minute';
+                                                        }
+                                                    @endphp
+                                                    
+                                                    <span class="{{ $colorClass }}">{{ $status }}{{ $timeDisplay }} {{ $now->gt($due) ? '' : 'remaining' }}</span>
+                                                </div>
+                                            @endif
+                                        </div>
                                         <span class="px-2 py-1 rounded text-xs {{ strtotime($assignment->due_date) < time() ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300' : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' }}">
                                             {{ strtotime($assignment->due_date) < time() ? 'Expired' : 'Active' }}
                                         </span>
                                     </div>
                                     <div class="mt-3 flex justify-between items-center text-xs text-gray-500 dark:text-gray-400">
-                                        <span>{{ $assignment->submissions_count ?? 0 }} submissions</span>
+                                        <span>{{ $assignment->submissions()->count() }} submissions</span>
                                         <a href="{{ route('teacher.assignments.show', [$classroom->id, $assignment->id]) }}" class="inline-flex items-center text-blue-600 dark:text-blue-400 hover:underline">
                                             View Details
                                             <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -314,38 +364,74 @@ document.addEventListener('DOMContentLoaded', function() {
     // Tab switching functionality
     const tabs = ['materials', 'assignments', 'members'];
     
+    // Function to switch tabs
+    function switchToTab(tabName) {
+        // Hide all content
+        tabs.forEach(t => {
+            document.getElementById(`${t}-content`).classList.add('hidden');
+            document.getElementById(`${t}-tab`).classList.remove('border-blue-500', 'text-blue-600', 'dark:text-blue-500');
+            document.getElementById(`${t}-tab`).classList.add('border-transparent', 'text-gray-500', 'dark:text-gray-400');
+        });
+        
+        // Show selected content
+        document.getElementById(`${tabName}-content`).classList.remove('hidden');
+        document.getElementById(`${tabName}-tab`).classList.add('border-blue-500', 'text-blue-600', 'dark:text-blue-500');
+        document.getElementById(`${tabName}-tab`).classList.remove('border-transparent', 'text-gray-500', 'dark:text-gray-400');
+        
+        // Update URL hash without scrolling
+        history.replaceState(null, null, `#${tabName}`);
+    }
+    
+    // Add click event listeners to tabs
     tabs.forEach(tab => {
         document.getElementById(`${tab}-tab`).addEventListener('click', () => {
-            // Hide all content
-            tabs.forEach(t => {
-                document.getElementById(`${t}-content`).classList.add('hidden');
-                document.getElementById(`${t}-tab`).classList.remove('border-blue-500', 'text-blue-600');
-                document.getElementById(`${t}-tab`).classList.add('border-transparent', 'text-gray-500');
-            });
-            
-            // Show selected content
-            document.getElementById(`${tab}-content`).classList.remove('hidden');
-            document.getElementById(`${tab}-tab`).classList.add('border-blue-500', 'text-blue-600');
-            document.getElementById(`${tab}-tab`).classList.remove('border-transparent', 'text-gray-500');
+            switchToTab(tab);
         });
     });
 
-    // Open tab from hash in URL if present
+    // Handle tab selection on page load
     const hash = window.location.hash;
-    if (hash) {
-        const tabName = hash.substring(1).split('-')[0];
-        if (tabs.includes(tabName)) {
-            document.getElementById(`${tabName}-tab`).click();
-        }
+    if (hash && tabs.includes(hash.substring(1))) {
+        // If hash exists and is a valid tab, switch to it
+        switchToTab(hash.substring(1));
+    } else {
+        // Default to materials tab if no hash or invalid hash
+        switchToTab('materials');
     }
 
-    // Modal functionality
-    // Find all buttons that should open modals
+    // Listen for hashchange events (browser back/forward buttons)
+    window.addEventListener('hashchange', function() {
+        const newHash = window.location.hash;
+        if (newHash && tabs.includes(newHash.substring(1))) {
+            switchToTab(newHash.substring(1));
+        }
+    });
+
+    // Add this code to handle all modals
     const modalButtons = document.querySelectorAll('[data-modal-target]');
     modalButtons.forEach(button => {
         button.addEventListener('click', () => {
             const modalId = button.getAttribute('data-modal-target');
             openModal(modalId);
+        });
+    });
+
+    // Add event listeners for modal close buttons
+    const closeButtons = document.querySelectorAll('[data-modal-close]');
+    closeButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const modalId = button.closest('.modal').id;
+            closeModal(modalId);
+        });
+    });
+    
+    // Handle clicks on the modal backdrop (optional)
+    const modals = document.querySelectorAll('.modal');
+    modals.forEach(modal => {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal(modal.id);
+            }
         });
     });
 });

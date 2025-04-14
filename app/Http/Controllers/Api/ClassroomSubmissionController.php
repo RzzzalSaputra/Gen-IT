@@ -281,9 +281,15 @@ class ClassroomSubmissionController extends Controller
                 }
                 
                 $file = $request->file('file');
-                $timestamp = Carbon::now()->format('Y-m-d_His');
-                $fileName = "submission_{$userId}_{$assignmentId}_{$timestamp}." . $file->getClientOriginalExtension();
-                $filePath = $file->storeAs('classroom_submissions', $fileName, 'public');
+                $originalFileName = $file->getClientOriginalName();
+                
+                // Store in a directory structure that prevents filename collisions
+                $filePath = $file->storeAs(
+                    "classroom_submissions/{$assignmentId}/{$userId}", 
+                    $originalFileName, 
+                    'public'
+                );
+                
                 $submission->file = $filePath;
             }
 
@@ -431,7 +437,8 @@ class ClassroomSubmissionController extends Controller
      *             mediaType="application/json",
      *             @OA\Schema(
      *                 required={"grade"},
-     *                 @OA\Property(property="grade", type="integer", description="Grade value (0-100)")
+     *                 @OA\Property(property="grade", type="integer", description="Grade value (0-100)"),
+     *                 @OA\Property(property="feedback", type="string", description="Feedback for the submission") // Added feedback property
      *             )
      *         )
      *     ),
@@ -482,7 +489,8 @@ class ClassroomSubmissionController extends Controller
 
         // Validate the request
         $validator = Validator::make($request->all(), [
-            'grade' => 'required|integer|min:0|max:100'
+            'grade' => 'required|integer|min:0|max:100',
+            'feedback' => 'nullable|string' // Added feedback validation
         ]);
 
         if ($validator->fails()) {
@@ -491,10 +499,11 @@ class ClassroomSubmissionController extends Controller
 
         DB::beginTransaction();
         try {
-            // Update submission with grade
+            // Update submission with grade and feedback
             $submission->update([
                 'graded' => true,
-                'grade' => $request->grade
+                'grade' => $request->grade,
+                'feedback' => $request->feedback // Save feedback
             ]);
             
             DB::commit();
@@ -676,17 +685,29 @@ class ClassroomSubmissionController extends Controller
                 $submission->content = $request->content;
             }
             
-            // Handle file upload
-            if ($request->hasFile('file')) {
+            // Handle file removal if requested
+            if ($request->has('remove_file') && $request->remove_file == "1" && !$isNew && $submission->file) {
+                Storage::disk('public')->delete($submission->file);
+                $submission->file = null;
+                $successMessage = 'Your submission has been updated and file was removed!';
+            }
+            // Handle file upload (only if not removing)
+            else if ($request->hasFile('file')) {
                 // Delete old file if exists
                 if (!$isNew && $submission->file) {
                     Storage::disk('public')->delete($submission->file);
                 }
                 
                 $file = $request->file('file');
-                $timestamp = Carbon::now()->format('Y-m-d_His');
-                $fileName = "submission_{$userId}_{$assignmentId}_{$timestamp}." . $file->getClientOriginalExtension();
-                $filePath = $file->storeAs('classroom_submissions', $fileName, 'public');
+                $originalFileName = $file->getClientOriginalName();
+                
+                // Store with original filename
+                $filePath = $file->storeAs(
+                    "classroom_submissions/{$assignmentId}/{$userId}", 
+                    $originalFileName, 
+                    'public'
+                );
+                
                 $submission->file = $filePath;
             }
             
@@ -700,7 +721,8 @@ class ClassroomSubmissionController extends Controller
             Log::info('Submission successful', [
                 'submission_id' => $submission->id,
                 'user_id' => $userId,
-                'assignment_id' => $assignmentId
+                'assignment_id' => $assignmentId,
+                'file_removed' => $request->has('remove_file') && $request->remove_file == "1"
             ]);
             
             return redirect()->route('student.classrooms.assignments.show', [

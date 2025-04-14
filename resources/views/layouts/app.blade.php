@@ -1,3 +1,14 @@
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // Configure SweetAlert defaults to match dark theme
+    Swal.mixin({
+        background: '#1f2937',
+        color: '#f3f4f6',
+        confirmButtonColor: '#3b82f6',
+        cancelButtonColor: '#6b7280'
+    });
+</script>
+
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>

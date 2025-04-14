@@ -1,4 +1,6 @@
 <!-- Edit Classroom Modal -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <div class="fixed inset-0 overflow-y-auto hidden" id="editClassroomModal" aria-labelledby="editClassroomModalLabel" role="dialog" aria-modal="true">
     <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
@@ -40,11 +42,11 @@
                     </div>
                 </form>
                 
-                <form action="{{ route('teacher.classrooms.destroy', $classroom->id) }}" method="POST" class="mt-4 border-t border-gray-200 dark:border-gray-700 pt-4">
+                <form id="deleteClassroomForm" action="{{ route('teacher.classrooms.destroy', $classroom->id) }}" method="POST" class="mt-4 border-t border-gray-200 dark:border-gray-700 pt-4">
                     @csrf
                     @method('DELETE')
                     <div class="flex justify-end">
-                        <button type="submit" onclick="return confirm('Are you sure you want to delete this classroom? This action cannot be undone.')" class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:w-auto sm:text-sm">
+                        <button type="button" id="deleteClassroomButton" class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:w-auto sm:text-sm">
                             Delete Classroom
                         </button>
                     </div>
@@ -53,3 +55,55 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteButton = document.getElementById('deleteClassroomButton');
+        const deleteForm = document.getElementById('deleteClassroomForm');
+        
+        deleteButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You are about to delete this classroom. This action cannot be undone!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#3b82f6',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel',
+                background: '#1f2937',  // Dark background
+                color: '#f3f4f6',       // Light text color
+                iconColor: '#fbbf24',   // Amber warning icon
+                customClass: {
+                    popup: 'swal-dark-theme',
+                    title: 'text-gray-100',
+                    htmlContainer: 'text-gray-300',
+                    confirmButton: 'bg-red-600 hover:bg-red-700',
+                    cancelButton: 'bg-blue-600 hover:bg-blue-700'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    deleteForm.submit();
+                }
+            });
+        });
+    });
+</script>
+
+<style>
+    .swal-dark-theme {
+        border: 1px solid #374151 !important;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
+    }
+    
+    .swal2-popup.swal2-toast {
+        background: #1f2937 !important;
+        color: #f3f4f6 !important;
+    }
+    
+    .swal2-title, .swal2-html-container {
+        color: inherit !important;
+    }
+</style>

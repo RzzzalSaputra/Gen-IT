@@ -553,7 +553,7 @@ class ClassroomController extends Controller
     private function generateUniqueCode()
     {
         $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $length = 10;
+        $length = 5;
         
         do {
             $code = '';

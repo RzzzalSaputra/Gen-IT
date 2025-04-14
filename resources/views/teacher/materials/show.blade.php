@@ -39,8 +39,8 @@
 
             <!-- Material Content -->
             <div class="p-6">
-                <!-- Material Content -->
-                <div class="prose prose-lg max-w-none dark:prose-invert mb-6">
+                <!-- Material Content with improved text color -->
+                <div class="prose prose-lg max-w-none dark:prose-invert text-gray-800 dark:text-white mb-6">
                     {!! $material->content !!}
                 </div>
 
@@ -57,10 +57,9 @@
                 </div>
                 @endif
 
-                <!-- Material Image -->
+                <!-- Material Image - Removed "Cover Image:" text -->
                 @if($material->img)
                 <div class="mt-6">
-                    <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Cover Image:</h3>
                     <img src="{{ asset('storage/' . $material->img) }}" alt="{{ $material->title }}" class="rounded-lg max-h-96 mx-auto">
                 </div>
                 @endif
@@ -84,4 +83,36 @@
         </div>
     </div>
 </div>
+
+<!-- Add these modals and script for the edit/delete functionality -->
+@include('teacher.classrooms.partials.modals.edit-material', ['material' => $material])
+@include('teacher.classrooms.partials.modals.delete-material', ['material' => $material])
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Modal functionality
+    const modalButtons = document.querySelectorAll('[data-modal-target]');
+    modalButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const modalId = button.getAttribute('data-modal-target');
+            openModal(modalId);
+        });
+    });
+});
+
+// Functions to open and close modals
+function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.remove('hidden');
+    }
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.add('hidden');
+    }
+}
+</script>
 @endsection

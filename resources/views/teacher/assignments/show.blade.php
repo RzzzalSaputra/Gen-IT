@@ -41,7 +41,9 @@
                         </svg>
                         Delete
                     </button>
-                    <a href="{{ route('teacher.classrooms.show', $classroom->id) }}" class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <a href="{{ route('teacher.classrooms.show', $classroom->id) }}" 
+                       onclick="localStorage.setItem('classroom_active_tab', 'assignments')" 
+                       class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                         <svg class="-ml-1 mr-2 h-5 w-5 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                         </svg>
@@ -51,7 +53,7 @@
             </div>
 
             <!-- Assignment Content -->
-            <div class="p-6">
+            <div class="p-6 text-gray-800 dark:text-white">
                 <!-- Assignment Description -->
                 <div class="prose prose-lg max-w-none dark:prose-invert mb-6">
                     {!! $assignment->description !!}
@@ -60,9 +62,9 @@
                 <!-- Assignment File -->
                 @if($assignment->file)
                 <div class="mt-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                    <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Attached File:</h3>
+                    <h3 class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Attached File:</h3>
                     <div class="flex items-center justify-between">
-                        <span class="text-gray-700 dark:text-gray-300">{{ basename($assignment->file) }}</span>
+                        <span class="text-gray-700 dark:text-gray-200">{{ basename($assignment->file) }}</span>
                         <a href="{{ route('teacher.assignments.download', [$classroom->id, $assignment->id]) }}" class="inline-flex items-center px-3 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -91,7 +93,7 @@
                             $ungradedCount = $submittedCount - $gradedCount;
                         @endphp
                         
-                        <div class="bg-white dark:bg-gray-700 shadow rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                        <div class="bg-white dark:bg-gray-700 shadow rounded-lg p-4 border border-gray-200 dark:border-gray-600 h-24 flex flex-col justify-between">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0 bg-blue-100 dark:bg-blue-900 rounded-full p-3">
                                     <svg class="h-6 w-6 text-blue-600 dark:text-blue-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -100,12 +102,12 @@
                                 </div>
                                 <div class="ml-3">
                                     <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Total Students</h4>
-                                    <p class="text-2xl font-semibold text-blue-600 dark:text-blue-400">{{ $totalStudents }}</p>
                                 </div>
                             </div>
+                            <p class="text-2xl font-semibold text-blue-600 dark:text-blue-400">{{ $totalStudents }}</p>
                         </div>
                         
-                        <div class="bg-white dark:bg-gray-700 shadow rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                        <div class="bg-white dark:bg-gray-700 shadow rounded-lg p-4 border border-gray-200 dark:border-gray-600 h-24 flex flex-col justify-between">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0 bg-green-100 dark:bg-green-900 rounded-full p-3">
                                     <svg class="h-6 w-6 text-green-600 dark:text-green-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -114,12 +116,12 @@
                                 </div>
                                 <div class="ml-3">
                                     <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Submitted</h4>
-                                    <p class="text-2xl font-semibold text-green-600 dark:text-green-400">{{ $submittedCount }}</p>
                                 </div>
                             </div>
+                            <p class="text-2xl font-semibold text-green-600 dark:text-green-400">{{ $submittedCount }}</p>
                         </div>
                         
-                        <div class="bg-white dark:bg-gray-700 shadow rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                        <div class="bg-white dark:bg-gray-700 shadow rounded-lg p-4 border border-gray-200 dark:border-gray-600 h-24 flex flex-col justify-between">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0 bg-yellow-100 dark:bg-yellow-900 rounded-full p-3">
                                     <svg class="h-6 w-6 text-yellow-600 dark:text-yellow-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -128,12 +130,12 @@
                                 </div>
                                 <div class="ml-3">
                                     <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Not Submitted</h4>
-                                    <p class="text-2xl font-semibold text-yellow-600 dark:text-yellow-400">{{ $notSubmittedCount }}</p>
                                 </div>
                             </div>
+                            <p class="text-2xl font-semibold text-yellow-600 dark:text-yellow-400">{{ $notSubmittedCount }}</p>
                         </div>
                         
-                        <div class="bg-white dark:bg-gray-700 shadow rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                        <div class="bg-white dark:bg-gray-700 shadow rounded-lg p-4 border border-gray-200 dark:border-gray-600 h-24 flex flex-col justify-between">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0 bg-red-100 dark:bg-red-900 rounded-full p-3">
                                     <svg class="h-6 w-6 text-red-600 dark:text-red-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -142,9 +144,9 @@
                                 </div>
                                 <div class="ml-3">
                                     <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Need Grading</h4>
-                                    <p class="text-2xl font-semibold text-red-600 dark:text-red-400">{{ $ungradedCount }}</p>
                                 </div>
                             </div>
+                            <p class="text-2xl font-semibold text-red-600 dark:text-red-400">{{ $ungradedCount }}</p>
                         </div>
                     </div>
                     
@@ -220,4 +222,36 @@
         </div>
     </div>
 </div>
+
+<!-- Modals -->
+@include('teacher.classrooms.partials.modals.edit-assignment', ['assignment' => $assignment])
+@include('teacher.classrooms.partials.modals.delete-assignment', ['assignment' => $assignment])
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Modal functionality
+    const modalButtons = document.querySelectorAll('[data-modal-target]');
+    modalButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const modalId = button.getAttribute('data-modal-target');
+            openModal(modalId);
+        });
+    });
+});
+
+// Functions to open and close modals
+function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.remove('hidden');
+    }
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.add('hidden');
+    }
+}
+</script>
 @endsection

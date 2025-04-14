@@ -39,25 +39,38 @@ class TeacherController extends Controller
         $teacher_id = Auth::id();
         
         // Get overview data
-        $classrooms = Classroom::where('create_by', $teacher_id)->get();
+        $classrooms = Classroom::where('create_by', $teacher_id)
+            ->with(['assignments.submissions' => function($query) {
+                $query->where('graded', false);
+            }])
+            ->get();
+            
         $classroomCount = $classrooms->count();
         $studentCount = 0;
         $pendingSubmissions = 0;
         
         foreach ($classrooms as $classroom) {
-            $studentCount += $classroom->students()->count();
+            $studentCount += $classroom->members()->where('role', 'student')->count();
             
-            // Count pending submissions (not graded)
+            // Count pending submissions more directly using the eager loaded data
+            $classroom_pending = 0;
             foreach ($classroom->assignments as $assignment) {
-                $pendingSubmissions += $assignment->submissions()->where('graded', false)->count();
+                $classroom_pending += $assignment->submissions->count();
             }
+            
+            // Add pending submission count to each classroom object
+            $classroom->pending_submissions_count = $classroom_pending;
+            
+            // Update total pending submissions
+            $pendingSubmissions += $classroom_pending;
         }
         
-        // Get recent activities - Updated to use ClassroomSubmission
+        // Get recent activities
         $recentSubmissions = ClassroomSubmission::whereHas('assignment.classroom', function($query) use ($teacher_id) {
                 $query->where('create_by', $teacher_id);
             })
-            ->orderBy('submitted_at', 'desc') // Changed from created_at to submitted_at
+            ->with(['user', 'assignment'])
+            ->orderBy('submitted_at', 'desc')
             ->take(5)
             ->get();
         
@@ -265,7 +278,8 @@ class TeacherController extends Controller
             'joined_at' => now(),
         ]);
         
-        return back()->with('success', 'Member added successfully.');
+        return back()->with('success', 'Member added successfully.')
+            ->with('active_tab', 'members');
     }
 
     public function updateMemberRole(Request $request, $classroom_id, $id)
@@ -381,7 +395,8 @@ class TeacherController extends Controller
             
             if ($response->getStatusCode() === 201) {
                 return redirect()->route('teacher.classrooms.show', $classroom_id)
-                    ->with('success', 'Material added successfully');
+                    ->with('success', 'Material added successfully')
+                    ->with('active_tab', 'materials');
             }
             
             Log::error('Material creation failed with non-201 status', [
@@ -437,7 +452,8 @@ class TeacherController extends Controller
             
             if ($response->getStatusCode() === 201) {
                 return redirect()->route('teacher.classrooms.show', $classroom_id)
-                    ->with('success', 'Assignment added successfully');
+                    ->with('success', 'Assignment added successfully')
+                    ->with('active_tab', 'assignments');
             }
             
             Log::error('Assignment creation failed with non-201 status', [
@@ -649,6 +665,96 @@ class TeacherController extends Controller
             ]);
             
             return back()->withErrors(['msg' => 'Error processing request: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Download an assignment file.
+     *
+     * @param  int  $classroom_id
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function downloadAssignment($classroom_id, $id)
+    {
+        try {
+            $classroom = Classroom::findOrFail($classroom_id);
+            
+            // Check if the authenticated user is the teacher of this classroom
+            if ($classroom->create_by !== Auth::id()) {
+                return redirect()->route('teacher.dashboard')
+                    ->with('error', 'You do not have permission to download assignments from this classroom.');
+            }
+            
+            // Get the assignment
+            $assignment = $classroom->assignments()->findOrFail($id);
+            
+            // Check if file exists
+            if (!$assignment->file || !file_exists(storage_path('app/' . $assignment->file))) {
+                return back()->with('error', 'Assignment file not found.');
+            }
+            
+            // Return the file for download
+            return response()->download(storage_path('app/' . $assignment->file), basename($assignment->file));
+        } catch (\Exception $e) {
+            Log::error('Exception in downloadAssignment', [
+                'message' => $e->getMessage(),
+                'classroom_id' => $classroom_id,
+                'assignment_id' => $id
+            ]);
+            
+            return back()->withErrors(['msg' => 'Error downloading file: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Display the specified submission.
+     *
+     * @param int $classroom_id
+     * @param int $assignment_id
+     * @param int $id
+     * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
+     */
+    public function showSubmission($classroom_id, $assignment_id, $id)
+    {
+        try {
+            $classroom = Classroom::findOrFail($classroom_id);
+            
+            // Check if the authenticated user is the teacher of this classroom
+            if ($classroom->create_by !== Auth::id()) {
+                return redirect()->route('teacher.dashboard')
+                    ->with('error', 'You do not have permission to view submissions in this classroom.');
+            }
+            
+            // Get the assignment
+            $assignment = $classroom->assignments()->findOrFail($assignment_id);
+            
+            // Get the submission with user information
+            $submission = $assignment->submissions()->with('user')->findOrFail($id);
+            
+            // Check if submission is late
+            $submissionDate = \Carbon\Carbon::parse($submission->created_at);
+            $dueDate = \Carbon\Carbon::parse($assignment->due_date);
+            $isLate = $submissionDate->isAfter($dueDate);
+            
+            return view('teacher.submissions.show', compact(
+                'classroom',
+                'assignment',
+                'submission',
+                'isLate',
+                'submissionDate',
+                'dueDate'
+            ));
+        } catch (\Exception $e) {
+            \Log::error('Exception in showSubmission', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'classroom_id' => $classroom_id,
+                'assignment_id' => $assignment_id,
+                'submission_id' => $id
+            ]);
+            
+            return back()->withErrors(['msg' => 'Error retrieving submission: ' . $e->getMessage()]);
         }
     }
 }

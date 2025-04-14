@@ -144,6 +144,10 @@ Route::prefix('teacher')->middleware(['auth', 'App\Http\Middleware\RoleMiddlewar
     Route::get('/classrooms/{classroom_id}/assignments/{id}', [App\Http\Controllers\TeacherController::class, 'showAssignment'])->name('assignments.show');
     Route::delete('/classrooms/{classroom_id}/assignments/{id}', [App\Http\Controllers\TeacherController::class, 'destroyAssignment'])->name('assignments.destroy');
     
+    // Add this new route for downloading assignments
+    Route::get('/classrooms/{classroom_id}/assignments/{id}/download', [App\Http\Controllers\TeacherController::class, 'downloadAssignment'])
+        ->name('assignments.download');
+    
     // Submissions/grading
     Route::get('/classrooms/{classroom_id}/assignments/{assignment_id}/submissions', [App\Http\Controllers\TeacherController::class, 'submissions'])->name('submissions.index');
     Route::get('/classrooms/{classroom_id}/assignments/{assignment_id}/submissions/{id}', [App\Http\Controllers\TeacherController::class, 'showSubmission'])->name('submissions.show');

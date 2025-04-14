@@ -237,9 +237,15 @@ class ClassroomAssignmentController extends Controller
             // Handle file upload if provided
             if ($request->hasFile('file')) {
                 $file = $request->file('file');
-                $timestamp = Carbon::now()->format('Y-m-d_His');
-                $fileName = "assignment_{$classroomId}_{$timestamp}." . $file->getClientOriginalExtension();
-                $filePath = $file->storeAs('classroom_assignments', $fileName, 'public');
+                $originalFileName = $file->getClientOriginalName();
+                
+                // Store in a directory structure that prevents filename collisions
+                $filePath = $file->storeAs(
+                    "classroom_assignments/{$classroomId}", 
+                    $originalFileName, 
+                    'public'
+                );
+                
                 $assignment->file = $filePath;
             }
 
@@ -675,5 +681,59 @@ class ClassroomAssignmentController extends Controller
                                           ->first();
         
         return view('student.classrooms.assignment-show', compact('classroom', 'assignment', 'userSubmission'));
+    }
+
+    /**
+     * Download assignment file for a student
+     *
+     * @param int $classroomId
+     * @param int $id
+     * @return \Illuminate\Http\Response
+     */
+    public function downloadForStudent($classroomId, $id)
+    {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+        
+        // Find the classroom
+        $classroom = Classroom::find($classroomId);
+        if (!$classroom) {
+            return redirect()->route('student.classrooms.index')
+                ->with('error', 'Classroom not found');
+        }
+
+        // Verify user is a member of this classroom
+        $userId = Auth::id();
+        $isMember = $classroom->create_by == $userId || 
+                    $classroom->members()->where('user_id', $userId)->exists();
+        
+        if (!$isMember) {
+            return redirect()->route('student.classrooms.index')
+                ->with('error', 'You are not a member of this classroom');
+        }
+
+        // Find the assignment
+        $assignment = ClassroomAssignment::where('id', $id)
+                                       ->where('classroom_id', $classroomId)
+                                       ->whereNull('delete_at')
+                                       ->first();
+        
+        if (!$assignment) {
+            return redirect()->route('student.classrooms.assignments.index', $classroomId)
+                ->with('error', 'Assignment not found');
+        }
+
+        // Check if assignment has a file
+        if (!$assignment->file || !Storage::disk('public')->exists($assignment->file)) {
+            return redirect()->route('student.classrooms.assignments.show', [$classroomId, $id])
+                ->with('error', 'No file available for download');
+        }
+
+        // Return the file as a download
+        $fileName = basename($assignment->file);
+        $path = Storage::disk('public')->path($assignment->file);
+        
+        return response()->download($path, $fileName);
     }
 }

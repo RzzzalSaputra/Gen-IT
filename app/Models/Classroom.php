@@ -75,6 +75,22 @@ class Classroom extends Model
     }
     
     /**
+     * Get the teachers for the classroom.
+     * Returns users who are members of this classroom with the teacher role.
+     */
+    public function teachers()
+    {
+        return $this->hasManyThrough(
+            User::class,
+            ClassroomMember::class,
+            'classroom_id', // Foreign key on ClassroomMember table
+            'id', // Foreign key on User table
+            'id', // Local key on Classroom table
+            'user_id' // Local key on ClassroomMember table
+        )->where('classroom_members.role', 'teacher');
+    }
+    
+    /**
      * Get the materials for the classroom.
      */
     public function materials(): HasMany
@@ -97,4 +113,6 @@ class Classroom extends Model
     {
         return $query->whereNull('delete_at');
     }
+    
+    
 }

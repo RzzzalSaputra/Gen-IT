@@ -24,5 +24,19 @@ export default {
         },
     },
 
-    plugins: [forms],
+    plugins: [
+        forms,
+        function({ addUtilities }) {
+            const newUtilities = {
+                '.scrollbar-hide': {
+                    '-ms-overflow-style': 'none',
+                    'scrollbar-width': 'none',
+                    '&::-webkit-scrollbar': {
+                        display: 'none',
+                    },
+                },
+            }
+            addUtilities(newUtilities);
+        }
+    ],
 };

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->timestamp('submitted_at');
             $table->boolean('graded')->default(false);
             $table->integer('grade')->nullable();
+            $table->text('feedback')->nullable();
             $table->timestamps(); // Add this line to include created_at and updated_at
         });
     }

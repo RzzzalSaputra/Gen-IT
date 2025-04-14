@@ -65,17 +65,28 @@
                     </a>
                 </div>
             @else
-                <div class="space-y-4">
+                <div class="space-y-4 max-h-80 overflow-y-auto pr-2 scrollbar-hide">
                     @foreach($classrooms as $classroom)
                         <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-700">
                             <a href="{{ route('teacher.classrooms.show', $classroom->id) }}" class="flex justify-between items-start">
                                 <div>
                                     <h4 class="font-medium text-gray-900 dark:text-white">{{ $classroom->name }}</h4>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ $classroom->students->count() }} students</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ $classroom->members()->where('role', 'student')->count() }} students</p>
                                 </div>
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $classroom->status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                    {{ ucfirst($classroom->status ?? 'active') }}
-                                </span>
+                                @if($classroom->pending_submissions_count > 0)
+                                    <span class="px-2 py-1 inline-flex items-center justify-center text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                                        </svg>
+                                        {{ $classroom->pending_submissions_count }}
+                                    </span>
+                                @else
+                                    <span class="px-2 py-1 inline-flex items-center justify-center text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    </span>
+                                @endif
                             </a>
                         </div>
                     @endforeach
@@ -93,11 +104,13 @@
             @if(count($recentSubmissions) === 0)
                 <p class="text-gray-500 dark:text-gray-400 text-center py-4">No recent submissions.</p>
             @else
-                <div class="space-y-4">
+                <div class="space-y-4 max-h-80 overflow-y-auto pr-2">
                     @foreach($recentSubmissions as $submission)
                         <div class="border-l-4 {{ $submission->graded ? 'border-green-500' : 'border-yellow-500' }} pl-4">
-                            <p class="font-medium text-gray-900 dark:text-white">{{ $submission->student->name }}</p>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ $submission->assignment->title }}</p>
+                            <p class="font-medium text-gray-900 dark:text-white">
+                                {{ $submission->user ? $submission->user->name : 'Unknown Student' }}
+                            </p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ $submission->assignment ? $submission->assignment->title : 'Unknown Assignment' }}</p>
                             <div class="flex justify-between items-center mt-2">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $submission->graded ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
                                     {{ $submission->graded ? 'Graded' : 'Pending' }}

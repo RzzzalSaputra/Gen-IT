@@ -62,7 +62,7 @@
                     @if($material->img)
                         <div class="mb-8 text-center">
                             <img 
-                                src="{{ $material->img }}" 
+                                src="{{ asset('storage/' . $material->img) }}" 
                                 alt="{{ $material->title }}" 
                                 class="rounded-xl max-h-96 mx-auto object-contain cursor-pointer image-preview" 
                                 onclick="openImageModal(this.src)"
