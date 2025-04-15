@@ -709,4 +709,51 @@ class ClassroomController extends Controller
         
         return view('student.classrooms.show', compact('classroom', 'materials', 'assignments'));
     }
+
+    /**
+     * Student leaves a classroom
+     */
+    public function leaveClassroom($id)
+    {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+        
+        $classroom = Classroom::findOrFail($id);
+        $userId = Auth::id();
+        
+        // Check if user is a member
+        $member = ClassroomMember::where('classroom_id', $id)
+            ->where('user_id', $userId)
+            ->first();
+            
+        if (!$member) {
+            return redirect()->route('student.classrooms.index')
+                ->with('error', 'You are not a member of this classroom.');
+        }
+        
+        // Don't allow classroom creator to leave
+        if ($classroom->create_by == $userId) {
+            return redirect()->route('student.classrooms.show', $id)
+                ->with('error', 'As the creator of this classroom, you cannot leave it.');
+        }
+        
+        try {
+            DB::beginTransaction();
+            
+            // Delete the classroom membership
+            $member->delete();
+            
+            DB::commit();
+            
+            return redirect()->route('student.classrooms.index')
+                ->with('success', 'You have successfully left the classroom.');
+        } catch (\Exception $e) {
+            DB::rollback();
+            Log::error('Error leaving classroom: ' . $e->getMessage());
+            
+            return redirect()->back()
+                ->with('error', 'An error occurred while trying to leave the classroom. Please try again.');
+        }
+    }
 }

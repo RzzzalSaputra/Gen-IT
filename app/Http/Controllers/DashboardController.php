@@ -11,6 +11,9 @@ use App\Http\Controllers\Api\MaterialController;
 use App\Models\Submission;
 use App\Models\Contact;
 use App\Models\Activity;
+use App\Models\Classroom;
+use App\Models\ClassroomAssignment;
+use App\Models\ClassroomSubmission;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -95,6 +98,57 @@ class DashboardController extends Controller
         // Set user profile completeness
         $profileComplete = !empty($user->user_name) && !empty($user->email) && !empty($user->first_name) && !empty($user->last_name);
         
+        // ====================== NEW CLASSROOM DATA SECTION ======================
+        
+        // Get user's classroom IDs (both owned and member of)
+        $userClassroomIds = Classroom::where('create_by', $user->id)
+            ->orWhereHas('members', function($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+            ->pluck('id');
+        
+        // Get last graded submission
+        $lastGradedSubmission = ClassroomSubmission::where('user_id', $user->id)
+            ->where('graded', true)
+            ->orderBy('updated_at', 'desc')
+            ->first();
+        
+        $lastGrade = $lastGradedSubmission ? $lastGradedSubmission->grade : null;
+        
+        // Count new materials (added in the last 30 days)
+        $newMaterialsCount = ClassroomAssignment::whereIn('classroom_id', $userClassroomIds)
+            ->whereNull('delete_at')
+            ->where('create_at', '>=', Carbon::now()->subDays(30))
+            ->count();
+        
+        // Get upcoming assignments with deadlines in the next 7 days
+        $upcomingDeadlinesCount = ClassroomAssignment::whereIn('classroom_id', $userClassroomIds)
+            ->whereNull('delete_at')
+            ->where('due_date', '>=', Carbon::now())
+            ->where('due_date', '<=', Carbon::now()->addDays(7))
+            ->count();
+        
+        // Calculate assignment completion rate
+        $totalAssignments = ClassroomAssignment::whereIn('classroom_id', $userClassroomIds)
+            ->whereNull('delete_at')
+            ->count();
+        
+        $completedAssignments = ClassroomSubmission::where('user_id', $user->id)
+            ->whereHas('assignment', function($query) use ($userClassroomIds) {
+                $query->whereIn('classroom_id', $userClassroomIds)
+                    ->whereNull('delete_at');
+            })
+            ->count();
+        
+        $assignmentCompletionRate = $totalAssignments > 0 
+            ? round(($completedAssignments / $totalAssignments) * 100) 
+            : 0;
+        
+        // Add the hasUpcomingDeadlines flag for the deadline indicator in the view
+        $hasUpcomingDeadlines = $upcomingDeadlinesCount > 0;
+        $deadlineStatusClass = $hasUpcomingDeadlines ? 'bg-yellow-900/30 text-yellow-300 border-yellow-500/30' : 'bg-green-900/30 text-green-300 border-green-500/30';
+        $messageStatusClass = ($pendingMessagesCount > 0) ? 'bg-yellow-900/30 text-yellow-300 border-yellow-500/30' : 'bg-green-900/30 text-green-300 border-green-500/30';
+        
         return view('dashboard', compact(
             'user',
             'submissionsCount',
@@ -108,7 +162,15 @@ class DashboardController extends Controller
             'materialsCount',
             'materialsChange',
             'recentActivities',
-            'profileComplete'
+            'profileComplete',
+            // New classroom data
+            'lastGrade',
+            'newMaterialsCount',
+            'upcomingDeadlinesCount',
+            'assignmentCompletionRate',
+            'hasUpcomingDeadlines',
+            'deadlineStatusClass',
+            'messageStatusClass'
         ));
     }
     

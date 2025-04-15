@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-2 sm:space-y-0">
             <h2 class="font-semibold text-2xl text-gray-800 dark:text-gray-200 leading-tight">
                 {{ __('Companies') }}
             </h2>
@@ -13,7 +13,7 @@
     <div class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 pt-16 sm:pt-24">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div class="mb-8">
-                <form action="{{ url('/companies') }}" method="GET" class="flex items-center gap-3">
+                <form action="{{ url('/companies') }}" method="GET" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                     <div class="relative flex-1">
                         <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
                             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -27,39 +27,43 @@
                                placeholder="Search companies...">
                     </div>
                     
-                    <div class="relative">
-                        <select name="province" class="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-gray-200 pl-4 pr-10 py-3 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 appearance-none">
-                            <option value="">All Provinces</option>
-                            @foreach($provinces as $province)
-                                <option value="{{ $province }}" {{ request('province') == $province ? 'selected' : '' }}>
-                                    {{ $province }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3">
-                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                            </svg>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full sm:w-auto">
+                        <div class="relative w-full">
+                            <select name="province" 
+                                   class="w-full bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-gray-200 pl-4 pr-10 py-3 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 truncate">
+                                <option value="" class="truncate">All Provinces</option>
+                                @foreach($provinces as $province)
+                                    <option value="{{ $province }}" {{ request('province') == $province ? 'selected' : '' }} class="truncate">
+                                        {{ $province }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="relative">
-                        <select name="city" class="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-gray-200 pl-4 pr-10 py-3 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 appearance-none">
-                            <option value="">All Cities</option>
-                            @foreach($cities as $city)
-                                <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>
-                                    {{ $city }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3">
-                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                            </svg>
+                        
+                        <div class="relative w-full">
+                            <select name="city" 
+                                   class="w-full bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-gray-200 pl-4 pr-10 py-3 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 truncate">
+                                <option value="" class="truncate">All Cities</option>
+                                @foreach($cities as $city)
+                                    <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }} class="truncate">
+                                        {{ $city }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
                         </div>
                     </div>
 
-                    <button type="submit" class="inline-flex items-center px-6 py-3 bg-blue-600 rounded-xl border border-blue-500 text-white font-medium hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-blue-500 transition-all duration-200">
+                    <button type="submit" class="inline-flex items-center justify-center px-6 py-3 bg-blue-600 rounded-xl border border-blue-500 text-white font-medium hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-blue-500 transition-all duration-200">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
@@ -99,7 +103,7 @@
                                             </div>
                                         @endif
                                         <div class="absolute inset-0 bg-gradient-to-t from-gray-900/80 to-transparent"></div>
-                                        <h4 class="absolute bottom-4 left-4 right-4 text-white font-medium text-sm line-clamp-2">
+                                        <h4 class="absolute bottom-4 left-4 right-4 text-white font-medium text-sm line-clamp-2 sm:line-clamp-2">
                                             {{ $company->name }}
                                         </h4>
                                     </a>
@@ -109,7 +113,7 @@
                                             {{ $company->name }}
                                         </h3>
                                         
-                                        <div class="text-sm text-gray-400 mb-4 line-clamp-2">
+                                        <div class="text-sm text-gray-400 mb-4 line-clamp-2 sm:line-clamp-3">
                                             {{ strip_tags($company->description) }}
                                         </div>
                                         
@@ -123,8 +127,8 @@
                                             </div>
                                         </div>
                                         
-                                        <div class="flex justify-between items-center mt-6">
-                                            <div class="flex space-x-2">
+                                        <div class="flex flex-wrap justify-between items-center mt-6 gap-y-3">
+                                            <div class="flex flex-wrap gap-2">
                                                 @if($company->website)
                                                 <a href="{{ $company->website }}" target="_blank" class="text-gray-400 hover:text-blue-400 transition-colors duration-200">
                                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -170,7 +174,7 @@
                             @endforeach
                         </div>
                         
-                        <div class="mt-8">
+                        <div class="mt-8 flex flex-wrap justify-center gap-2">
                             {{ $companies->appends(request()->except('page'))->links() }}
                         </div>
                     @endif
@@ -178,21 +182,6 @@
             </div>
         </div>
     </div>
-
-    <style>
-        /* Fixed widths for the province and city dropdowns */
-        select[name="province"], 
-        select[name="city"] {
-            width: 220px; /* You can adjust this value to fit your design */
-            text-overflow: ellipsis;
-        }
-        
-        /* Handle text overflow in dropdowns */
-        select option {
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-    </style>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -208,6 +197,13 @@
             
             // Store the currently selected city value
             let currentCityValue = citySelect.value;
+            
+            // Fix for mobile dropdown display
+            if (window.innerWidth < 768) {
+                // On mobile, force native dropdown control which handles sizing better
+                provinceSelect.classList.remove('appearance-none');
+                citySelect.classList.remove('appearance-none');
+            }
             
             // Function to update cities based on selected province
             function updateCities() {
@@ -234,6 +230,7 @@
                     const option = document.createElement('option');
                     option.value = city;
                     option.textContent = city;
+                    option.classList.add('truncate'); // Add Tailwind truncate class
                     // If this was the previously selected city, select it again
                     if (city === currentCityValue) {
                         option.selected = true;

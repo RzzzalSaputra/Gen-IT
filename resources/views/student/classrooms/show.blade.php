@@ -1,4 +1,9 @@
 <x-app-layout>
+    <!-- SweetAlert CDN -->
+    @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @endpush
+
     <!-- Main container with padding that pushes content below fixed navbar -->
     <div class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         <!-- Spacing div that accounts for the navbar height -->
@@ -25,12 +30,26 @@
                             </div>
                         </div>
                     </div>
-                    <a href="{{ route('student.classrooms.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-700/70 hover:bg-gray-600/70 backdrop-blur-sm text-white text-sm font-medium rounded-lg transition-colors duration-200 mt-4 md:mt-0">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                        </svg>
-                        Back to Classrooms
-                    </a>
+                    <div class="flex flex-col sm:flex-row gap-3 mt-4 md:mt-0">
+                        <!-- Leave Classroom Button -->
+                        <button 
+                            type="button" 
+                            onclick="confirmLeaveClassroom()"
+                            class="inline-flex items-center px-4 py-2 bg-red-600/70 hover:bg-red-500/70 backdrop-blur-sm text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            </svg>
+                            Leave Classroom
+                        </button>
+
+                        <!-- Back to Classrooms Button -->
+                        <a href="{{ route('student.classrooms.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-700/70 hover:bg-gray-600/70 backdrop-blur-sm text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                            </svg>
+                            Back to Classrooms
+                        </a>
+                    </div>
                 </div>
                 <div class="bg-gray-900/30 backdrop-blur-sm rounded-xl p-4 mt-4">
                     <h3 class="text-sm font-medium text-gray-300 mb-2">About this classroom</h3>
@@ -103,60 +122,71 @@
                                             $isVideo = !empty($material->link) && (strpos($material->link, 'youtube.com') !== false || strpos($material->link, 'youtu.be') !== false);
                                             $isExternalLink = !empty($material->link) && !$isVideo;
                                             
-                                            // Set the appropriate styles based on material type with reduced border intensity
+                                            // Enhanced styling with gradients and better visual indicators
                                             if ($isTextOnly) {
-                                                $iconClass = 'text-blue-400';
+                                                $iconClass = 'text-blue-300';
                                                 $icon = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>';
                                                 $typeLabel = 'Reading Material';
-                                                $bgColor = 'bg-blue-900/20';
-                                                $borderColor = 'border-blue-500/30';
-                                                $hoverBorderColor = 'hover:border-blue-400/40';
+                                                $bgColor = 'bg-gradient-to-br from-blue-900/40 to-blue-800/20';
+                                                $borderColor = 'border-blue-600/40';
+                                                $hoverBgColor = 'group-hover:from-blue-900/60 group-hover:to-blue-800/40';
+                                                $iconBgColor = 'bg-gradient-to-br from-blue-600 to-blue-800';
                                             } elseif ($isDownloadable) {
-                                                $iconClass = 'text-green-400';
+                                                $iconClass = 'text-green-300';
                                                 $icon = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"></path>';
                                                 $typeLabel = 'Study Material';
-                                                $bgColor = 'bg-green-900/20';
-                                                $borderColor = 'border-green-500/30';
-                                                $hoverBorderColor = 'hover:border-green-400/40';
+                                                $bgColor = 'bg-gradient-to-br from-green-900/40 to-emerald-800/20';
+                                                $borderColor = 'border-green-600/40';
+                                                $hoverBgColor = 'group-hover:from-green-900/60 group-hover:to-emerald-800/40';
+                                                $iconBgColor = 'bg-gradient-to-br from-green-600 to-emerald-700';
                                             } elseif ($isVideo) {
-                                                $iconClass = 'text-red-400';
+                                                $iconClass = 'text-red-300';
                                                 $icon = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>';
                                                 $typeLabel = 'Video Material';
-                                                $bgColor = 'bg-red-900/20';
-                                                $borderColor = 'border-red-500/30';
-                                                $hoverBorderColor = 'hover:border-red-400/40';
+                                                $bgColor = 'bg-gradient-to-br from-red-900/40 to-rose-800/20';
+                                                $borderColor = 'border-red-600/40';
+                                                $hoverBgColor = 'group-hover:from-red-900/60 group-hover:to-rose-800/40';
+                                                $iconBgColor = 'bg-gradient-to-br from-red-600 to-rose-700';
                                             } else {
-                                                $iconClass = 'text-purple-400';
+                                                $iconClass = 'text-purple-300';
                                                 $icon = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>';
                                                 $typeLabel = 'Web Resource';
-                                                $bgColor = 'bg-purple-900/20';
-                                                $borderColor = 'border-purple-500/30';
-                                                $hoverBorderColor = 'hover:border-purple-400/40';
+                                                $bgColor = 'bg-gradient-to-br from-purple-900/40 to-indigo-800/20';
+                                                $borderColor = 'border-purple-600/40';
+                                                $hoverBgColor = 'group-hover:from-purple-900/60 group-hover:to-indigo-800/40';
+                                                $iconBgColor = 'bg-gradient-to-br from-purple-600 to-indigo-700';
                                             }
                                         @endphp
                                         
-                                        <div class="group bg-gray-800/30 hover:bg-gray-800/50 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg border border-gray-700/50 transition duration-300">
-                                            <div class="flex flex-col sm:flex-row p-4">
+                                        <!-- Enhanced material card with better visual distinction -->
+                                        <div class="group {{ $bgColor }} hover:{{ $hoverBgColor }} backdrop-blur-sm rounded-xl overflow-hidden shadow-lg border-2 {{ $borderColor }} transition-all duration-300 hover:shadow-xl hover:shadow-{{ substr($borderColor, 7, 5) }}/10">
+                                            <div class="flex flex-col sm:flex-row p-5">
                                                 <div class="flex-shrink-0 mb-4 sm:mb-0 sm:mr-4">
-                                                    <div class="w-12 h-12 {{ $bgColor }} rounded-lg flex items-center justify-center border {{ $borderColor }}">
+                                                    <div class="w-12 h-12 {{ $iconBgColor }} rounded-xl flex items-center justify-center shadow-lg shadow-{{ substr($iconBgColor, 24) }}/30">
                                                         <svg class="w-6 h-6 {{ $iconClass }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             {!! $icon !!}
                                                         </svg>
                                                     </div>
                                                 </div>
                                                 <div class="flex-1 min-w-0">
-                                                    <h4 class="font-medium text-gray-100 group-hover:text-blue-400 transition-colors duration-200 mb-2">{{ $material->title }}</h4>
-                                                    <p class="text-sm text-gray-400 line-clamp-2 mb-3">
+                                                    <div class="flex flex-wrap gap-2 items-center mb-2">
+                                                        <h4 class="font-medium text-gray-100 group-hover:text-white transition-colors duration-200">{{ $material->title }}</h4>
+                                                        <span class="px-2 py-1 rounded-full text-xs font-medium {{ str_replace('from-', 'bg-', substr($iconBgColor, 0, 30)) }}/40 {{ $iconClass }} border border-{{ substr($borderColor, 7) }}">
+                                                            {{ $typeLabel }}
+                                                        </span>
+                                                    </div>
+                                                    <p class="text-sm text-gray-300 line-clamp-2 mb-3">
                                                         {{ Str::limit(strip_tags($material->content), 120) }}
                                                     </p>
-                                                    <div class="text-xs text-gray-500">
+                                                    <div class="text-xs text-gray-400">
                                                         Posted: {{ $material->create_at ? $material->create_at->format('M d, Y') : 'Unknown date' }}
                                                         @if($material->creator)
                                                             by {{ $material->creator->name }}
                                                         @endif
                                                     </div>
                                                     <div class="flex justify-end mt-3">
-                                                        <a href="{{ route('student.classrooms.materials.show', ['classroom_id' => $classroom->id, 'id' => $material->id]) }}" class="inline-flex items-center px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                                                        <a href="{{ route('student.classrooms.materials.show', ['classroom_id' => $classroom->id, 'id' => $material->id]) }}" 
+                                                           class="inline-flex items-center px-4 py-2 {{ str_replace('from-', 'bg-', substr($iconBgColor, 0, 30)) }} hover:bg-opacity-90 text-white text-sm font-medium rounded-lg transition-all duration-200 shadow-md hover:shadow-lg">
                                                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -293,4 +323,34 @@
             </div>
         </div>
     </div>
+
+    <!-- SweetAlert Confirmation Script -->
+    <script>
+        function confirmLeaveClassroom() {
+            Swal.fire({
+                title: 'Leave Classroom?',
+                text: "Are you sure you want to leave this classroom? You'll lose access to all materials and assignments.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Yes, leave classroom',
+                cancelButtonText: 'Cancel',
+                background: '#1f2937',
+                backdrop: 'rgba(0,0,0,0.7)',
+                iconColor: '#f87171',
+                customClass: {
+                    title: 'text-white',
+                    content: 'text-gray-300',
+                    confirmButton: 'py-2 px-4 rounded-lg',
+                    cancelButton: 'py-2 px-4 rounded-lg'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Submit the form to leave the classroom
+                    window.location.href = "{{ route('student.classrooms.leave', $classroom->id) }}";
+                }
+            });
+        }
+    </script>
 </x-app-layout>

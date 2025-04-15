@@ -163,9 +163,24 @@
                                     @endif
                                 </div>
                                 
+                                <!-- Teacher Feedback (if graded) -->
+                                @if($submission->graded && $submission->feedback)
+                                <div class="bg-green-900/20 border border-green-700/30 rounded-lg p-4 mb-4">
+                                    <h4 class="text-white text-sm font-medium mb-2 flex items-center">
+                                        <svg class="w-4 h-4 mr-2 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                                        </svg>
+                                        Teacher Feedback:
+                                    </h4>
+                                    <div class="prose prose-sm max-w-none text-gray-200 ml-6">
+                                        {!! $submission->feedback !!}
+                                    </div>
+                                </div>
+                                @endif
+                                
                                 @if($submission->content)
                                     <div class="bg-gray-900/30 rounded-lg p-4 mb-4">
-                                        <h4 class="text-white text-sm font-medium mb-2">Your Notes:</h4>
+                                        <h4 class="text-white text-sm font-medium mb-2">Your Answer:</h4>
                                         <p class="text-gray-300">{{ $submission->content }}</p>
                                     </div>
                                 @endif
