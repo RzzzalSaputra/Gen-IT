@@ -438,7 +438,7 @@ class ClassroomSubmissionController extends Controller
      *             @OA\Schema(
      *                 required={"grade"},
      *                 @OA\Property(property="grade", type="integer", description="Grade value (0-100)"),
-     *                 @OA\Property(property="feedback", type="string", description="Feedback for the submission") // Added feedback property
+     *                 @OA\Property(property="feedback", type="string", description="Feedback for the submission")
      *             )
      *         )
      *     ),

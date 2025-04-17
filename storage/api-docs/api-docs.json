@@ -2233,6 +2233,10 @@
                                     "grade": {
                                         "description": "Grade value (0-100)",
                                         "type": "integer"
+                                    },
+                                    "feedback": {
+                                        "description": "Feedback for the submission",
+                                        "type": "string"
                                     }
                                 },
                                 "type": "object"
