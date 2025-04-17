@@ -27,7 +27,6 @@
                             <option value="teacher">Teacher</option>
                         </select>
                     </div>
-                    <input type="hidden" id="memberIdForRole" name="member_id">
                 </div>
                 
                 <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
@@ -51,8 +50,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const memberId = this.getAttribute('data-member-id');
             const currentRole = this.getAttribute('data-current-role');
             
-            // Set the member ID in the hidden field
-            document.getElementById('memberIdForRole').value = memberId;
+            // Check if memberId exists
+            if (!memberId) {
+                console.error('Member ID is missing');
+                return; // Don't open modal if ID is missing
+            }
             
             // Set the initial selection in the dropdown
             const roleSelect = document.getElementById('memberRole');
@@ -65,7 +67,10 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Update the form action with the correct route
             const form = document.getElementById('changeRoleForm');
-            form.action = "{{ route('teacher.members.update.role', [$classroom->id, '']) }}" + memberId;
+            const classroomId = {{ $classroom->id }};
+            
+            // Build the URL manually
+            form.action = `/teacher/classrooms/${classroomId}/members/${memberId}/role`;
             
             // Show the modal
             document.getElementById('changeRoleModal').classList.remove('hidden');

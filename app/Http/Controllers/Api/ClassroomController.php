@@ -576,10 +576,16 @@ class ClassroomController extends Controller
         
         $userId = Auth::id();
         
-        // Get classrooms where user is a member
+        // Get classrooms where user is a member with assignments and materials
         $joinedClassrooms = Classroom::whereHas('members', function($query) use ($userId) {
                 $query->where('user_id', $userId);
             })
+            ->with(['creator', 'members', 
+                'assignments.submissions' => function($query) use ($userId) {
+                    $query->where('user_id', $userId);
+                },
+                'materials'
+            ])
             ->whereNull('delete_at')
             ->get();
             

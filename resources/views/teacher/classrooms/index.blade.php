@@ -7,12 +7,20 @@
 <div class="container py-4">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-black text-gray-800 dark:text-white">My Classrooms</h1>
-        <a href="{{ route('teacher.classrooms.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border-4 border-gray-900 rounded-none font-black text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.7)] hover:-translate-y-1 transition-transform">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
-            </svg>
-            Create New Classroom
-        </a>
+        <div class="flex space-x-3">
+            <button onclick="openJoinModal()" class="inline-flex items-center px-4 py-2 bg-green-600 border-4 border-gray-900 rounded-none font-black text-xs text-white uppercase tracking-widest hover:bg-green-700 active:bg-green-900 focus:outline-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.7)] hover:-translate-y-1 transition-transform">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z" />
+                </svg>
+                Join Classroom
+            </button>
+            <button onclick="openCreateModal()" class="inline-flex items-center px-4 py-2 bg-blue-600 border-4 border-gray-900 rounded-none font-black text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.7)] hover:-translate-y-1 transition-transform">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                </svg>
+                Create New Classroom
+            </button>
+        </div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -71,13 +79,21 @@
                         </svg>
                         <div>
                             <p class="text-xl font-black mb-3">No classrooms found</p>
-                            <p class="mb-5 text-base font-bold">You haven't created any classrooms yet. Get started by creating your first classroom!</p>
-                            <a href="{{ route('teacher.classrooms.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border-4 border-gray-900 rounded-none font-black text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.7)] hover:-translate-y-1 transition-transform">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
-                                </svg>
-                                Create Your First Classroom
-                            </a>
+                            <p class="mb-5 text-base font-bold">You haven't created any classrooms yet. Get started by creating your first classroom or joining an existing one!</p>
+                            <div class="flex flex-wrap gap-3">
+                                <button onclick="openJoinModal()" class="inline-flex items-center px-4 py-2 bg-green-600 border-4 border-gray-900 rounded-none font-black text-xs text-white uppercase tracking-widest hover:bg-green-700 active:bg-green-900 focus:outline-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.7)] hover:-translate-y-1 transition-transform">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z" />
+                                    </svg>
+                                    Join Classroom
+                                </button>
+                                <button onclick="openCreateModal()" class="inline-flex items-center px-4 py-2 bg-blue-600 border-4 border-gray-900 rounded-none font-black text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.7)] hover:-translate-y-1 transition-transform">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                                    </svg>
+                                    Create Classroom
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -85,4 +101,88 @@
         @endforelse
     </div>
 </div>
+
+<!-- Include both modals -->
+@include('teacher.classrooms.join-modal')
+@include('teacher.classrooms.create-modal')
+
+<!-- JavaScript for modal functionality -->
+<script>
+    function openJoinModal() {
+        document.getElementById('joinClassroomModal').classList.remove('hidden');
+        document.getElementById('code').focus();
+        // Reset form and errors
+        document.getElementById('joinClassroomForm').reset();
+        document.getElementById('modalError').classList.add('hidden');
+        document.getElementById('codeError').classList.add('hidden');
+    }
+    
+    function closeJoinModal() {
+        document.getElementById('joinClassroomModal').classList.add('hidden');
+    }
+    
+    function openCreateModal() {
+        document.getElementById('createClassroomModal').classList.remove('hidden');
+        document.getElementById('name').focus();
+        // Reset form and errors
+        document.getElementById('createClassroomForm').reset();
+        document.getElementById('createModalError').classList.add('hidden');
+        document.getElementById('nameError').classList.add('hidden');
+        document.getElementById('descriptionError').classList.add('hidden');
+    }
+    
+    function closeCreateModal() {
+        document.getElementById('createClassroomModal').classList.add('hidden');
+    }
+    
+    // Close modal when clicking Escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeJoinModal();
+            closeCreateModal();
+        }
+    });
+    
+    // Handle join form submission errors
+    @if(session('error') && !session('form'))
+        document.addEventListener('DOMContentLoaded', function() {
+            openJoinModal();
+            document.getElementById('modalError').classList.remove('hidden');
+            document.getElementById('errorMessage').textContent = "{{ session('error') }}";
+        });
+    @endif
+    
+    @error('code')
+        document.addEventListener('DOMContentLoaded', function() {
+            openJoinModal();
+            document.getElementById('codeError').classList.remove('hidden');
+            document.getElementById('codeError').textContent = "{{ $message }}";
+        });
+    @enderror
+    
+    // Handle create form submission errors
+    @if(session('error') && session('form') === 'create')
+        document.addEventListener('DOMContentLoaded', function() {
+            openCreateModal();
+            document.getElementById('createModalError').classList.remove('hidden');
+            document.getElementById('createErrorMessage').textContent = "{{ session('error') }}";
+        });
+    @endif
+    
+    @error('name')
+        document.addEventListener('DOMContentLoaded', function() {
+            openCreateModal();
+            document.getElementById('nameError').classList.remove('hidden');
+            document.getElementById('nameError').textContent = "{{ $message }}";
+        });
+    @enderror
+    
+    @error('description')
+        document.addEventListener('DOMContentLoaded', function() {
+            openCreateModal();
+            document.getElementById('descriptionError').classList.remove('hidden');
+            document.getElementById('descriptionError').textContent = "{{ $message }}";
+        });
+    @enderror
+</script>
 @endsection

@@ -161,6 +161,11 @@ Route::prefix('teacher')->middleware(['auth', 'App\Http\Middleware\RoleMiddlewar
     // Students management
     Route::get('/classrooms/{classroom_id}/students', [TeacherController::class, 'students'])->name('students.index');
     
+    // teacher join
+
+    Route::post('/classrooms/join', [TeacherController::class, 'processJoinClassroom'])
+    ->name('classrooms.process-join');
+    
     // Members/Students management
     Route::post('/classrooms/{classroom_id}/members', [TeacherController::class, 'storeMember'])->name('members.store');
     Route::put('/classrooms/{classroom_id}/members/{id}/role', [TeacherController::class, 'updateMemberRole'])->name('members.update.role');

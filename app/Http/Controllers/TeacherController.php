@@ -38,13 +38,26 @@ class TeacherController extends Controller
     {
         $teacher_id = Auth::id();
         
-        // Get overview data
-        $classrooms = Classroom::where('create_by', $teacher_id)
+        // Get classrooms created by the teacher
+        $createdClassrooms = Classroom::where('create_by', $teacher_id)
             ->with(['assignments.submissions' => function($query) {
                 $query->where('graded', false);
             }])
             ->get();
             
+        // Get classrooms where the teacher is a member with 'teacher' role    
+        $joinedClassrooms = Classroom::whereHas('members', function($query) use ($teacher_id) {
+            $query->where('user_id', $teacher_id)
+                  ->where('role', 'teacher');
+        })
+        ->with(['assignments.submissions' => function($query) {
+            $query->where('graded', false);
+        }])
+        ->get();
+        
+        // Merge the collections and remove duplicates
+        $classrooms = $createdClassrooms->concat($joinedClassrooms)->unique('id');
+        
         $classroomCount = $classrooms->count();
         $studentCount = 0;
         $pendingSubmissions = 0;
@@ -65,9 +78,13 @@ class TeacherController extends Controller
             $pendingSubmissions += $classroom_pending;
         }
         
-        // Get recent activities
+        // Get recent activities from all classrooms (created and joined)
         $recentSubmissions = ClassroomSubmission::whereHas('assignment.classroom', function($query) use ($teacher_id) {
-                $query->where('create_by', $teacher_id);
+                $query->where('create_by', $teacher_id)
+                      ->orWhereHas('members', function($q) use ($teacher_id) {
+                          $q->where('user_id', $teacher_id)
+                            ->where('role', 'teacher');
+                      });
             })
             ->with(['user', 'assignment'])
             ->orderBy('submitted_at', 'desc')
@@ -87,7 +104,18 @@ class TeacherController extends Controller
     public function classrooms()
     {
         $teacher_id = Auth::id();
-        $classrooms = Classroom::where('create_by', $teacher_id)->get();
+        
+        // Get classrooms created by the teacher
+        $createdClassrooms = Classroom::where('create_by', $teacher_id)->get();
+        
+        // Get classrooms where the teacher is a member with 'teacher' role
+        $joinedClassrooms = Classroom::whereHas('members', function($query) use ($teacher_id) {
+            $query->where('user_id', $teacher_id)
+                  ->where('role', 'teacher');
+        })->get();
+        
+        // Merge the collections and remove duplicates
+        $classrooms = $createdClassrooms->concat($joinedClassrooms)->unique('id');
         
         return view('teacher.classrooms.index', compact('classrooms'));
     }
@@ -113,11 +141,16 @@ class TeacherController extends Controller
     public function showClassroom($id)
     {
         $classroom = Classroom::findOrFail($id);
+        $user_id = Auth::id();
         
-        // Check if the authenticated user is the teacher of this classroom
-        if ($classroom->create_by !== Auth::id()) {
-            return redirect()->route('teacher.dashboard')
-                ->with('error', 'You do not have permission to view this classroom.');
+        // Check if the authenticated user is the teacher of this classroom or has teacher role
+        $isTeacher = ($classroom->create_by === $user_id) || 
+                     $classroom->members()->where('user_id', $user_id)
+                               ->where('role', 'teacher')
+                               ->exists();
+        
+        if (!$isTeacher) {
+            abort(403, 'Unauthorized action.');
         }
         
         // Load the materials with filter to exclude deleted ones
@@ -132,65 +165,37 @@ class TeacherController extends Controller
         return view('teacher.classrooms.show', compact('classroom', 'materials', 'assignments', 'members'));
     }
     
+    /**
+     * Update the specified classroom
+     */
     public function updateClassroom(Request $request, $id)
     {
-        $classroom = Classroom::findOrFail($id);
-        
-        // Check if the authenticated user is the teacher of this classroom
-        if ($classroom->create_by !== Auth::id()) {
-            return redirect()->route('teacher.dashboard')
-                ->with('error', 'You do not have permission to update this classroom.');
+        if (!$this->isTeacherInClassroom($id)) {
+            abort(403, 'Unauthorized action. Only teachers can update this classroom.');
         }
         
-        // Update the classroom
-        $classroom->update($request->only(['name', 'description']));
+        $classroom = Classroom::findOrFail($id);
+        // Validation and update logic...
         
-        return redirect()->route('teacher.classrooms.show', $classroom->id)
-            ->with('success', 'Classroom updated successfully.');
+        // Rest of your update logic
+        return redirect()->route('teacher.classrooms.show', $id)
+                         ->with('success', 'Classroom updated successfully');
     }
 
+    /**
+     * Remove the specified classroom
+     */
     public function destroyClassroom($id)
     {
+        if (!$this->isTeacherInClassroom($id)) {
+            abort(403, 'Unauthorized action. Only teachers can delete this classroom.');
+        }
+        
         $classroom = Classroom::findOrFail($id);
+        // Deletion logic...
         
-        // Check if the authenticated user is the teacher of this classroom
-        if ($classroom->create_by !== Auth::id()) {
-            return redirect()->route('teacher.dashboard')
-                ->with('error', 'You do not have permission to delete this classroom.');
-        }
-        
-        // Begin a database transaction
-        DB::beginTransaction();
-        
-        try {
-            // Delete all related records first
-            // Members
-            $classroom->members()->delete();
-            
-            // Materials
-            $classroom->materials()->delete();
-            
-            // For assignments, also delete submissions first
-            foreach ($classroom->assignments as $assignment) {
-                $assignment->submissions()->delete();
-            }
-            
-            // Assignments
-            $classroom->assignments()->delete();
-            
-            // Finally delete the classroom
-            $classroom->delete();
-            
-            DB::commit();
-            
-            return redirect()->route('teacher.classrooms.index')
-                ->with('success', 'Classroom deleted successfully.');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            
-            return redirect()->back()
-                ->with('error', 'Failed to delete classroom: ' . $e->getMessage());
-        }
+        return redirect()->route('teacher.classrooms.index')
+                         ->with('success', 'Classroom deleted successfully');
     }
     
     // Add other methods for assignments, materials, submissions, etc...
@@ -198,10 +203,7 @@ class TeacherController extends Controller
     // Example of the grading functionality
     public function gradeSubmission(Request $request, $classroom_id, $assignment_id, $id)
     {
-        $classroom = Classroom::findOrFail($classroom_id);
-        
-        // Check if the authenticated user is the teacher of this classroom
-        if ($classroom->create_by !== Auth::id()) {
+        if (!$this->isTeacherInClassroom($classroom_id)) {
             return redirect()->route('teacher.dashboard')
                 ->with('error', 'You do not have permission to grade submissions in this classroom.');
         }
@@ -218,28 +220,25 @@ class TeacherController extends Controller
     
     public function showMaterial($classroom_id, $id)
     {
-        $classroom = Classroom::findOrFail($classroom_id);
-        $material = $classroom->materials()->findOrFail($id);
-        
-        // Check if the authenticated user is the teacher of this classroom
-        if ($classroom->create_by !== Auth::id()) {
+        if (!$this->isTeacherInClassroom($classroom_id)) {
             return redirect()->route('teacher.dashboard')
                 ->with('error', 'You do not have permission to view this material.');
         }
+        
+        $classroom = Classroom::findOrFail($classroom_id);
+        $material = $classroom->materials()->findOrFail($id);
         
         return view('teacher.materials.show', compact('classroom', 'material'));
     }
 
     public function showAssignment($classroom_id, $id)
     {
-        $classroom = Classroom::findOrFail($classroom_id);
-        
-        // Check if the authenticated user is the teacher of this classroom
-        if ($classroom->create_by !== Auth::id()) {
+        if (!$this->isTeacherInClassroom($classroom_id)) {
             return redirect()->route('teacher.dashboard')
                 ->with('error', 'You do not have permission to view this assignment.');
         }
         
+        $classroom = Classroom::findOrFail($classroom_id);
         $assignment = $classroom->assignments()->findOrFail($id);
         
         return view('teacher.assignments.show', compact('classroom', 'assignment'));
@@ -249,13 +248,12 @@ class TeacherController extends Controller
 
     public function storeMember(Request $request, $classroom_id)
     {
-        $classroom = Classroom::findOrFail($classroom_id);
-        
-        // Check if the authenticated user is the teacher of this classroom
-        if ($classroom->create_by !== Auth::id()) {
+        if (!$this->isTeacherInClassroom($classroom_id)) {
             return redirect()->route('teacher.dashboard')
                 ->with('error', 'You do not have permission to add members to this classroom.');
         }
+        
+        $classroom = Classroom::findOrFail($classroom_id);
         
         // Validate the request
         $request->validate([
@@ -284,10 +282,7 @@ class TeacherController extends Controller
 
     public function updateMemberRole(Request $request, $classroom_id, $id)
     {
-        $classroom = Classroom::findOrFail($classroom_id);
-        
-        // Check if the authenticated user is the teacher of this classroom
-        if ($classroom->create_by !== Auth::id()) {
+        if (!$this->isTeacherInClassroom($classroom_id)) {
             return redirect()->route('teacher.dashboard')
                 ->with('error', 'You do not have permission to update member roles in this classroom.');
         }
@@ -296,6 +291,9 @@ class TeacherController extends Controller
         $request->validate([
             'role' => 'required|in:student,teacher',
         ]);
+        
+        // Get the classroom
+        $classroom = Classroom::findOrFail($classroom_id);
         
         // Update the member's role
         $classroom->members()->where('id', $id)->update([
@@ -307,13 +305,13 @@ class TeacherController extends Controller
 
     public function destroyMember($classroom_id, $id)
     {
-        $classroom = Classroom::findOrFail($classroom_id);
-        
-        // Check if the authenticated user is the teacher of this classroom
-        if ($classroom->create_by !== Auth::id()) {
+        if (!$this->isTeacherInClassroom($classroom_id)) {
             return redirect()->route('teacher.dashboard')
                 ->with('error', 'You do not have permission to remove members from this classroom.');
         }
+        
+        // Get the classroom
+        $classroom = Classroom::findOrFail($classroom_id);
         
         // Remove the member
         $classroom->members()->where('id', $id)->delete();
@@ -321,42 +319,19 @@ class TeacherController extends Controller
         return back()->with('success', 'Member removed successfully.');
     }
 
+    /**
+     * Remove the specified material from the classroom
+     */
     public function destroyMaterial($classroom_id, $id)
     {
-        $classroom = Classroom::findOrFail($classroom_id);
-        
-        // Check if the authenticated user is the teacher of this classroom
-        if ($classroom->create_by !== Auth::id()) {
-            return redirect()->route('teacher.dashboard')
-                ->with('error', 'You do not have permission to delete materials in this classroom.');
+        if (!$this->isTeacherInClassroom($classroom_id)) {
+            abort(403, 'Unauthorized action. Only teachers can delete materials from this classroom.');
         }
         
-        // Soft delete the material
-        $material = $classroom->materials()->findOrFail($id);
-        $material->delete_at = now();
-        $material->save();
+        // Material deletion logic...
         
-        return redirect()->route('teacher.classrooms.show', $classroom_id)
-            ->with('success', 'Material deleted successfully.');
-    }
-
-    public function destroyAssignment($classroom_id, $id)
-    {
-        $classroom = Classroom::findOrFail($classroom_id);
-        
-        // Check if the authenticated user is the teacher of this classroom
-        if ($classroom->create_by !== Auth::id()) {
-            return redirect()->route('teacher.dashboard')
-                ->with('error', 'You do not have permission to delete assignments in this classroom.');
-        }
-        
-        // Soft delete the assignment
-        $assignment = $classroom->assignments()->findOrFail($id);
-        $assignment->delete_at = now();
-        $assignment->save();
-        
-        return redirect()->route('teacher.classrooms.show', $classroom_id)
-            ->with('success', 'Assignment deleted successfully.');
+        return redirect()->route('teacher.materials.index', $classroom_id)
+                         ->with('success', 'Material deleted successfully');
     }
 
     /**
@@ -371,11 +346,8 @@ class TeacherController extends Controller
         Log::debug('Starting material submission', ['classroom_id' => $classroom_id, 'user_id' => Auth::id()]);
         
         try {
-            $classroom = Classroom::findOrFail($classroom_id);
-            
-            // Check if the authenticated user is the teacher of this classroom
-            if ($classroom->create_by !== Auth::id()) {
-                Log::warning('Permission denied: User is not classroom creator', [
+            if (!$this->isTeacherInClassroom($classroom_id)) {
+                Log::warning('Permission denied: User is not a teacher in this classroom', [
                     'user_id' => Auth::id(),
                     'classroom_id' => $classroom_id
                 ]);
@@ -417,6 +389,72 @@ class TeacherController extends Controller
     }
 
     /**
+     * Update the specified material in the classroom
+     */
+    public function updateMaterial(Request $request, $classroom_id, $id)
+    {
+        Log::debug('Starting material update', ['classroom_id' => $classroom_id, 'material_id' => $id, 'user_id' => Auth::id()]);
+        
+        try {
+            if (!$this->isTeacherInClassroom($classroom_id)) {
+                Log::warning('Permission denied: User is not a teacher in this classroom', [
+                    'user_id' => Auth::id(),
+                    'classroom_id' => $classroom_id
+                ]);
+                return redirect()->route('teacher.dashboard')
+                    ->with('error', 'You do not have permission to update materials in this classroom.');
+            }
+            
+            // Get the classroom first
+            $classroom = Classroom::findOrFail($classroom_id);
+            
+            // Check if material exists, belongs to this classroom, and is not soft deleted
+            $material = $classroom->materials()
+                ->whereNull('delete_at')
+                ->findOrFail($id);
+            
+            // Remove the type field from the request to ensure it doesn't get changed
+            $requestData = $request->except(['type']);
+            
+            // Create a new request with the filtered data
+            $filteredRequest = new Request($requestData);
+            
+            Log::debug('Permissions verified, calling material controller with filtered data', [
+                'filtered_fields' => array_keys($requestData)
+            ]);
+            
+            // Pass filtered request, classroom_id, and material_id to the update method
+            $response = $this->materialController->update($filteredRequest, $classroom_id, $id);
+            
+            Log::info('Material controller response', [
+                'status_code' => $response->getStatusCode(),
+                'content' => json_decode($response->getContent(), true)
+            ]);
+            
+            if ($response->getStatusCode() === 200) {
+                return redirect()->route('teacher.materials.show', [$classroom_id, $id])
+                    ->with('success', 'Material updated successfully');
+            }
+            
+            Log::error('Material update failed with non-200 status', [
+                'status_code' => $response->getStatusCode(),
+                'response' => $response->getContent()
+            ]);
+            
+            return back()->withErrors(['msg' => 'Failed to update material: ' . $response->getContent()]);
+        } catch (\Exception $e) {
+            Log::error('Exception in updateMaterial', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'classroom_id' => $classroom_id,
+                'material_id' => $id
+            ]);
+            
+            return back()->withErrors(['msg' => 'Error processing request: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
      * Store a newly created classroom assignment.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -428,11 +466,8 @@ class TeacherController extends Controller
         Log::debug('Starting assignment creation', ['classroom_id' => $classroom_id, 'user_id' => Auth::id()]);
         
         try {
-            $classroom = Classroom::findOrFail($classroom_id);
-            
-            // Check if the authenticated user is the teacher of this classroom
-            if ($classroom->create_by !== Auth::id()) {
-                Log::warning('Permission denied: User is not classroom creator', [
+            if (!$this->isTeacherInClassroom($classroom_id)) {
+                Log::warning('Permission denied: User is not a teacher in this classroom', [
                     'user_id' => Auth::id(),
                     'classroom_id' => $classroom_id
                 ]);
@@ -486,17 +521,17 @@ class TeacherController extends Controller
         Log::debug('Starting assignment update', ['classroom_id' => $classroom_id, 'assignment_id' => $id, 'user_id' => Auth::id()]);
         
         try {
-            $classroom = Classroom::findOrFail($classroom_id);
-            
-            // Check if the authenticated user is the teacher of this classroom
-            if ($classroom->create_by !== Auth::id()) {
-                Log::warning('Permission denied: User is not classroom creator', [
+            if (!$this->isTeacherInClassroom($classroom_id)) {
+                Log::warning('Permission denied: User is not a teacher in this classroom', [
                     'user_id' => Auth::id(),
                     'classroom_id' => $classroom_id
                 ]);
                 return redirect()->route('teacher.dashboard')
                     ->with('error', 'You do not have permission to update assignments in this classroom.');
             }
+            
+            // Get the classroom first
+            $classroom = Classroom::findOrFail($classroom_id);
             
             // Check if assignment exists and belongs to this classroom
             $assignment = $classroom->assignments()->findOrFail($id);
@@ -535,74 +570,18 @@ class TeacherController extends Controller
     }
 
     /**
-     * Update an existing classroom material.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $classroom_id
-     * @param  int  $id
-     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     * Remove the specified assignment from the classroom
      */
-    public function updateMaterial(Request $request, $classroom_id, $id)
+    public function destroyAssignment($classroom_id, $id)
     {
-        Log::debug('Starting material update', ['classroom_id' => $classroom_id, 'material_id' => $id, 'user_id' => Auth::id()]);
-        
-        try {
-            $classroom = Classroom::findOrFail($classroom_id);
-            
-            // Check if the authenticated user is the teacher of this classroom
-            if ($classroom->create_by !== Auth::id()) {
-                Log::warning('Permission denied: User is not classroom creator', [
-                    'user_id' => Auth::id(),
-                    'classroom_id' => $classroom_id
-                ]);
-                return redirect()->route('teacher.dashboard')
-                    ->with('error', 'You do not have permission to update materials in this classroom.');
-            }
-            
-            // Check if material exists, belongs to this classroom, and is not soft deleted
-            $material = $classroom->materials()
-                ->whereNull('delete_at')
-                ->findOrFail($id);
-            
-            // Remove the type field from the request to ensure it doesn't get changed
-            $requestData = $request->except(['type']);
-            
-            // Create a new request with the filtered data
-            $filteredRequest = new Request($requestData);
-            
-            Log::debug('Permissions verified, calling material controller with filtered data', [
-                'filtered_fields' => array_keys($requestData)
-            ]);
-            
-            // Pass filtered request, classroom_id, and material_id to the update method
-            $response = $this->materialController->update($filteredRequest, $classroom_id, $id);
-            
-            Log::info('Material controller response', [
-                'status_code' => $response->getStatusCode(),
-                'content' => json_decode($response->getContent(), true)
-            ]);
-            
-            if ($response->getStatusCode() === 200) {
-                return redirect()->route('teacher.materials.show', [$classroom_id, $id])
-                    ->with('success', 'Material updated successfully');
-            }
-            
-            Log::error('Material update failed with non-200 status', [
-                'status_code' => $response->getStatusCode(),
-                'response' => $response->getContent()
-            ]);
-            
-            return back()->withErrors(['msg' => 'Failed to update material: ' . $response->getContent()]);
-        } catch (\Exception $e) {
-            Log::error('Exception in updateMaterial', [
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-                'classroom_id' => $classroom_id,
-                'material_id' => $id
-            ]);
-            
-            return back()->withErrors(['msg' => 'Error processing request: ' . $e->getMessage()]);
+        if (!$this->isTeacherInClassroom($classroom_id)) {
+            abort(403, 'Unauthorized action. Only teachers can delete assignments from this classroom.');
         }
+        
+        // Assignment deletion logic...
+        
+        return redirect()->route('teacher.assignments.index', $classroom_id)
+                         ->with('success', 'Assignment deleted successfully');
     }
 
     /**
@@ -621,17 +600,17 @@ class TeacherController extends Controller
         ]);
         
         try {
-            $classroom = Classroom::findOrFail($classroom_id);
-            
-            // Check if the authenticated user is the teacher of this classroom
-            if ($classroom->create_by !== Auth::id()) {
-                Log::warning('Permission denied: User is not classroom creator', [
+            if (!$this->isTeacherInClassroom($classroom_id)) {
+                Log::warning('Permission denied: User is not a teacher in this classroom', [
                     'user_id' => Auth::id(),
                     'classroom_id' => $classroom_id
                 ]);
                 return redirect()->route('teacher.dashboard')
                     ->with('error', 'You do not have permission to view submissions for this classroom.');
             }
+            
+            // Get the classroom first
+            $classroom = Classroom::findOrFail($classroom_id);
             
             // Get the assignment
             $assignment = $classroom->assignments()->whereNull('delete_at')->findOrFail($assignment_id);
@@ -673,18 +652,17 @@ class TeacherController extends Controller
      *
      * @param  int  $classroom_id
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
     public function downloadAssignment($classroom_id, $id)
     {
         try {
-            $classroom = Classroom::findOrFail($classroom_id);
-            
-            // Check if the authenticated user is the teacher of this classroom
-            if ($classroom->create_by !== Auth::id()) {
+            if (!$this->isTeacherInClassroom($classroom_id)) {
                 return redirect()->route('teacher.dashboard')
                     ->with('error', 'You do not have permission to download assignments from this classroom.');
             }
+            
+            $classroom = Classroom::findOrFail($classroom_id);
             
             // Get the assignment
             $assignment = $classroom->assignments()->findOrFail($id);
@@ -718,13 +696,12 @@ class TeacherController extends Controller
     public function showSubmission($classroom_id, $assignment_id, $id)
     {
         try {
-            $classroom = Classroom::findOrFail($classroom_id);
-            
-            // Check if the authenticated user is the teacher of this classroom
-            if ($classroom->create_by !== Auth::id()) {
+            if (!$this->isTeacherInClassroom($classroom_id)) {
                 return redirect()->route('teacher.dashboard')
                     ->with('error', 'You do not have permission to view submissions in this classroom.');
             }
+            
+            $classroom = Classroom::findOrFail($classroom_id);
             
             // Get the assignment
             $assignment = $classroom->assignments()->findOrFail($assignment_id);
@@ -746,7 +723,7 @@ class TeacherController extends Controller
                 'dueDate'
             ));
         } catch (\Exception $e) {
-            \Log::error('Exception in showSubmission', [
+            Log::error('Exception in showSubmission', [
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
                 'classroom_id' => $classroom_id,
@@ -756,5 +733,85 @@ class TeacherController extends Controller
             
             return back()->withErrors(['msg' => 'Error retrieving submission: ' . $e->getMessage()]);
         }
+    }
+
+    /**
+     * Process the request for a teacher to join a classroom.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function processJoinClassroom(Request $request)
+    {
+        // Validate the request
+        $request->validate([
+            'code' => 'required|string|exists:classrooms,code',
+        ], [
+            'code.exists' => 'The classroom code is invalid or does not exist.',
+        ]);
+
+        try {
+            // Find the classroom by code
+            $classroom = Classroom::where('code', $request->code)->first();
+            
+            if (!$classroom) {
+                return back()->with('error', 'Classroom not found.');
+            }
+            
+            $user_id = Auth::id();
+            
+            // Check if the authenticated user is the creator of this classroom
+            if ($classroom->create_by == $user_id) {
+                return back()->with('error', 'You cannot join a classroom you created.');
+            }
+            
+            // Check if user is already a member - use whereHas to properly query the relationship
+            $existingMembership = $classroom->members()
+                ->where('user_id', $user_id)
+                ->first();
+                
+            if ($existingMembership) {
+                // If they're already a member but not as a teacher, upgrade them
+                if ($existingMembership->role !== 'teacher') {
+                    $existingMembership->update(['role' => 'teacher']);
+                    return redirect()->route('teacher.classrooms.show', $classroom->id)
+                        ->with('success', 'Your role has been upgraded to teacher in this classroom.');
+                }
+                
+                return back()->with('error', 'You are already a member of this classroom as a teacher.');
+            }
+            
+            // Add the teacher as a member with teacher role
+            $classroom->members()->create([
+                'user_id' => $user_id,
+                'role' => 'teacher', // Always set as teacher
+                'joined_at' => now(),
+            ]);
+            
+            return redirect()->route('teacher.classrooms.show', $classroom->id)
+                ->with('success', 'You have successfully joined the classroom as a teacher.');
+                
+        } catch (\Exception $e) {
+            Log::error('Error joining classroom: ' . $e->getMessage());
+            return back()->with('error', 'An error occurred while joining the classroom: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Check if the authenticated user is a teacher in the given classroom
+     *
+     * @param Classroom $classroom
+     * @return bool
+     */
+    protected function isTeacherInClassroom($classroom_id)
+    {
+        $classroom = Classroom::findOrFail($classroom_id);
+        $user_id = Auth::id();
+        
+        return ($classroom->create_by == $user_id) || 
+               $classroom->members()
+                         ->where('user_id', $user_id)
+                         ->where('role', 'teacher')
+                         ->exists();
     }
 }

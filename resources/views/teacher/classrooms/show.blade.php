@@ -59,173 +59,255 @@
                     </button>
                 </div>
                 @if(isset($materials) && $materials->count() > 0)
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        @foreach($materials as $material)
-                            <div class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg shadow-sm overflow-hidden">
-                                <div class="p-4">
-                                    <div class="flex justify-between items-start">
-                                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white">{{ $material->title }}</h4>
-                                        <div class="flex space-x-2">
-                                            <button data-modal-target="editMaterialModal{{ $material->id }}" data-modal-toggle="editMaterialModal{{ $material->id }}" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                                </svg>
-                                            </button>
-                                            <button data-modal-target="deleteMaterialModal{{ $material->id }}" data-modal-toggle="deleteMaterialModal{{ $material->id }}" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">{{ Str::limit($material->content, 100) }}</p>
-                                    <div class="mt-3 flex justify-between items-center text-xs text-gray-500 dark:text-gray-400">
-                                        <span>{{ $material->create_at ? $material->create_at->format('M d, Y') : 'No date' }}</span>
-                                        <a href="{{ route('teacher.materials.show', [$classroom->id, $material->id]) }}" class="inline-flex items-center text-blue-600 dark:text-blue-400 hover:underline">
-                                            View Details
-                                            <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                            </svg>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                @else
-                    <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6 text-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-blue-500 dark:text-blue-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @foreach($materials as $material)
+            <div class="group bg-white dark:bg-gray-800 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600">
+                <!-- Material Type Indicator -->
+                <div class="h-2 bg-blue-500"></div>
+                
+                <div class="p-5">
+                    <!-- Title with cleaner spacing -->
+                    <h4 class="text-xl font-bold text-gray-900 dark:text-white mb-3 line-clamp-2">{{ $material->title }}</h4>
+                    
+                    <!-- Content preview with better text formatting -->
+                    <p class="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-3">{{ Str::limit($material->content, 120) }}</p>
+                    
+                    <!-- Cleaner date display -->
+                    <div class="text-xs text-gray-500 dark:text-gray-400 mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
-                        <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-2">No materials yet</h3>
-                        <p class="text-gray-600 dark:text-gray-400 mb-4">Get started by adding your first learning material.</p>
-                        <button onclick="openModal('addMaterialModal')" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-sm text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring ring-blue-300 transition">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
-                            </svg>
-                            Add Material
-                        </button>
+                        {{ $material->create_at ? $material->create_at->format('M d, Y') : 'No date' }}
                     </div>
-                @endif
+                    
+                    <!-- Actions row with cleaner layout -->
+                    <div class="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-700">
+                        <div class="flex space-x-1">
+                            <button data-modal-target="editMaterialModal{{ $material->id }}" data-modal-toggle="editMaterialModal{{ $material->id }}" class="p-1.5 rounded-full text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 dark:text-gray-400 dark:hover:text-blue-400 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                            </button>
+                            <button data-modal-target="deleteMaterialModal{{ $material->id }}" data-modal-toggle="deleteMaterialModal{{ $material->id }}" class="p-1.5 rounded-full text-gray-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 dark:text-gray-400 dark:hover:text-red-400 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <!-- More prominent "View Details" button -->
+                        <a href="{{ route('teacher.materials.show', [$classroom->id, $material->id]) }}" 
+                           class="px-3 py-1 text-xs font-medium bg-blue-50 text-blue-600 rounded-full hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50 transition-colors">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        @endforeach
+    </div>
+@else
+    <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6 text-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-blue-500 dark:text-blue-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+        </svg>
+        <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-2">No materials yet</h3>
+        <p class="text-gray-600 dark:text-gray-400 mb-4">Get started by adding your first learning material.</p>
+        <button onclick="openModal('addMaterialModal')" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-sm text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring ring-blue-300 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+            </svg>
+            Add Material
+        </button>
+    </div>
+@endif
             </div>
 
             <!-- Assignments Content (hidden by default) -->
             <div id="assignments-content" class="hidden space-y-4" id="assignments-section">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">Classroom Assignments</h3>
-                    <button data-modal-target="addAssignmentModal" data-modal-toggle="addAssignmentModal" class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded text-blue-700 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                        </svg>
-                        Add Assignment
-                    </button>
-                </div>
-                @if(isset($assignments) && $assignments->count() > 0)
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        @foreach($assignments as $assignment)
-                            <div class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg shadow-sm overflow-hidden">
-                                <div class="p-4">
-                                    <div class="flex justify-between items-start">
-                                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white">{{ $assignment->title }}</h4>
-                                        <div class="flex space-x-2">
-                                            <button data-modal-target="editAssignmentModal{{ $assignment->id }}" data-modal-toggle="editAssignmentModal{{ $assignment->id }}" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                                </svg>
-                                            </button>
-                                            <button data-modal-target="deleteAssignmentModal{{ $assignment->id }}" data-modal-toggle="deleteAssignmentModal{{ $assignment->id }}" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">{{ Str::limit($assignment->description, 100) }}</p>
-                                    <div class="mt-3 flex justify-between items-center text-xs">
-                                        <div>
-                                            <span class="text-orange-600 dark:text-orange-400">Due: {{ $assignment->due_date ? $assignment->due_date->format('M d, Y, g:i A') : 'No due date' }}</span>
-                                            @if($assignment->due_date)
-                                                <div class="mt-1">
-                                                    @php
-                                                        $now = \Carbon\Carbon::now();
-                                                        $due = \Carbon\Carbon::parse($assignment->due_date);
-                                                        
-                                                        if ($now->gt($due)) {
-                                                            // Overdue
-                                                            $totalDiffSeconds = $now->diffInSeconds($due);
-                                                            $status = 'Overdue by ';
-                                                            $colorClass = 'text-red-600 dark:text-red-400';
-                                                        } else {
-                                                            // Still time remaining
-                                                            $totalDiffSeconds = $due->diffInSeconds($now);
-                                                            $status = '';
-                                                            $colorClass = $now->diffInDays($due) > 0 ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400';
-                                                        }
-                                                        
-                                                        // Calculate days, hours, minutes from total seconds
-                                                        $diffDays = floor($totalDiffSeconds / 86400); // 86400 seconds in a day
-                                                        $remainingSeconds = $totalDiffSeconds % 86400;
-                                                        $diffHours = floor($remainingSeconds / 3600); // 3600 seconds in an hour
-                                                        $remainingSeconds = $remainingSeconds % 3600;
-                                                        $diffMinutes = floor($remainingSeconds / 60);
-                                                        
-                                                        // Make sure all values are positive
-                                                        $diffDays = abs($diffDays);
-                                                        $diffHours = abs($diffHours);
-                                                        $diffMinutes = abs($diffMinutes);
-                                                        
-                                                        $timeDisplay = '';
-                                                        if ($diffDays > 0) {
-                                                            // More than 1 day - show days and hours only
-                                                            $timeDisplay = $diffDays . ' day' . ($diffDays > 1 ? 's' : '') . ', ' . $diffHours . ' hour' . ($diffHours > 1 || $diffHours == 0 ? 's' : '');
-                                                        } else {
-                                                            // Less than 1 day - show hours and minutes only
-                                                            $timeDisplay = $diffHours . ' hour' . ($diffHours > 1 || $diffHours == 0 ? 's' : '') . ', ' . $diffMinutes . ' minute' . ($diffMinutes > 1 || $diffMinutes == 0 ? 's' : '');
-                                                        }
-                                                        
-                                                        // Handle edge cases
-                                                        if ($diffDays == 0 && $diffHours == 0 && $diffMinutes == 0) {
-                                                            $timeDisplay = 'less than a minute';
-                                                        }
-                                                    @endphp
-                                                    
-                                                    <span class="{{ $colorClass }}">{{ $status }}{{ $timeDisplay }} {{ $now->gt($due) ? '' : 'remaining' }}</span>
-                                                </div>
-                                            @endif
-                                        </div>
-                                        <span class="px-2 py-1 rounded text-xs {{ strtotime($assignment->due_date) < time() ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300' : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' }}">
-                                            {{ strtotime($assignment->due_date) < time() ? 'Expired' : 'Active' }}
-                                        </span>
-                                    </div>
-                                    <div class="mt-3 flex justify-between items-center text-xs text-gray-500 dark:text-gray-400">
-                                        <span>{{ $assignment->submissions()->count() }} submissions</span>
-                                        <a href="{{ route('teacher.assignments.show', [$classroom->id, $assignment->id]) }}" class="inline-flex items-center text-blue-600 dark:text-blue-400 hover:underline">
-                                            View Details
-                                            <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                            </svg>
-                                        </a>
-                                    </div>
-                                </div>
+    <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white">Classroom Assignments</h3>
+        <button data-modal-target="addAssignmentModal" data-modal-toggle="addAssignmentModal" class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded text-blue-700 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Add Assignment
+        </button>
+    </div>
+    @if(isset($assignments) && $assignments->count() > 0)
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @foreach($assignments as $assignment)
+                <div class="group bg-white dark:bg-gray-800 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg border border-gray-200 dark:border-gray-700 
+    @php
+        $now = \Carbon\Carbon::now();
+        $due = \Carbon\Carbon::parse($assignment->due_date);
+        
+        // Calculate hours difference directly
+        $hoursDiff = $now->diffInHours($due, false);
+        
+        if ($now->gt($due)) {
+            // Past due date - Green
+            echo 'hover:border-green-300 dark:hover:border-green-600';
+            $statusColor = 'bg-green-500';
+        } else if ($hoursDiff >= 24) {
+            // More than 24 hours (1 day) - Blue
+            echo 'hover:border-blue-300 dark:hover:border-blue-600';
+            $statusColor = 'bg-blue-500';
+        } else {
+            // Less than 24 hours - Yellow
+            echo 'hover:border-yellow-300 dark:hover:border-yellow-600';
+            $statusColor = 'bg-yellow-500';
+        }
+    @endphp">
+    <!-- Assignment Type Indicator - Dynamic color based on status -->
+    <div class="h-2 {{ $statusColor }}"></div>
+    
+    <div class="p-5">
+        <!-- Title with cleaner spacing -->
+        <h4 class="text-xl font-bold text-gray-900 dark:text-white mb-3 line-clamp-2">{{ $assignment->title }}</h4>
+        
+        <!-- Content preview with better text formatting -->
+        <p class="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-3">{{ Str::limit($assignment->description, 120) }}</p>
+        
+        <!-- Due date display -->
+        <div class="text-xs text-gray-500 dark:text-gray-400 mb-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            Due: <span class="text-orange-600 dark:text-orange-400">{{ $assignment->due_date ? $assignment->due_date->format('M d, Y, g:i A') : 'No due date' }}</span>
+        </div>
+        
+        <!-- Time remaining or status -->
+        @if($assignment->due_date)
+    <div class="text-xs mb-4">
+        @php
+            $now = \Carbon\Carbon::now();
+            $due = \Carbon\Carbon::parse($assignment->due_date);
+            
+            if ($now->gt($due)) {
+                // Past due date
+                $status = 'Completed';
+                $colorClass = 'text-green-600 dark:text-green-400';
+                $timeDisplay = '';
+            } else {
+                // Still time remaining
+                $status = '';
+
+                // Calculate hours difference directly
+                $hoursDiff = $now->diffInHours($due, false);
+
+                // Change color based on remaining time
+                if ($hoursDiff >= 24) {
+                    // More than 24 hours (1 day) - blue
+                    $colorClass = 'text-blue-600 dark:text-blue-400';
+                } else {
+                    // Less than 24 hours - yellow
+                    $colorClass = 'text-yellow-600 dark:text-yellow-400';
+                }
+                
+                // Fix: Use Carbon's built-in diff methods for correct calculation
+                $diffHours = $now->diffInHours($due, false); // Total hours difference
+                $diffDays = floor($diffHours / 24); // Full days
+                $remainingHours = $diffHours % 24; // Remaining hours after days are calculated
+                $diffMinutes = $now->diffInMinutes($due, false) % 60; // Minutes remainder
+                
+                // Build time display string
+                if ($diffDays > 0) {
+                    // More than 1 day - show days and hours only
+                    $timeDisplay = $diffDays . ' day' . ($diffDays > 1 ? 's' : '') . ', ' . $remainingHours . ' hour' . ($remainingHours > 1 || $remainingHours == 0 ? 's' : '');
+                } else {
+                    // Less than 1 day - show hours and minutes only
+                    $timeDisplay = $remainingHours . ' hour' . ($remainingHours > 1 || $remainingHours == 0 ? 's' : '') . ', ' . $diffMinutes . ' minute' . ($diffMinutes > 1 || $diffMinutes == 0 ? 's' : '');
+                }
+                
+                // Handle edge cases
+                if ($diffDays == 0 && $remainingHours == 0 && $diffMinutes == 0) {
+                    $timeDisplay = 'less than a minute';
+                }
+                
+                $timeDisplay .= ' remaining';
+            }
+        @endphp
+        <div class="flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 {{ $colorClass }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span class="{{ $colorClass }}">{{ $status }}{{ $timeDisplay }}</span>
+        </div>
+    </div>
+@endif
+
+<!-- Status badge -->
+<div class="mb-4">
+    @php
+        $now = \Carbon\Carbon::now();
+        $due = \Carbon\Carbon::parse($assignment->due_date);
+        
+        // Calculate hours difference directly
+        $hoursDiff = $now->diffInHours($due, false);
+        
+        if ($now->gt($due)) {
+            // Completed/Expired
+            $statusClass = 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300';
+            $statusText = 'Completed';
+        } else if ($hoursDiff >= 24) {
+            // Active, more than 24 hours
+            $statusClass = 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300';
+            $statusText = 'Active';
+        } else {
+            // Less than 24 hours - approaching deadline
+            $statusClass = 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300';
+            $statusText = 'Due Soon';
+        }
+    @endphp
+    <span class="px-2 py-1 rounded-full text-xs {{ $statusClass }}">
+        {{ $statusText }}
+    </span>
+    <span class="ml-2 text-xs text-gray-500 dark:text-gray-400">
+        {{ $assignment->submissions()->count() }} submissions
+    </span>
+</div>
+                        
+                        <!-- Actions row with cleaner layout -->
+                        <div class="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-700">
+                            <div class="flex space-x-1">
+                                <button data-modal-target="editAssignmentModal{{ $assignment->id }}" data-modal-toggle="editAssignmentModal{{ $assignment->id }}" class="p-1.5 rounded-full text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 dark:text-gray-400 dark:hover:text-blue-400 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    </svg>
+                                </button>
+                                <button data-modal-target="deleteAssignmentModal{{ $assignment->id }}" data-modal-toggle="deleteAssignmentModal{{ $assignment->id }}" class="p-1.5 rounded-full text-gray-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 dark:text-gray-400 dark:hover:text-red-400 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
                             </div>
-                        @endforeach
+                            
+                            <!-- More prominent "View Details" button -->
+                            <a href="{{ route('teacher.assignments.show', [$classroom->id, $assignment->id]) }}" 
+                               class="px-3 py-1 text-xs font-medium bg-orange-50 text-orange-600 rounded-full hover:bg-orange-100 dark:bg-orange-900/30 dark:text-orange-400 dark:hover:bg-orange-900/50 transition-colors">
+                                View Details
+                            </a>
+                        </div>
                     </div>
-                @else
-                    <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6 text-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-blue-500 dark:text-blue-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-                        </svg>
-                        <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-2">No assignments yet</h3>
-                        <p class="text-gray-600 dark:text-gray-400 mb-4">Get started by creating your first assignment.</p>
-                        <button onclick="openModal('addAssignmentModal')" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-sm text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring ring-blue-300 transition">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
-                            </svg>
-                            Add Assignment
-                        </button>
-                    </div>
-                @endif
-            </div>
+                </div>
+            @endforeach
+        </div>
+    @else
+        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6 text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-blue-500 dark:text-blue-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+            </svg>
+            <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-2">No assignments yet</h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">Get started by creating your first assignment.</p>
+            <button onclick="openModal('addAssignmentModal')" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-sm text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring ring-blue-300 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                </svg>
+                Add Assignment
+            </button>
+        </div>
+    @endif
+</div>
 
             <!-- Members Content (hidden by default) -->
             <div id="members-content" class="hidden space-y-4" id="members-section">
@@ -269,7 +351,7 @@
                                                 </div>
                                                 <div class="ml-4">
                                                     <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $member->user ? $member->user->name : 'Unknown User' }}</div>
-                                                    <div class="text-sm text-gray-500 dark:text-gray-400">ID: {{ $member->user ? $member->user->id : 'N/A' }}</div>
+                                                    <!-- Removed the ID line that was here -->
                                                 </div>
                                             </div>
                                         </td>
