@@ -14,7 +14,11 @@ class ListUsers extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label('Buat Pengguna Baru')
+                ->icon('heroicon-o-plus')
+                ->color('primary')
+                ->url(UserResource::getUrl('create')),
         ];
     }
     public function getTabs(): array

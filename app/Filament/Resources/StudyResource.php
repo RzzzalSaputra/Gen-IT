@@ -16,8 +16,14 @@ class StudyResource extends Resource
 {
     protected static ?string $model = Study::class;
     protected static ?string $navigationIcon = 'heroicon-o-book-open';
-    protected static ?string $navigationLabel = 'Studies';
-    protected static ?string $pluralLabel = 'Studies';
+    protected static ?string $navigationLabel = 'Program Studi';
+    protected static ?string $pluralLabel = 'Program Studi';
+    protected static ?string $navigationGroup = 'Pendidikan';
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
 
     public static function form(Form $form): Form
     {

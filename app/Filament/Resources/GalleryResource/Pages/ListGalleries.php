@@ -14,7 +14,11 @@ class ListGalleries extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label('Buat Galeri Baru')
+                ->icon('heroicon-o-plus')
+                ->color('primary')
+                ->url(GalleryResource::getUrl('create')),
         ];
     }
 

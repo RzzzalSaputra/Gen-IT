@@ -17,8 +17,14 @@ class ContactResource extends Resource
 {
     protected static ?string $model = Contact::class;
     protected static ?string $navigationIcon = 'heroicon-o-chat-bubble-left-right';
-    protected static ?string $navigationLabel = 'Respond Contacts';
-    protected static ?string $pluralLabel = 'Responses';
+    protected static ?string $navigationLabel = 'Kontak';
+    protected static ?string $pluralLabel = 'Kontak';
+    protected static ?string $navigationGroup = 'Manajemen Pengguna';
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
 
     public static function form(Form $form): Form
     {

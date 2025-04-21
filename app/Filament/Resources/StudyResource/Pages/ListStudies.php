@@ -14,7 +14,11 @@ class ListStudies extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label('Buat Studi Baru')
+                ->icon('heroicon-o-plus')
+                ->color('primary')
+                ->url(StudyResource::getUrl('create')),
         ];
     }
 

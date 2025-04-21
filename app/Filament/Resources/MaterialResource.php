@@ -19,7 +19,12 @@ class MaterialResource extends Resource
     protected static ?string $model = Material::class;
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
     protected static ?string $navigationLabel = 'Materi';
-    protected static ?string $pluralLabel = 'Materi';
+    protected static ?string $navigationGroup = 'Konten';
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
 
     public static function form(Form $form): Form
     {

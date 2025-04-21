@@ -14,7 +14,11 @@ class ListVicons extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label('Buat Vicon Baru')
+                ->icon('heroicon-o-plus')
+                ->color('primary')
+                ->url(ViconResource::getUrl('create')),
         ];
     }
 

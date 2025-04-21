@@ -16,6 +16,7 @@ class OptionResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-cog';
     protected static ?string $navigationLabel = 'Options';
     protected static ?string $pluralLabel = 'Options';
+    protected static ?string $navigationGroup = 'Sistem';
 
     public static function form(Form $form): Form
     {

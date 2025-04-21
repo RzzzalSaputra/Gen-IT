@@ -19,8 +19,14 @@ class GalleryResource extends Resource
 {
     protected static ?string $model = Gallery::class;
     protected static ?string $navigationIcon = 'heroicon-o-photo';
-    protected static ?string $navigationLabel = 'Gallery';
-    protected static ?string $pluralLabel = 'Galleries';
+    protected static ?string $navigationLabel = 'Galeri';
+    protected static ?string $pluralLabel = 'Galeri';
+    protected static ?string $navigationGroup = 'Konten';
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
 
     public static function form(Form $form): Form
     {

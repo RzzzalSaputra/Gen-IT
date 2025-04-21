@@ -17,8 +17,14 @@ class ViconResource extends Resource
 {
     protected static ?string $model = Vicon::class;
     protected static ?string $navigationIcon = 'heroicon-o-video-camera';
-    protected static ?string $navigationLabel = 'Vicons';
-    protected static ?string $pluralLabel = 'Vicons';
+    protected static ?string $navigationLabel = 'Video Zoom';
+    protected static ?string $pluralLabel = 'Video Zoom';
+    protected static ?string $navigationGroup = 'Konten';
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
 
     public static function form(Form $form): Form
     {

@@ -14,7 +14,11 @@ class ListJobs extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label('Buat Lowongan Baru')
+                ->icon('heroicon-o-plus')
+                ->color('primary')
+                ->url(JobResource::getUrl('create')),
         ];
     }
 

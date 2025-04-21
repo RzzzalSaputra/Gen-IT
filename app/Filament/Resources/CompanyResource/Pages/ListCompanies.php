@@ -13,7 +13,11 @@ class ListCompanies extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label('Buat Perusahaan Baru')
+                ->icon('heroicon-o-plus')
+                ->color('primary')
+                ->url(CompanyResource::getUrl('create')),
         ];
     }
 }

@@ -19,8 +19,14 @@ class PostResource extends Resource
 {
     protected static ?string $model = Post::class;
     protected static ?string $navigationIcon = 'heroicon-o-document';
-    protected static ?string $navigationLabel = 'Posts';
-    protected static ?string $pluralLabel = 'Posts';
+    protected static ?string $navigationLabel = 'Postingan';
+    protected static ?string $pluralLabel = 'Postingan';
+    protected static ?string $navigationGroup = 'Konten';
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
 
     public static function form(Form $form): Form
     {

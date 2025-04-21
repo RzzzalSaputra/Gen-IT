@@ -18,8 +18,15 @@ class SubmissionResource extends Resource
 {
     protected static ?string $model = Submission::class;
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
-    protected static ?string $navigationLabel = 'Submissions';
-    protected static ?string $pluralLabel = 'Submissions';
+    protected static ?string $navigationLabel = 'Pengajuan';
+    protected static ?string $pluralLabel = 'Pengajuan';
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
+
+    protected static ?string $navigationGroup = 'Konten';
 
     public static function form(Form $form): Form
     {

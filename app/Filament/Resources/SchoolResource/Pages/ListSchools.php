@@ -14,7 +14,11 @@ class ListSchools extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label('Buat Sekolah Baru')
+                ->icon('heroicon-o-plus')
+                ->color('primary')
+                ->url(SchoolResource::getUrl('create')),
         ];
     }
 

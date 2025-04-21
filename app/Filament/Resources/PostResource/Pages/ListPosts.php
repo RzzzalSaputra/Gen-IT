@@ -13,7 +13,11 @@ class ListPosts extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label('Buat Postingan Baru')
+                ->icon('heroicon-o-plus')
+                ->color('primary')
+                ->url(PostResource::getUrl('create')),
         ];
     }
 }

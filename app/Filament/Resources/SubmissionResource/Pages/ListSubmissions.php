@@ -14,7 +14,11 @@ class ListSubmissions extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label('Buat Pengajuan Baru')
+                ->icon('heroicon-o-plus')
+                ->color('primary')
+                ->url(SubmissionResource::getUrl('create')),
         ];
     }
 

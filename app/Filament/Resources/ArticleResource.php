@@ -16,7 +16,14 @@ class ArticleResource extends Resource
     protected static ?string $model = Article::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
-    protected static ?string $navigationLabel = 'Articles';
+    protected static ?string $navigationLabel = 'Artikel';
+    protected static ?string $pluralLabel = 'Artikel';
+    protected static ?string $navigationGroup = 'Konten';
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
 
     public static function form(Form $form): Form
     {

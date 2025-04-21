@@ -15,8 +15,14 @@ class SchoolResource extends Resource
 {
     protected static ?string $model = School::class;
     protected static ?string $navigationIcon = 'heroicon-o-building-library';
-    protected static ?string $navigationLabel = 'Schools';
-    protected static ?string $pluralLabel = 'Schools';
+    protected static ?string $navigationLabel = 'Sekolah';
+    protected static ?string $pluralLabel = 'Sekolah';
+    protected static ?string $navigationGroup = 'Pendidikan';
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
 
     public static function form(Form $form): Form
     {
