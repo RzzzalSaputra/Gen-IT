@@ -5,12 +5,12 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CompanyResource\Pages;
 use App\Models\Company;
 use Filament\Forms;
+use Illuminate\Support\Str;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Forms\Components\FileUpload;
-use Illuminate\Support\Facades\Storage;
 
 class CompanyResource extends Resource
 {
@@ -22,59 +22,91 @@ class CompanyResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->unique(ignoreRecord: true),
-                Forms\Components\Textarea::make('description')
-                    ->required(),
+            Forms\Components\TextInput::make('name')
+                ->label('Nama Perusahaan')
+                ->required()
+                ->helperText('Nama harus unik dan wajib diisi.')
+                ->columnSpanFull()
+                ->unique(ignoreRecord: true),
+
+            Forms\Components\RichEditor::make('description')
+                ->label('Deskripsi')
+                ->required()
+                ->helperText('Deskripsi perusahaan tidak boleh kosong.')
+                ->columnSpanFull()
+                ->disableToolbarButtons(['attachFiles']),
 
             FileUpload::make('img')
-                ->label('Company Image')
+                ->label('Logo Perusahaan')
                 ->image()
-                ->directory('companies')
+                ->directory('company')
                 ->visibility('public')
+                ->nullable()
                 ->getUploadedFileNameForStorageUsing(function ($file) {
                     $timestamp = now()->format('Ymd_His');
-                    $randomNumber = mt_rand(1, 1000);
-                    return "{$randomNumber}_{$timestamp}.{$file->getClientOriginalExtension()}";
+                    $random = mt_rand(100, 999);
+
+                    $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                    $slugName = Str::slug($originalName);
+
+                    return "{$random}_{$slugName}_{$timestamp}.{$file->getClientOriginalExtension()}";
                 })
-                ->afterStateUpdated(
-                    fn($state, callable $set) =>
-                    is_string($state) && !empty($state) ? $set('img', "/storage/companies/{$state}") : null
-                )
                 ->deleteUploadedFileUsing(function ($record) {
                     $filePath = storage_path('app/public/' . $record?->img);
 
                     if (file_exists($filePath)) {
                         unlink($filePath);
                     }
-                })
-                ->nullable(),
+                }),
+
+            Forms\Components\TextInput::make('province')
+                ->label('Provinsi')
+                ->required()
+                ->helperText('Provinsi tempat perusahaan berada.'),
+
+            Forms\Components\TextInput::make('city')
+                ->label('Kota')
+                ->required()
+                ->helperText('Kota tempat perusahaan berada.'),
+
+            Forms\Components\Textarea::make('address')
+                ->label('Alamat')
+                ->required()
+                ->helperText('Alamat lengkap perusahaan.'),
 
             Forms\Components\TextInput::make('gmap')
-                    ->label('Google Maps Link')
-                    ->nullable(),
-                Forms\Components\TextInput::make('province')
-                    ->required(),
-                Forms\Components\TextInput::make('city')
-                    ->required(),
-                Forms\Components\Textarea::make('address')
-                    ->required(),
-                Forms\Components\TextInput::make('website')
-                    ->url()
-                    ->nullable(),
-                Forms\Components\TextInput::make('instagram')
-                    ->nullable(),
-                Forms\Components\TextInput::make('facebook')
-                    ->nullable(),
-                Forms\Components\TextInput::make('x')
-                    ->label('Twitter/X')
-                    ->nullable(),
-                Forms\Components\TextInput::make('read_counter')
-                    ->numeric()
-                    ->default(0)
-                    ->disabled(),
-            ]);
+                ->label('Google Maps Link')
+                ->nullable()
+                ->helperText('Opsional. Link lokasi di Google Maps.'),
+
+            Forms\Components\TextInput::make('website')
+                ->label('Website')
+                ->url()
+                ->nullable()
+                ->helperText('Opsional. Pastikan link diawali dengan https://'),
+
+            Forms\Components\TextInput::make('instagram')
+                ->label('Instagram')
+                ->nullable()
+                ->helperText('Opsional. Link halaman Instagram.'),
+
+            Forms\Components\TextInput::make('facebook')
+                ->label('Facebook')
+                ->nullable()
+                ->helperText('Opsional. Link halaman Facebook.'),
+
+            Forms\Components\TextInput::make('x')
+                ->label('Twitter/X')
+                ->nullable()
+                ->helperText('Opsional. Username atau link Twitter/X.'),
+
+            Forms\Components\TextInput::make('read_counter')
+                ->label('Jumlah Pembaca')
+                ->numeric()
+                ->default(0)
+                ->disabled()
+                ->helperText('Akan terisi otomatis, tidak bisa diubah manual.'),
+        ]);
     }
 
     public static function table(Table $table): Table
@@ -82,14 +114,17 @@ class CompanyResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->label('Nama Perusahaan')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('province')
+                    ->label('Provinsi')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('city')
+                    ->label('Kota')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('website')
-                    ->limit(30),
+
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Dibuat Pada')
                     ->dateTime()
                     ->sortable(),
             ])

@@ -23,16 +23,16 @@ class SchoolResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
-                    ->label('School Name')
+                    ->label('Nama Sekolah')
                     ->required()
                     ->maxLength(255),
 
                 Forms\Components\Textarea::make('description')
-                    ->label('Description')
+                    ->label('Deskripsi')
                     ->required(),
 
                 Forms\Components\FileUpload::make('img')
-                    ->label('School Image')
+                    ->label('Gambar Sekolah')
                     ->image()
                     ->directory('schools')
                     ->visibility('public')
@@ -50,7 +50,7 @@ class SchoolResource extends Resource
                     }),
 
                 Forms\Components\Select::make('type')
-                    ->label('School Type')
+                    ->label('Tipe Sekolah')
                     ->options(Option::where('type', 'school_type')->pluck('value', 'id'))
                     ->searchable()
                     ->required(),
@@ -61,15 +61,15 @@ class SchoolResource extends Resource
                     ->nullable(),
 
                 Forms\Components\TextInput::make('province')
-                    ->label('Province')
+                    ->label('Provinsi')
                     ->required(),
 
                 Forms\Components\TextInput::make('city')
-                    ->label('City')
+                    ->label('Kota')
                     ->required(),
 
                 Forms\Components\Textarea::make('address')
-                    ->label('Address')
+                    ->label('Alamat')
                     ->required(),
 
                 Forms\Components\TextInput::make('website')
@@ -93,7 +93,7 @@ class SchoolResource extends Resource
                     ->nullable(),
 
                 Forms\Components\TextInput::make('read_counter')
-                    ->label('View Counter')
+                    ->label('Jumlah Pembaca')
                     ->numeric()
                     ->default(0)
                     ->disabled(),
@@ -105,29 +105,24 @@ class SchoolResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label('School Name')
+                    ->label('Nama Sekolah')
                     ->sortable()
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('type')
-                    ->label('Type')
-                    ->sortable()
-                    ->formatStateUsing(fn($state) => Option::find($state)?->value),
-
                 Tables\Columns\TextColumn::make('province')
-                    ->label('Province')
+                    ->label('Provinsi')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('city')
-                    ->label('City')
+                    ->label('Kota')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('read_counter')
-                    ->label('Views')
+                    ->label('Jumlah Pembaca')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Created At')
+                    ->label('Tanggal Dibuat')
                     ->dateTime()
                     ->sortable(),
             ])

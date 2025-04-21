@@ -5,6 +5,7 @@ namespace App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Resources\Pages\ListRecords\Tab;
 
 class ListUsers extends ListRecords
 {
@@ -14,6 +15,30 @@ class ListUsers extends ListRecords
     {
         return [
             Actions\CreateAction::make(),
+        ];
+    }
+    public function getTabs(): array
+    {
+        return [
+            'all' => Tab::make('Semua')
+                ->modifyQueryUsing(
+                    fn($query) => $query
+                ),
+
+            'admin' => Tab::make('Admin')
+                ->modifyQueryUsing(
+                    fn($query) => $query->where('role', 'admin')
+                ),
+
+            'user' => Tab::make('User')
+                ->modifyQueryUsing(
+                    fn($query) => $query->where('role', 'user')
+                ),
+
+            'teacher' => Tab::make('Teacher')  // Mengganti Manager menjadi Teacher
+                ->modifyQueryUsing(
+                    fn($query) => $query->where('role', 'teacher')
+                ),
         ];
     }
 }

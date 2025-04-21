@@ -18,108 +18,125 @@ class MaterialResource extends Resource
 {
     protected static ?string $model = Material::class;
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
-    protected static ?string $navigationLabel = 'Materials';
-    protected static ?string $pluralLabel = 'Materials';
+    protected static ?string $navigationLabel = 'Materi';
+    protected static ?string $pluralLabel = 'Materi';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                
-                
                 Forms\Components\TextInput::make('title')
-                ->label('Title')
-                ->required()
-                ->maxLength(255),
-                
+                    ->label('Judul')
+                    ->required()
+                    ->maxLength(255),
+
                 Forms\Components\TextInput::make('slug')
                     ->label('Slug')
                     ->unique(Material::class, 'slug', ignoreRecord: true)
                     ->required()
                     ->suffixAction(
-                    Forms\Components\Actions\Action::make('generate_slug')
-                        ->label('Generate')
-                        ->color('primary')
-                        ->icon('heroicon-o-arrow-path')
-                        ->action(function (callable $set, callable $get) {
-                            $title = $get('title');
-                            if ($title) {
-                                $set('slug', Str::slug($title));
-                            }
-                        })
+                        Forms\Components\Actions\Action::make('generate_slug')
+                            ->label('Buat Otomatis')
+                            ->color('primary')
+                            ->icon('heroicon-o-arrow-path')
+                            ->action(function (callable $set, callable $get) {
+                                $title = $get('title');
+                                if ($title) {
+                                    $set('slug', Str::slug($title));
+                                }
+                            })
                     ),
 
-                Forms\Components\RichEditor::make('content')
-                    ->label('Content')
-                    ->required(),
+                Forms\Components\Select::make('layout')
+                    ->label('Tata Letak')
+                    ->options(Option::where('type', 'layout')->pluck('value', 'id'))
+                    ->required()
+                    ->reactive(),
 
-            Forms\Components\FileUpload::make('file')
-                ->label('File (PDF, DOC, etc.)')
-                ->nullable()
-                ->directory('materials/files')
-                ->visibility('public')
-                ->getUploadedFileNameForStorageUsing(function ($file) {
-                    $timestamp = now()->format('Ymd_His');
-                    $random = mt_rand(100, 999);
-                    return "{$random}_{$timestamp}.{$file->getClientOriginalExtension()}";
-                })
-                ->deleteUploadedFileUsing(function ($record) {
-                    $filePath = storage_path('app/public/' . $record?->file);
-                    if (file_exists($filePath)) {
-                        unlink($filePath);
-                    }
-                }),
+                Forms\Components\RichEditor::make('content')
+                    ->label('Konten')
+                    ->required()
+                    ->columnSpanFull()
+                    ->visible(fn(callable $get) => (int)$get('layout') === 9 || (int)$get('layout') === 10),
 
                 Forms\Components\FileUpload::make('img')
-                    ->label('Thumbnail Image')
+                    ->label('Gambar Thumbnail')
                     ->image()
                     ->directory('materials/images')
                     ->visibility('public')
                     ->nullable()
+                ->getUploadedFileNameForStorageUsing(function ($file) {
+                    $timestamp = now()->format('Ymd_His');
+                    $random = mt_rand(100, 999);
+
+                    // Mengambil nama asli file dan mengubahnya menjadi slug
+                    $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                    $slugName = Str::slug($originalName);
+
+                    // Membuat nama file dengan format random_slug_timestamp.extension
+                    return "{$random}_{$slugName}_{$timestamp}.{$file->getClientOriginalExtension()}";
+                })
+                ->deleteUploadedFileUsing(function ($record) {
+                    // Mengakses path file yang benar di database (sesuaikan dengan nama kolom yang digunakan)
+                    $filePath = storage_path('app/public/' . $record?->file);  // Pastikan ini mengakses kolom yang benar
+
+                    // Hapus file jika ada
+                    if (file_exists($filePath)) {
+                        unlink($filePath);
+                    }
+                })
+                    ->visible(fn(callable $get) => (int)$get('layout') === 10),
+
+                Forms\Components\FileUpload::make('file')
+                    ->label('File (PDF, DOC, dll.)')
+                    ->nullable()
+                    ->directory('materials/files')
+                    ->visibility('public')
+                    ->openable()
+                    ->downloadable()
                     ->getUploadedFileNameForStorageUsing(function ($file) {
-                        $timestamp = now()->format('Ymd_His');
                         $random = mt_rand(100, 999);
-                        return "{$random}_{$timestamp}.{$file->getClientOriginalExtension()}";
+                        $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                        $extension = $file->getClientOriginalExtension();
+                        return "{$random}_{$originalName}.{$extension}";
                     })
                     ->deleteUploadedFileUsing(function ($record) {
-                        $filePath = storage_path('app/public/' . $record?->img);
-
+                        $filePath = storage_path('app/public/' . $record?->file);
                         if (file_exists($filePath)) {
                             unlink($filePath);
                         }
-                    }),
+                    })
+                    ->afterStateUpdated(function ($state, callable $set) {
+                        if ($state) {
+                            $set('file_preview_url', asset('storage/' . $state));
+                        }
+                    })
+                    ->visible(fn(callable $get) => (int)$get('layout') === 12),
 
                 Forms\Components\TextInput::make('link')
-                    ->label('External Link')
+                    ->label('Link Video (YouTube)')
                     ->url()
-                    ->nullable(),
-
-                Forms\Components\Select::make('layout')
-                    ->label('Layout')
-                    ->options(Option::where('type', 'layout')->pluck('value', 'id'))
-                    ->searchable()
-                    ->required(),
+                    ->nullable()
+                    ->visible(fn(callable $get) => (int)$get('layout') === 11),
 
                 Forms\Components\Select::make('type')
-                    ->label('Type')
+                    ->label('Jenis Materi')
                     ->options(Option::where('type', 'material_type')->pluck('value', 'id'))
-                    ->searchable()
                     ->required(),
 
                 Forms\Components\TextInput::make('read_counter')
-                    ->label('Read Counter')
+                    ->label('Jumlah Dibaca')
                     ->numeric()
                     ->default(0)
                     ->disabled(),
 
                 Forms\Components\TextInput::make('download_counter')
-                    ->label('Download Counter')
+                    ->label('Jumlah Diunduh')
                     ->numeric()
                     ->default(0)
                     ->disabled(),
 
-
-            Forms\Components\Hidden::make('created_by')
+                Forms\Components\Hidden::make('created_by')
                     ->default(Auth::id())
                     ->required(),
             ]);
@@ -129,45 +146,39 @@ class MaterialResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('slug')
-                    ->label('Slug')
-                    ->sortable()
-                    ->searchable(),
-
                 Tables\Columns\TextColumn::make('title')
-                    ->label('Title')
+                    ->label('Judul')
                     ->sortable()
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('layout')
-                    ->label('Layout')
+                    ->label('Tata Letak')
                     ->sortable()
                     ->formatStateUsing(fn($state) => Option::find($state)?->value),
 
                 Tables\Columns\TextColumn::make('type')
-                    ->label('Type')
+                    ->label('Jenis Materi')
                     ->sortable()
                     ->formatStateUsing(fn($state) => Option::find($state)?->value),
 
                 Tables\Columns\ImageColumn::make('img')
-                    ->label('Thumbnail')
-                    ->circular(),
+                    ->label('Thumbnail'),
 
                 Tables\Columns\TextColumn::make('read_counter')
-                    ->label('Reads')
+                    ->label('Dibaca')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('download_counter')
-                    ->label('Downloads')
+                    ->label('Diunduh')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('created_by')
-                    ->label('Created By')
+                    ->label('Dibuat Oleh')
                     ->sortable()
                     ->formatStateUsing(fn($state) => User::find($state)?->name),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Created At')
+                    ->label('Tanggal Dibuat')
                     ->dateTime()
                     ->sortable(),
             ])

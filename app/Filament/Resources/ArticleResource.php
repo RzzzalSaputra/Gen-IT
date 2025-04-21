@@ -25,55 +25,88 @@ class ArticleResource extends Resource
                 Forms\Components\Grid::make(columns: 2)
                     ->schema([
                         Forms\Components\TextInput::make('title')
+                            ->label('Judul')
                             ->required()
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->helperText('Judul artikel maksimal 255 karakter dan wajib diisi.'),
 
-                Forms\Components\TextInput::make('slug')
-                    ->label('Slug')
-                    ->unique(Article::class, 'slug', ignoreRecord: true)
-                    ->required()
-                    ->suffixAction(
-                        Forms\Components\Actions\Action::make('generate_slug')
-                            ->label('Generate')
-                            ->color('primary')
-                            ->icon('heroicon-o-arrow-path')
-                            ->action(function (callable $set, callable $get) {
-                                $title = $get('title');
-                                if ($title) {
-                                    $set('slug', Str::slug($title));
-                                }
-                            })
-                        ),
+                        Forms\Components\TextInput::make('slug')
+                            ->label('Slug')
+                            ->unique(Article::class, 'slug', ignoreRecord: true)
+                            ->required()
+                            ->maxLength(255)
+                            ->helperText('Slug wajib unik dan akan digunakan di URL. Tekan Generate untuk membuat slug otomatis dari judul.')
+                            ->suffixAction(
+                                Forms\Components\Actions\Action::make('generate_slug')
+                                    ->label('Generate')
+                                    ->color('primary')
+                                    ->icon('heroicon-o-arrow-path')
+                                    ->action(function (callable $set, callable $get) {
+                                        $title = $get('title');
+                                        if ($title) {
+                                            $set('slug', Str::slug($title));
+                                        }
+                                    })
+                            ),
                     ]),
 
                 Forms\Components\RichEditor::make('content')
-                    ->required(),
+                    ->label('Konten')
+                    ->required()
+                    ->columnSpanFull()
+                    ->disableToolbarButtons([
+                        'attachFiles',
+                    ])
+                    ->helperText('Isi utama dari artikel. Harus diisi ya!'),
 
                 Forms\Components\Textarea::make('summary')
+                    ->label('Ringkasan')
                     ->maxLength(500)
+                    ->columnSpanFull()
                     ->nullable()
-                    ->required(),
+                    ->required()
+                    ->helperText('Ringkasan artikel, maksimal 500 karakter dan wajib diisi.'),
 
                 Forms\Components\TextInput::make('writer')
+                    ->label('Penulis')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->helperText('Nama penulis artikel. Wajib diisi dan maksimal 255 karakter.'),
 
                 Forms\Components\DateTimePicker::make('post_time')
-                    ->required(),
-
-                // Tidak perlu tampilkan created_by dan updated_by di form
+                    ->label('Tanggal Posting')
+                    ->required()
+                    ->helperText('Waktu kapan artikel ini akan dianggap dipublikasikan.'),
             ]);
     }
+
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('title')->searchable(),
-                Tables\Columns\TextColumn::make('writer')->searchable(),
-                Tables\Columns\TextColumn::make('post_time')->dateTime()->sortable(),
-                Tables\Columns\TextColumn::make('creator.user_name')->label('Dibuat Oleh')->sortable(),
-                Tables\Columns\TextColumn::make('created_at')->dateTime()->sortable(),
+                Tables\Columns\TextColumn::make('title')
+                    ->searchable()
+                    ->sortable()
+                    ->label('Judul'),
+                
+                Tables\Columns\TextColumn::make('writer')
+                    ->searchable()
+                    ->label('Penulis'),
+
+                Tables\Columns\TextColumn::make('post_time')
+                    ->dateTime()
+                    ->sortable()
+                    ->label('Tanggal Posting'),
+
+                Tables\Columns\TextColumn::make('creator.user_name')
+                    ->label('Dibuat Oleh')
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->label('Dibuat Tanggal'),
             ])
             ->filters([])
             ->actions([

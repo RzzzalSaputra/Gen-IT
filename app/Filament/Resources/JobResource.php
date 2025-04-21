@@ -24,54 +24,56 @@ class JobResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Select::make('company_id')
-                    ->label('Company')
+                    ->label('Perusahaan')
                     ->options(Company::pluck('name', 'id'))
                     ->searchable()
                     ->required(),
 
                 Forms\Components\TextInput::make('title')
-                    ->label('Job Title')
+                    ->label('Judul Pekerjaan')
                     ->required()
                     ->maxLength(255),
 
                 Forms\Components\Textarea::make('description')
-                    ->label('Job Description')
+                    ->label('Deskripsi Pekerjaan')
+                    ->columnSpanFull()
                     ->required(),
 
                 Forms\Components\Textarea::make('requirment')
-                    ->label('Job Requirements')
+                    ->label('Persyaratan Pekerjaan')
+                    ->columnSpanFull()
                     ->required(),
 
                 Forms\Components\TextInput::make('salary_range')
-                    ->label('Salary Range')
+                    ->label('Rentang Gaji')
                     ->numeric()
                     ->required(),
 
                 Forms\Components\TextInput::make('register_link')
-                    ->label('Registration Link')
+                    ->label('Link Pendaftaran')
                     ->url()
                     ->required(),
 
                 Forms\Components\Select::make('type')
-                    ->label('Job Type')
+                    ->label('Jenis Pekerjaan')
                     ->options(Option::where('type', 'job_type')->pluck('value', 'id'))
                     ->searchable()
                     ->required(),
 
                 Forms\Components\Select::make('experience')
-                    ->label('Experience Level')
+                    ->label('Tingkat Pengalaman')
                     ->options(Option::where('type', 'experience_level')->pluck('value', 'id'))
                     ->searchable()
                     ->required(),
 
                 Forms\Components\Select::make('work_type')
-                    ->label('Work Type')
+                    ->label('Tipe Kerja')
                     ->options(Option::where('type', 'work_type')->pluck('value', 'id'))
                     ->searchable()
                     ->required(),
 
                 Forms\Components\TextInput::make('read_counter')
-                    ->label('Read Counter')
+                    ->label('Jumlah Dilihat')
                     ->numeric()
                     ->default(0)
                     ->disabled(),
@@ -83,52 +85,49 @@ class JobResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('company.name')
-                    ->label('Company')
+                    ->label('Perusahaan')
                     ->sortable()
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('title')
-                    ->label('Job Title')
+                    ->label('Judul Pekerjaan')
                     ->sortable()
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('type')
-                    ->label('Job Type')
+                    ->label('Jenis Pekerjaan')
                     ->sortable()
                     ->formatStateUsing(fn($state) => Option::find($state)?->value),
 
                 Tables\Columns\TextColumn::make('experience')
-                    ->label('Experience Level')
+                    ->label('Tingkat Pengalaman')
                     ->sortable()
                     ->formatStateUsing(fn($state) => Option::find($state)?->value),
 
                 Tables\Columns\TextColumn::make('work_type')
-                    ->label('Work Type')
+                    ->label('Tipe Kerja')
                     ->sortable()
                     ->formatStateUsing(fn($state) => Option::find($state)?->value),
 
                 Tables\Columns\TextColumn::make('salary_range')
-                    ->label('Salary')
+                    ->label('Gaji')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('read_counter')
-                    ->label('Views')
+                    ->label('Dilihat')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Posted At')
+                    ->label('Diposting Pada')
                     ->dateTime()
                     ->sortable(),
             ])
-            ->filters([])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-            ])
+            
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
             ])
             ->defaultSort('created_at', 'desc');
+
     }
 
     public static function getRelations(): array

@@ -24,42 +24,42 @@ class StudyResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Select::make('school_id')
-                    ->label('School')
+                    ->label('Sekolah')
                     ->options(School::pluck('name', 'id'))
                     ->searchable()
                     ->required(),
 
                 Forms\Components\TextInput::make('name')
-                    ->label('Study Program Name')
+                    ->label('Nama Program Studi')
                     ->required()
                     ->maxLength(255),
 
                 Forms\Components\Textarea::make('description')
-                    ->label('Description')
+                    ->label('Deskripsi')
                     ->required(),
 
                 Forms\Components\TextInput::make('duration')
-                    ->label('Duration (e.g. 4 Years, 3 Months)')
+                    ->label('Durasi (contoh: 4 Tahun, 3 Bulan)')
                     ->required(),
 
                 Forms\Components\TextInput::make('link')
-                    ->label('More Info Link')
+                    ->label('Tautan Info Lebih Lanjut')
                     ->url()
                     ->nullable(),
 
                 Forms\Components\FileUpload::make('img')
-                    ->label('Program Image')
+                    ->label('Gambar Program')
                     ->image()
                     ->directory('studies/images'),
 
                 Forms\Components\Select::make('level')
-                    ->label('Level')
+                    ->label('Tingkat')
                     ->options(Option::where('type', 'study_level')->pluck('value', 'id'))
                     ->searchable()
                     ->required(),
 
                 Forms\Components\TextInput::make('read_counter')
-                    ->label('View Counter')
+                    ->label('Jumlah Dilihat')
                     ->numeric()
                     ->default(0)
                     ->disabled(),
@@ -71,30 +71,25 @@ class StudyResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('school.name')
-                    ->label('School')
+                    ->label('Sekolah')
                     ->sortable()
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Program Name')
+                    ->label('Nama Program')
                     ->sortable()
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('level')
-                    ->label('Level')
-                    ->sortable()
-                    ->formatStateUsing(fn($state) => Option::find($state)?->value),
-
                 Tables\Columns\TextColumn::make('duration')
-                    ->label('Duration')
+                    ->label('Durasi')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('read_counter')
-                    ->label('Views')
+                    ->label('Jumlah Dilihat')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Created At')
+                    ->label('Dibuat Pada')
                     ->dateTime()
                     ->sortable(),
             ])

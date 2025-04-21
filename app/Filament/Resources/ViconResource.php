@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Vicon;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Illuminate\Support\Str;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -24,65 +25,77 @@ class ViconResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('title')
-                    ->label('Title')
+                    ->label('Judul')
                     ->required()
+                    ->columnSpanFull()
                     ->maxLength(255),
 
                 Forms\Components\RichEditor::make('desc')
-                    ->label('Description')
+                    ->label('Deskripsi')
+                    ->columnSpanFull()
+                    ->disableToolbarButtons([
+                        'attachFiles',
+                    ])
                     ->required(),
 
-            Forms\Components\FileUpload::make('img')
-                ->label('Thumbnail Image')
-                ->image()
-                ->directory('vicon/images')
-                ->visibility('public')
-                ->nullable()
-                ->getUploadedFileNameForStorageUsing(function ($file) {
-                    $timestamp = now()->format('Ymd_His');
-                    $random = mt_rand(100, 999);
-                    return "{$random}_{$timestamp}.{$file->getClientOriginalExtension()}";
-                })
-                ->deleteUploadedFileUsing(function ($record) {
-                    $filePath = storage_path('app/public/' . $record?->img);
+                Forms\Components\FileUpload::make('img')
+                    ->label('Gambar Thumbnail')
+                    ->image()
+                    ->directory('vicon/images')
+                    ->visibility('public')
+                    ->nullable()
+                    ->getUploadedFileNameForStorageUsing(function ($file) {
+                        $timestamp = now()->format('Ymd_His');
+                        $random = mt_rand(100, 999);
 
-                    if (file_exists($filePath)) {
-                        unlink($filePath);
-                    }
-                }),
+                        $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                        $slugName = Str::slug($originalName);
+
+                        return "{$random}_{$slugName}_{$timestamp}.{$file->getClientOriginalExtension()}";
+                    })
+                    ->deleteUploadedFileUsing(function ($record) {
+                        $filePath = storage_path('app/public/' . $record?->img);
+
+                        if (file_exists($filePath)) {
+                            unlink($filePath);
+                        }
+                    }),
 
                 Forms\Components\DateTimePicker::make('time')
-                    ->label('Scheduled Time')
+                    ->label('Waktu Terjadwal')
                     ->required(),
 
                 Forms\Components\TextInput::make('link')
-                    ->label('Meeting Link')
+                    ->label('Tautan Meeting')
                     ->url()
                     ->required(),
 
-            Forms\Components\FileUpload::make('file')
-                ->label('File (PDF, DOC, etc.)')
-                ->nullable()
-                ->directory('vicon/files')
-                ->visibility('public')
-                ->getUploadedFileNameForStorageUsing(function ($file) {
-                    $timestamp = now()->format('Ymd_His');
-                    $random = mt_rand(100, 999);
-                    return "{$random}_{$timestamp}.{$file->getClientOriginalExtension()}";
-                })
-                ->deleteUploadedFileUsing(function ($record) {
-                    $filePath = storage_path('app/public/' . $record?->file);
-                    if (file_exists($filePath)) {
-                        unlink($filePath);
-                    }
-                }),
+                Forms\Components\FileUpload::make('file')
+                    ->label('File (PDF, DOC, dll.)')
+                    ->nullable()
+                    ->directory('vicon/files')
+                    ->visibility('public')
+                    ->getUploadedFileNameForStorageUsing(function ($file) {
+                        $timestamp = now()->format('Ymd_His');
+                        $random = mt_rand(100, 999);
 
+                        $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                        $slugName = Str::slug($originalName);
 
-            Forms\Components\Hidden::make('created_by')
+                        return "{$random}_{$slugName}_{$timestamp}.{$file->getClientOriginalExtension()}";
+                    })
+                    ->deleteUploadedFileUsing(function ($record) {
+                        $filePath = storage_path('app/public/' . $record?->img);
+
+                        if (file_exists($filePath)) {
+                            unlink($filePath);
+                        }
+                    }),
+
+                Forms\Components\Hidden::make('created_by')
                     ->default(fn() => Auth::id())
                     ->required(),
-
-        ]);
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -90,36 +103,32 @@ class ViconResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('title')
-                    ->label('Title')
+                    ->label('Judul')
                     ->sortable()
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('desc')
-                    ->label('Description')
+                    ->label('Deskripsi')
                     ->limit(50)
                     ->sortable()
                     ->searchable(),
 
-                Tables\Columns\ImageColumn::make('img')
-                    ->label('Image')
-                    ->circular(),
-
                 Tables\Columns\TextColumn::make('time')
-                    ->label('Scheduled Time')
+                    ->label('Waktu Terjadwal')
                     ->sortable()
                     ->dateTime(),
 
                 Tables\Columns\TextColumn::make('link')
-                    ->label('Meeting Link')
+                    ->label('Tautan Meeting')
                     ->url(fn(string $state): string => $state, true),
 
                 Tables\Columns\TextColumn::make('created_by')
-                    ->label('Created By')
+                    ->label('Dibuat Oleh')
                     ->sortable()
                     ->formatStateUsing(fn($state) => User::find($state)?->name),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Created At')
+                    ->label('Dibuat Pada')
                     ->dateTime()
                     ->sortable(),
             ])

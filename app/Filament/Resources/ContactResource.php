@@ -23,15 +23,23 @@ class ContactResource extends Resource
     public static function form(Form $form): Form
     {
         
-        
         $authId = Auth::guard('web')->id();
 
         return $form
             ->schema([
-                Forms\Components\Textarea::make('respond_message')
-                    ->label('Response Message')
+                Forms\Components\TextInput::make('message')
+                    ->label('Pesan')
                     ->required()
-                    ->maxLength(500),
+                    ->maxLength(500)
+                    ->columnSpanFull()
+                    ->disabled(),
+
+                Forms\Components\Textarea::make('respond_message')
+                    ->label('Pesan Balasan')
+                    ->required()
+                    ->maxLength(500)
+                    ->columnSpanFull(),
+
                 Forms\Components\Hidden::make('respond_by')
                     ->afterStateHydrated(fn($state, callable $set) => $set('respond_by', $authId))
                     ->required(),
@@ -46,21 +54,21 @@ class ContactResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('creator.name')
-                    ->label('Sender')
+                    ->label('Pengirim')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('message')
-                    ->label('Message')
+                    ->label('Pesan')
                     ->limit(50)
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('respond_message')
-                    ->label('Response')
+                    ->label('Pesan Balasan')
                     ->limit(50)
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('responder.name')
-                    ->label('Responded By')
+                    ->label('Direspon Oleh')
                     ->sortable(),
 
             Tables\Columns\TextColumn::make('status')
@@ -78,7 +86,7 @@ class ContactResource extends Resource
                 }),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Received At')
+                    ->label('Dibuat Pada')
                     ->dateTime()
                     ->sortable(),
             ])

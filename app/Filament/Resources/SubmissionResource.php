@@ -12,6 +12,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
+use Joaopaulolndev\FilamentPdfViewer\Forms\Components\PdfViewerField;
 
 class SubmissionResource extends Resource
 {
@@ -24,14 +25,26 @@ class SubmissionResource extends Resource
     {
         return $form
             ->schema([
+            Forms\Components\Select::make('created_by')
+                ->label('Disubmit Oleh')
+                ->options(User::pluck('user_name', 'id'))
+                ->disabled(),
+
                 Forms\Components\TextInput::make('title')
-                    ->label('Title')
+                    ->label('Judul')
                     ->required()
                     ->maxLength(255)
                     ->disabled(fn(?Submission $record) => $record !== null),
 
+                Forms\Components\Select::make('type')
+                    ->label('Tipe')
+                    ->options(Option::where('type', 'submission_type')->pluck('value', 'id'))
+                    ->searchable()
+                    ->required()
+                    ->disabled(fn(?Submission $record) => $record !== null),
+
                 Forms\Components\RichEditor::make('content')
-                    ->label('Content')
+                    ->label('Konten')
                     ->nullable()
                     ->disabled(fn(?Submission $record) => $record !== null),
 
@@ -40,51 +53,39 @@ class SubmissionResource extends Resource
                     ->nullable()
                     ->directory('submissions/files')
                     ->disabled(fn(?Submission $record) => $record !== null)
-                    ->hint(fn(?Submission $record) => $record ? 'File tidak bisa diubah setelah dibuat' : null),
-
-                Forms\Components\View::make('components.file-preview-button')
-                    ->visible(fn($get) => filled($get('file'))),
+                    ->downloadable()
+                    ->deletable(false)
+                    ->openable()
+                    ->visible(fn($get) => !empty($get('file'))),
 
                 Forms\Components\TextInput::make('link')
                     ->label('External Link')
                     ->url()
                     ->nullable()
-                    ->disabled(fn(?Submission $record) => $record !== null),
+                    ->disabled(fn(?Submission $record) => $record !== null)
+                    ->visible(fn($get) => !empty($get('link'))),
 
                 Forms\Components\FileUpload::make('img')
-                    ->label('Image')
+                    ->label('Gambar')
                     ->image()
                     ->nullable()
                     ->directory('submissions/images')
-                    ->disabled(fn(?Submission $record) => $record !== null),
-
-                Forms\Components\Select::make('type')
-                    ->label('Type')
-                    ->options(Option::where('type', 'submission_type')->pluck('value', 'id'))
-                    ->searchable()
-                    ->required()
-                    ->disabled(fn(?Submission $record) => $record !== null),
+                    ->disabled(fn(?Submission $record) => $record !== null)
+                    ->visible(fn($get) => !empty($get('img'))),
 
                 Forms\Components\Select::make('status')
                     ->label('Status')
                     ->options(Option::where('type', 'submission_status')->pluck('value', 'id'))
-                    ->searchable()
                     ->required(),
 
                 Forms\Components\DatePicker::make('approve_at')
-                    ->label('Approval Date')
+                    ->label('Dijawab Tanggal')
                     ->nullable(),
 
                 Forms\Components\Hidden::make('approve_by')
+                    ->label('Dijawab Oleh')
                     ->default(fn() => Auth::id()),
 
-                Forms\Components\Select::make('created_by')
-                    ->label('Created By')
-                    ->options(User::pluck('user_name', 'id'))
-                    ->searchable()
-                    ->default(Auth::id())
-                    ->required()
-                    ->disabled(),
             ]);
     }
 
@@ -93,47 +94,32 @@ class SubmissionResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('title')
-                    ->label('Title')
+                    ->label('Judul')
                     ->sortable()
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('file')
-                    ->label('File')
-                    ->formatStateUsing(function ($state) {
-                        if (!$state) return '-';
-                        $url = asset('storage/' . ltrim($state, '/'));
-                        return "<a href=\"{$url}\" target=\"_blank\" class=\"text-primary underline\">📄</a>";
-                    })
-                    ->html()
-                    ->sortable(),
-
                 Tables\Columns\TextColumn::make('type')
-                    ->label('Type')
-                    ->sortable()
-                    ->formatStateUsing(fn($state) => Option::find($state)?->value ?? '-'),
-
-                Tables\Columns\TextColumn::make('status')
-                    ->label('Status')
+                    ->label('Tipe')
                     ->sortable()
                     ->formatStateUsing(fn($state) => Option::find($state)?->value ?? '-'),
 
                 Tables\Columns\TextColumn::make('approve_by')
-                    ->label('Approved By')
+                    ->label('Dijawab Oleh')
                     ->sortable()
                     ->formatStateUsing(fn($state) => User::find($state)?->user_name ?? '-'),
 
                 Tables\Columns\TextColumn::make('approve_at')
-                    ->label('Approval Date')
+                    ->label('Dijawab Tanggal')
                     ->date()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('created_by')
-                    ->label('Created By')
+                    ->label('Disubmit Oleh')
                     ->sortable()
                     ->formatStateUsing(fn($state) => User::find($state)?->user_name ?? '-'),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Created At')
+                    ->label('Disubmit Tanggal')
                     ->dateTime()
                     ->sortable(),
             ])

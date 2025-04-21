@@ -7,6 +7,7 @@ use App\Models\Gallery;
 use App\Models\Option;
 use App\Models\User;
 use Filament\Forms;
+use Illuminate\Support\Str;
 use Filament\Forms\Form;
 use Filament\Forms\Components\Select;
 use Filament\Resources\Resource;
@@ -26,9 +27,8 @@ class GalleryResource extends Resource
         return $form
             ->schema([
             Forms\Components\Select::make('type')
-                ->label('Gallery Type')
+                ->label('Jenis Galeri')
                 ->options(Option::where('type', 'gallery_type')->pluck('value', 'id'))
-                ->searchable()
                 ->required()
                 ->reactive()
                 ->afterStateHydrated(function (Forms\Components\Select $component, $state, callable $get, callable $set) {
@@ -49,32 +49,41 @@ class GalleryResource extends Resource
                 }),
 
             Forms\Components\TextInput::make('title')
-                    ->label('Title')
+                    ->label('Judul')
                     ->required()
                     ->maxLength(255),
 
-                // Kalau tipe-nya image, tampilkan upload
-                Forms\Components\FileUpload::make('file')
-                    ->label('File (Image)')
-                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                    ->directory('gallery')
-                    ->visibility('public')
-                    ->nullable()
-                    ->getUploadedFileNameForStorageUsing(function ($file) {
-                        $timestamp = now()->format('Ymd_His');
-                        $random = mt_rand(100, 999);
-                        return "{$random}_{$timestamp}.{$file->getClientOriginalExtension()}";
-                    })
-                    ->deleteUploadedFileUsing(function ($record) {
-                        $filePath = storage_path('app/public/' . $record?->file);
-                        if (file_exists($filePath)) {
-                            unlink($filePath);
-                        }
-                    })
-                    ->visible(fn(callable $get) => Option::find($get('type'))?->value === 'image'),
+            Forms\Components\FileUpload::make('file')
+                ->label('File (Image)')
+                ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                ->directory('gallery')  // Menyimpan file dalam direktori gallery
+                ->visibility('public')  // Menetapkan file sebagai publik
+                ->nullable()  // Memungkinkan untuk tidak mengunggah file
+                ->getUploadedFileNameForStorageUsing(function ($file) {
+                    $timestamp = now()->format('Ymd_His');
+                    $random = mt_rand(100, 999);
 
-                // Kalau tipe-nya video, tampilkan input link
-                Forms\Components\TextInput::make('link')
+                    // Mengambil nama asli file dan mengubahnya menjadi slug
+                    $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                    $slugName = Str::slug($originalName);
+
+                    // Membuat nama file dengan format random_slug_timestamp.extension
+                    return "{$random}_{$slugName}_{$timestamp}.{$file->getClientOriginalExtension()}";
+                })
+                ->deleteUploadedFileUsing(function ($record) {
+                    // Mengakses path file yang benar di database (sesuaikan dengan nama kolom yang digunakan)
+                    $filePath = storage_path('app/public/' . $record?->file);  // Pastikan ini mengakses kolom yang benar
+
+                    // Hapus file jika ada
+                    if (file_exists($filePath)) {
+                        unlink($filePath);
+                    }
+                })
+                ->visible(fn(callable $get) => Option::find($get('type'))?->value === 'image'),  // Hanya tampilkan jika tipe adalah 'image'
+
+
+            // Kalau tipe-nya video, tampilkan input link
+            Forms\Components\TextInput::make('link')
                     ->label('External Link (for Video)')
                     ->url()
                     ->nullable()
@@ -91,19 +100,13 @@ class GalleryResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('type')
-                    ->label('Type')
-                    ->sortable()
-                    ->formatStateUsing(fn($state) => Option::find($state)?->value),
-
                 Tables\Columns\TextColumn::make('title')
-                    ->label('Title')
+                    ->label('Judul')
                     ->sortable()
                     ->searchable(),
 
                 Tables\Columns\ImageColumn::make('file')
-                    ->label('File')
-                    ->circular(),
+                    ->label('File'),
 
                 Tables\Columns\TextColumn::make('link')
                     ->label('External Link')
@@ -111,12 +114,12 @@ class GalleryResource extends Resource
                     ->url(fn($state) => $state, true),
 
                 Tables\Columns\TextColumn::make('created_by')
-                    ->label('Created By')
+                    ->label('Dibuat Oleh')
                     ->sortable()
                     ->formatStateUsing(fn($state) => User::find($state)?->name),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Created At')
+                    ->label('Dibuat Pada')
                     ->dateTime()
                     ->sortable(),
             ])

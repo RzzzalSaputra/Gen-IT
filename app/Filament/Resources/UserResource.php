@@ -26,31 +26,43 @@ class UserResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('user_name')
+                    ->label('Nama Pengguna')
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('email')
+                    ->label('Surel')
                     ->email()
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('password')
+                    ->label('Kata Sandi')
                     ->password()
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('phone')
+                    ->label('Nomor Telepon')
                     ->tel()
                     ->required()
                     ->numeric(),
                 Forms\Components\TextInput::make('first_name')
+                    ->label('Nama Depan')
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('last_name')
+                    ->label('Nama Belakang')
                     ->required()
                     ->maxLength(255),
                 Forms\Components\DatePicker::make('birthdate')
+                    ->label('Tanggal Lahir')
                     ->required(),
-                Forms\Components\TextInput::make('role')
+                Forms\Components\Select::make('role')
+                    ->label('Peran')
                     ->required()
-                    ->maxLength(255),
+                    ->options([
+                        'admin' => 'Admin',
+                        'user' => 'User',
+                        'teacher' => 'Guru',
+                    ])
             ]);
     }
 
@@ -59,33 +71,32 @@ class UserResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('user_name')
+                    ->label('Nama Pengguna')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
+                    ->label('Surel')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('email_verified_at')
-                    ->dateTime()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('phone')
-                    ->numeric()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('first_name')
+                    ->label('Nama Depan')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('last_name')
+                    ->label('Nama Belakang')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('birthdate')
-                    ->date()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('role')
+                    ->label('Peran')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Dibuat Pada')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Diperbarui Pada')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('deleted_at')
+                    ->label('Dihapus Pada')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
