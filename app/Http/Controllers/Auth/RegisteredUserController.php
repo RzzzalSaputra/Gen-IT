@@ -3,31 +3,22 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rules\Password;
-use Illuminate\Support\Facades\Http;
 
 class RegisteredUserController extends Controller
 {
     public function store(Request $request)
     {
-        $response = Http::post(config('app.url') . '/api/register', [
-            'user_name' => $request->user_name,
-            'email' => $request->email,
-            'password' => $request->password,
-            'phone' => $request->phone,
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'birthdate' => $request->birthdate,
-        ]);
-
-        if ($response->status() === 422) {
-            return back()->withErrors($response->json()['errors'])->withInput();
+        // Direct method call - no HTTP request needed
+        $apiController = new \App\Http\Controllers\Api\RegisteredUserController();
+        $response = $apiController->store($request);
+        
+        // Process response
+        if ($response->getStatusCode() === 422) {
+            $responseData = json_decode($response->getContent(), true);
+            return back()->withErrors($responseData['errors'])->withInput();
         }
-
+        
         return redirect()->route('login')->with('status', 'Registration successful! Please log in.');
     }
 

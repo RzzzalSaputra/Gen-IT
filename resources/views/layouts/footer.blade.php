@@ -1,11 +1,11 @@
 <footer class="bg-gray-900 text-white py-8 mt-auto border-t border-gray-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <!-- Company Info -->
             <div>
                 <h3 class="text-lg font-semibold mb-4"><span class="text-blue-500">Gen</span>-IT</h3>
                 <p class="text-gray-400 text-sm">
-                    Empowering the next generation with innovative technology solutions and educational resources.
+                    Memberdayakan generasi berikutnya dengan solusi teknologi inovatif dan sumber daya pendidikan.
                 </p>
                 <div class="flex mt-4 space-x-4">
                     <a href="#" class="text-gray-400 hover:text-white">
@@ -26,27 +26,16 @@
                 </div>
             </div>
             
-            <!-- Quick Links -->
-            <div>
-                <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
-                <ul class="space-y-2">
-                    <li><a href="{{ route('gallery.index', ['type' => 7]) }}" class="text-gray-400 hover:text-white">Images</a></li>
-                    <li><a href="{{ route('gallery.index', ['type' => 8]) }}" class="text-gray-400 hover:text-white">Videos</a></li>
-                    <li><a href="{{ route('articles.index') }}" class="text-gray-400 hover:text-white">Articles</a></li>
-                    <li><a href="{{ route('materials.index') }}" class="text-gray-400 hover:text-white">Materials</a></li>
-                </ul>
-            </div>
-            
             <!-- Contact Info -->
             <div>
-                <h3 class="text-lg font-semibold mb-4">Contact Us</h3>
+                <h3 class="text-lg font-semibold mb-4">Hubungi Kami</h3>
                 <div class="space-y-3 text-sm text-gray-400">
                     <p class="flex items-center">
                         <svg class="h-5 w-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                         </svg>
-                        123 Tech Street, Digital City
+                        Jalan Teknologi 123, Kota Digital
                     </p>
                     <p class="flex items-center">
                         <svg class="h-5 w-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -64,15 +53,8 @@
             </div>
         </div>
         
-        <div class="mt-8 pt-6 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center">
-            <p class="text-sm text-gray-400">&copy; {{ date('Y') }} Gen-IT. All rights reserved.</p>
-            <div class="mt-4 md:mt-0">
-                <ul class="flex space-x-6 text-sm">
-                    <li><a href="#" class="text-gray-400 hover:text-white">Privacy Policy</a></li>
-                    <li><a href="#" class="text-gray-400 hover:text-white">Terms of Service</a></li>
-                    <li><a href="#" class="text-gray-400 hover:text-white">Cookie Policy</a></li>
-                </ul>
-            </div>
+        <div class="mt-8 pt-6 border-t border-gray-800 flex justify-center">
+            <p class="text-sm text-gray-400">&copy; {{ date('Y') }} Gen-IT. Hak Cipta Dilindungi.</p>
         </div>
     </div>
 </footer>

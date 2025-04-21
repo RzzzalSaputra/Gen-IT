@@ -75,6 +75,7 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['au
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Contact routes
@@ -100,6 +101,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/join', [ClassroomController::class, 'processJoin'])->name('process-join');
         Route::get('/{id}', [ClassroomController::class, 'showForStudent'])->name('show');
         Route::get('/{classroom_id}/materials/{id}', [ClassroomMaterialController::class, 'showForStudent'])->name('materials.show');
+        
+        // Add this new route for downloading classroom materials
+        Route::get('/{classroom_id}/materials/{id}/download', [ClassroomMaterialController::class, 'download'])->name('materials.download');
         
         // Assignment routes
         Route::get('/{classroom_id}/assignments', [ClassroomAssignmentController::class, 'indexForStudent'])->name('assignments.index');
@@ -139,6 +143,7 @@ Route::prefix('teacher')->middleware(['auth', 'App\Http\Middleware\RoleMiddlewar
     Route::put('/classrooms/{classroom_id}/materials/{id}', [TeacherController::class, 'updateMaterial'])->name('materials.update');
     Route::get('/classrooms/{classroom_id}/materials/{id}', [TeacherController::class, 'showMaterial'])->name('materials.show');
     Route::delete('/classrooms/{classroom_id}/materials/{id}', [TeacherController::class, 'destroyMaterial'])->name('materials.destroy');
+    Route::delete('/classrooms/{classroom}/materials/{id}', [TeacherController::class, 'destroyMaterial'])->name('teacher.materials.destroy');
     
     // Assignments management
     Route::get('/classrooms/{classroom_id}/assignments', [TeacherController::class, 'assignments'])->name('assignments.index');
@@ -148,10 +153,10 @@ Route::prefix('teacher')->middleware(['auth', 'App\Http\Middleware\RoleMiddlewar
     Route::put('/classrooms/{classroom_id}/assignments/{id}', [TeacherController::class, 'updateAssignment'])->name('assignments.update');
     Route::get('/classrooms/{classroom_id}/assignments/{id}', [TeacherController::class, 'showAssignment'])->name('assignments.show');
     Route::delete('/classrooms/{classroom_id}/assignments/{id}', [TeacherController::class, 'destroyAssignment'])->name('assignments.destroy');
+    Route::delete('/classrooms/{classroom}/assignments/{id}', [TeacherController::class, 'destroyAssignment'])->name('teacher.assignments.destroy');
     
     // Add this new route for downloading assignments
-    Route::get('/classrooms/{classroom_id}/assignments/{id}/download', [TeacherController::class, 'downloadAssignment'])
-        ->name('assignments.download');
+    Route::get('/classrooms/{classroom_id}/assignments/{id}/download', [TeacherController::class, 'downloadAssignment'])->name('assignments.download');
     
     // Submissions/grading
     Route::get('/classrooms/{classroom_id}/assignments/{assignment_id}/submissions', [TeacherController::class, 'submissions'])->name('submissions.index');
@@ -169,7 +174,7 @@ Route::prefix('teacher')->middleware(['auth', 'App\Http\Middleware\RoleMiddlewar
     // Members/Students management
     Route::post('/classrooms/{classroom_id}/members', [TeacherController::class, 'storeMember'])->name('members.store');
     Route::put('/classrooms/{classroom_id}/members/{id}/role', [TeacherController::class, 'updateMemberRole'])->name('members.update.role');
-    Route::delete('/classrooms/{classroom_id}/members/{id}', [TeacherController::class, 'destroyMember'])->name('members.remove');
+    Route::delete('/classrooms/{classroom_id}/members/{id}', [TeacherController::class, 'destroyMember'])->name('members.destroy');
 });
 
 

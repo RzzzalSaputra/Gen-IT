@@ -8,7 +8,7 @@
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
-                Back to Companies
+                Kembali ke List Perusahaan
             </a>
         </div>
     </x-slot>
@@ -58,7 +58,7 @@
                             <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
-                            Last updated: {{ $company->updated_at->format('M d, Y') }}
+                            Terakhir Diperbaharui: {{ $company->updated_at->format('M d, Y') }}
                         </div>
                     </div>
                 </div>
@@ -73,7 +73,7 @@
                             <!-- Company Description -->
                             <div class="mb-12">
                                 <h2 class="text-2xl md:text-3xl text-blue-300 border-b border-blue-600/20 pb-2 mb-6 font-bold">
-                                    About This Company
+                                    Tentang Perusahaan ini
                                 </h2>
                                 <div class="prose lg:prose-xl dark:prose-invert text-gray-100 max-w-none">
                                     {!! $company->description !!}
@@ -84,7 +84,7 @@
                             @if(isset($company->jobs) && $company->jobs->count() > 0)
                             <div class="mb-12">
                                 <h2 class="text-2xl md:text-3xl text-blue-300 border-b border-blue-600/20 pb-2 mb-6 font-bold">
-                                    Job Opportunities
+                                    Lowongan Pekerjaan
                                 </h2>
                                 
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -123,7 +123,7 @@
                             <!-- Company Location -->
                             <div class="mb-12">
                                 <h2 class="text-2xl md:text-3xl text-blue-300 border-b border-blue-600/20 pb-2 mb-6 font-bold">
-                                    Location
+                                    Lokasi
                                 </h2>
                                 <p class="text-gray-100 mb-6">{{ $company->address }}</p>
                                 
@@ -144,14 +144,14 @@
                             <div class="mt-16 pt-8 border-t border-gray-700/50">
                                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                                     <div>
-                                        <span class="text-sm font-medium text-gray-400">Last updated:</span>
+                                        <span class="text-sm font-medium text-gray-400">Terakhir Diperbaharui:</span>
                                         <span class="text-gray-300">{{ $company->updated_at->format('M d, Y, h:i A') }}</span>
                                     </div>
                                     <a href="{{ route('companies.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-sm text-white transition-colors duration-200">
                                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                                         </svg>
-                                        Back to Companies
+                                        Kembali ke List Perusahaan
                                     </a>
                                 </div>
                             </div>
@@ -168,7 +168,7 @@
                                 <svg class="w-5 h-5 mr-2 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                Company Information
+                                Informasi Perusahaan
                             </h3>
                             
                             <ul class="space-y-3">
@@ -246,7 +246,7 @@
                                 <svg class="w-5 h-5 mr-2 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                 </svg>
-                                Similar Companies
+                                Perusahaan Serupa
                             </h3>
                             <div class="space-y-4">
                                 @foreach(App\Models\Company::where('id', '!=', $company->id)->where('province', $company->province)->take(5)->get() as $relatedCompany)

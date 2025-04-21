@@ -21,7 +21,7 @@ class DashboardController extends Controller
     /**
      * Display the dashboard with user's statistics.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function index()
     {

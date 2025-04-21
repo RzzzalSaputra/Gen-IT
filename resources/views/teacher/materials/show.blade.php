@@ -11,9 +11,8 @@
                 <div>
                     <div class="flex items-center">
                         <h1 class="text-2xl font-semibold text-gray-800 dark:text-white">{{ $material->title }}</h1>
-                        <span class="ml-4 px-3 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 text-xs font-medium rounded-full">{{ ucfirst($material->type) }}</span>
                     </div>
-                    <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Added on {{ date('M d, Y', strtotime($material->created_at)) }}</p>
+                    <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Added on {{ date('M d, Y', strtotime($material->create_at)) }}</p>
                 </div>
                 <div class="mt-4 sm:mt-0 flex space-x-2">
                     <button data-modal-target="editMaterialModal{{ $material->id }}" data-modal-toggle="editMaterialModal{{ $material->id }}" class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">

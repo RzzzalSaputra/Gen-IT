@@ -2,18 +2,18 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-2xl text-gray-800 dark:text-gray-200 leading-tight">
-                {{ __('My Submissions') }}
+                {{ __('SubmissionSaya') }}
             </h2>
             <div class="flex items-center gap-4">
                 <div class="text-sm text-gray-500 dark:text-gray-400">
-                    {{ $submissions->total() }} {{ Str::plural('submission', $submissions->total()) }} sent
+                    {{ $submissions->total() }} {{ Str::plural('submisi', $submissions->total()) }} terkirim
                 </div>
                 <a href="{{ route('submissions.create') }}" 
                    class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                     </svg>
-                    New Submission
+                    SubmissionBaru
                 </a>
             </div>
         </div>
@@ -59,10 +59,10 @@
                     <div class="flex items-start justify-between">
                         <div>
                             <h3 class="text-xl font-bold text-gray-100 mb-2">
-                                Want to share something?
+                                Ingin berbagi sesuatu?
                             </h3>
                             <p class="text-gray-300 mb-4">
-                                Submit your content and we'll review it within 24-48 hours.
+                                Kirim konten Anda dan kami akan meninjau dalam 24-48 jam.
                             </p>
                         </div>
                         <div class="flex-shrink-0">
@@ -76,7 +76,7 @@
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                         </svg>
-                        Create New Submission
+                        Buat Submission Baru
                     </a>
                 </div>
             </div>
@@ -84,7 +84,7 @@
             <!-- Submissions History Section -->
             <div class="bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-700/50 overflow-hidden shadow-xl">
                 <div class="px-6 py-4 border-b border-gray-700/50">
-                    <h3 class="text-lg font-semibold text-gray-200">Your Submission History</h3>
+                    <h3 class="text-lg font-semibold text-gray-200">Riwayat SubmissionAnda</h3>
                 </div>
                 <div class="p-6">
                     @if($submissions->isEmpty())
@@ -92,13 +92,13 @@
                             <svg class="w-16 h-16 mx-auto text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
-                            <h3 class="text-xl font-semibold mb-2 text-gray-200">No Submissions Yet</h3>
-                            <p class="text-gray-400 mb-6">Start by creating your first submission.</p>
+                            <h3 class="text-xl font-semibold mb-2 text-gray-200">Belum Ada Submisi</h3>
+                            <p class="text-gray-400 mb-6">Mulai dengan membuat Submissionpertama Anda.</p>
                             <a href="{{ route('submissions.create') }}" class="inline-flex items-center px-6 py-3 bg-blue-600 text-white text-base font-medium rounded-xl hover:bg-blue-700 transition-colors duration-200">
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                                 </svg>
-                                Create First Submission
+                                Buat SubmissionPertama
                             </a>
                         </div>
                     @else
@@ -113,7 +113,7 @@
                                                     {{ $submission->title }}
                                                 </h3>
                                                 <div class="text-sm text-gray-400 mb-4">
-                                                    Submitted {{ $submission->created_at->diffForHumans() }}
+                                                    Dikirim {{ $submission->created_at->locale('id')->diffForHumans() }}
                                                 </div>
                                             </div>
                                             <div>
@@ -132,7 +132,8 @@
                                                         $submission->statusOption->value == 'pending' ? 'bg-yellow-400' : 
                                                         ($submission->statusOption->value == 'accepted' ? 'bg-green-400' : 'bg-red-400') 
                                                     }}"></span>
-                                                    {{ ucfirst($submission->statusOption->value) }}
+                                                    {{ $submission->statusOption->value == 'pending' ? 'Pending' : 
+                                                       ($submission->statusOption->value == 'accepted' ? 'Diterima' : 'Ditolak') }}
                                                 </span>
                                             </div>
                                         </div>
@@ -150,7 +151,7 @@
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                                 </svg>
-                                                View Image
+                                                Lihat Gambar
                                             </button>
                                         @elseif($submission->link && str_contains($submission->link, 'youtube.com'))
                                             @php
@@ -167,7 +168,7 @@
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                     </svg>
-                                                    Play Video
+                                                    Putar Video
                                                 </button>
                                             @endif
                                         @endif
@@ -205,7 +206,7 @@
                                                             </div>
                                                             <div>
                                                                 <div class="text-sm font-medium text-gray-200">{{ $fileName }}</div>
-                                                                <div class="text-xs text-gray-400">{{ strtoupper($fileExtension) }} File</div>
+                                                                <div class="text-xs text-gray-400">File {{ strtoupper($fileExtension) }}</div>
                                                             </div>
                                                         </div>
                                                         
@@ -239,15 +240,27 @@
                                         @if($submission->approve_at)
                                             <div class="mt-6">
                                                 <h4 class="text-lg font-medium text-gray-200 mb-2 flex items-center">
-                                                    <svg class="w-5 h-5 mr-2 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                                    </svg>
-                                                    Approval Details
+                                                    @if($submission->statusOption->value == 'declined')
+                                                        <svg class="w-5 h-5 mr-2 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                        </svg>
+                                                        Detail Penolakan
+                                                    @else
+                                                        <svg class="w-5 h-5 mr-2 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                        </svg>
+                                                        Detail Persetujuan
+                                                    @endif
                                                 </h4>
-                                                <div class="bg-blue-900/20 rounded-xl p-4 border border-blue-500/20">
+                                                <div class="{{ $submission->statusOption->value == 'declined' ? 'bg-red-900/20 border-red-500/20' : 'bg-blue-900/20 border-blue-500/20' }} rounded-xl p-4 border">
                                                     <p class="text-gray-300">
-                                                        Approved by: {{ $submission->approvedBy->name ?? 'System' }}<br>
-                                                        Date: {{ $submission->approve_at->format('F j, Y H:i') }}
+                                                        @if($submission->statusOption->value == 'declined')
+                                                            Ditolak oleh: {{ $submission->approvedBy->name ?? 'Sistem' }}<br>
+                                                            Tanggal: {{ $submission->approve_at->format('F j, Y H:i') }}
+                                                        @else
+                                                            Disetujui oleh: {{ $submission->approvedBy->name ?? 'Sistem' }}<br>
+                                                            Tanggal: {{ $submission->approve_at->format('F j, Y H:i') }}
+                                                        @endif
                                                     </p>
                                                 </div>
                                             </div>
@@ -255,10 +268,9 @@
 
                                         <div class="flex justify-between items-center mt-6">
                                             <div class="flex gap-4 text-sm text-gray-500">
-                                                <span>Type: {{ $submission->typeOption->value }}</span>
-                                                <span>Created by: {{ $submission->createdBy->name }}</span>
+                                                <span>Tipe: {{ $submission->typeOption->value }}</span>
+                                                <span>Dibuat oleh: {{ $submission->createdBy->name }}</span>
                                             </div>
-                                            <!-- Removed download icon -->
                                         </div>
                                     </div>
                                 </div>

@@ -14,7 +14,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
             </svg>
-            Edit Classroom
+            Edit Kelas
         </button>
     </div>
 
@@ -28,7 +28,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                     </svg>
-                    Materials
+                    Materi
                 </button>
                 <button id="assignments-tab" class="border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -50,12 +50,12 @@
             <!-- Materials Content -->
             <div id="materials-content" class="space-y-4" id="materials-section">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">Learning Materials</h3>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">Materi Pelajaran</h3>
                     <button data-modal-target="addMaterialModal" data-modal-toggle="addMaterialModal" class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded text-blue-700 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                         </svg>
-                        Add Material
+                        Tambah Materi
                     </button>
                 </div>
                 @if(isset($materials) && $materials->count() > 0)
@@ -88,7 +88,10 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                 </svg>
                             </button>
-                            <button data-modal-target="deleteMaterialModal{{ $material->id }}" data-modal-toggle="deleteMaterialModal{{ $material->id }}" class="p-1.5 rounded-full text-gray-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 dark:text-gray-400 dark:hover:text-red-400 transition-colors">
+                            <button class="delete-material-btn p-1.5 rounded-full text-gray-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 dark:text-gray-400 dark:hover:text-red-400 transition-colors"
+                                data-material-id="{{ $material->id }}"
+                                data-material-title="{{ $material->title }}"
+                                data-delete-url="{{ route('teacher.materials.destroy', [$classroom->id, $material->id]) }}">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                 </svg>
@@ -130,7 +133,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
-            Add Assignment
+            Tambah Assignment
         </button>
     </div>
     @if(isset($assignments) && $assignments->count() > 0)
@@ -185,7 +188,7 @@
             
             if ($now->gt($due)) {
                 // Past due date
-                $status = 'Completed';
+                $status = 'Selesai';
                 $colorClass = 'text-green-600 dark:text-green-400';
                 $timeDisplay = '';
             } else {
@@ -213,18 +216,18 @@
                 // Build time display string
                 if ($diffDays > 0) {
                     // More than 1 day - show days and hours only
-                    $timeDisplay = $diffDays . ' day' . ($diffDays > 1 ? 's' : '') . ', ' . $remainingHours . ' hour' . ($remainingHours > 1 || $remainingHours == 0 ? 's' : '');
+                    $timeDisplay = $diffDays . ' hari' . ', ' . $remainingHours . ' jam';
                 } else {
                     // Less than 1 day - show hours and minutes only
-                    $timeDisplay = $remainingHours . ' hour' . ($remainingHours > 1 || $remainingHours == 0 ? 's' : '') . ', ' . $diffMinutes . ' minute' . ($diffMinutes > 1 || $diffMinutes == 0 ? 's' : '');
+                    $timeDisplay = $remainingHours . ' jam' . ', ' . $diffMinutes . ' menit';
                 }
                 
                 // Handle edge cases
                 if ($diffDays == 0 && $remainingHours == 0 && $diffMinutes == 0) {
-                    $timeDisplay = 'less than a minute';
+                    $timeDisplay = 'kurang dari semenit';
                 }
                 
-                $timeDisplay .= ' remaining';
+                $timeDisplay .= ' tersisa';
             }
         @endphp
         <div class="flex items-center">
@@ -248,15 +251,15 @@
         if ($now->gt($due)) {
             // Completed/Expired
             $statusClass = 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300';
-            $statusText = 'Completed';
+            $statusText = 'Selesai';
         } else if ($hoursDiff >= 24) {
             // Active, more than 24 hours
             $statusClass = 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300';
-            $statusText = 'Active';
+            $statusText = 'Aktif';
         } else {
             // Less than 24 hours - approaching deadline
             $statusClass = 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300';
-            $statusText = 'Due Soon';
+            $statusText = 'Segera Berakhir';
         }
     @endphp
     <span class="px-2 py-1 rounded-full text-xs {{ $statusClass }}">
@@ -275,7 +278,10 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                     </svg>
                                 </button>
-                                <button data-modal-target="deleteAssignmentModal{{ $assignment->id }}" data-modal-toggle="deleteAssignmentModal{{ $assignment->id }}" class="p-1.5 rounded-full text-gray-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 dark:text-gray-400 dark:hover:text-red-400 transition-colors">
+                                <button class="delete-assignment-btn p-1.5 rounded-full text-gray-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 dark:text-gray-400 dark:hover:text-red-400 transition-colors"
+                                    data-assignment-id="{{ $assignment->id }}"
+                                    data-assignment-title="{{ $assignment->title }}"
+                                    data-delete-url="{{ route('teacher.assignments.destroy', [$classroom->id, $assignment->id]) }}">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                     </svg>
@@ -285,7 +291,7 @@
                             <!-- More prominent "View Details" button -->
                             <a href="{{ route('teacher.assignments.show', [$classroom->id, $assignment->id]) }}" 
                                class="px-3 py-1 text-xs font-medium bg-orange-50 text-orange-600 rounded-full hover:bg-orange-100 dark:bg-orange-900/30 dark:text-orange-400 dark:hover:bg-orange-900/50 transition-colors">
-                                View Details
+                               Lihat Detail
                             </a>
                         </div>
                     </div>
@@ -297,8 +303,8 @@
             <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-blue-500 dark:text-blue-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
             </svg>
-            <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-2">No assignments yet</h3>
-            <p class="text-gray-600 dark:text-gray-400 mb-4">Get started by creating your first assignment.</p>
+            <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-2">Belum ada Assignment</h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">Mulailah dengan membuat Assignment pertama Anda.</p>
             <button onclick="openModal('addAssignmentModal')" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-sm text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring ring-blue-300 transition">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
@@ -317,7 +323,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                         </svg>
-                        Add Member
+                        Tambah Anggota
                     </button>
                 </div>
                 
@@ -380,9 +386,7 @@
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                                         </svg>
                                                     </button>
-                                                    <button class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 remove-member-btn" 
-                                                        data-modal-target="removeMemberModal" 
-                                                        data-modal-toggle="removeMemberModal"
+                                                    <button class="remove-member-btn text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300" 
                                                         data-member-id="{{ $member->id }}" 
                                                         data-member-name="{{ $member->user ? $member->user->name : 'Unknown User' }}">
                                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -424,19 +428,16 @@
 @include('teacher.classrooms.partials.modals.add-assignment')
 @include('teacher.classrooms.partials.modals.add-member')
 @include('teacher.classrooms.partials.modals.change-role')
-@include('teacher.classrooms.partials.modals.remove-member')
 
 @if(isset($materials) && $materials->count() > 0)
     @foreach($materials as $material)
         @include('teacher.classrooms.partials.modals.edit-material', ['material' => $material])
-        @include('teacher.classrooms.partials.modals.delete-material', ['material' => $material])
     @endforeach
 @endif
 
 @if(isset($assignments) && $assignments->count() > 0)
     @foreach($assignments as $assignment)
         @include('teacher.classrooms.partials.modals.edit-assignment', ['assignment' => $assignment])
-        @include('teacher.classrooms.partials.modals.delete-assignment', ['assignment' => $assignment])
     @endforeach
 @endif
 
@@ -516,13 +517,162 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    // Replace modal handling with SweetAlert
+    // For deleting materials
+    document.querySelectorAll('.delete-material-btn').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const materialId = this.getAttribute('data-material-id');
+            const materialTitle = this.getAttribute('data-material-title');
+            const deleteUrl = this.getAttribute('data-delete-url');
+            
+            Swal.fire({
+                title: 'Delete Material?',
+                text: `Are you sure you want to delete "${materialTitle}"? This action cannot be undone.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6b7280',
+                background: '#1f2937',
+                color: '#fff',
+                iconColor: '#f59e0b'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Create form and submit
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = deleteUrl;
+                    
+                    // Add CSRF token
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = '_token';
+                    csrfInput.value = csrfToken;
+                    form.appendChild(csrfInput);
+                    
+                    // Add method spoofing for DELETE
+                    const methodInput = document.createElement('input');
+                    methodInput.type = 'hidden';
+                    methodInput.name = '_method';
+                    methodInput.value = 'DELETE';
+                    form.appendChild(methodInput);
+                    
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        });
+    });
+    
+    // For deleting assignments
+    document.querySelectorAll('.delete-assignment-btn').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const assignmentId = this.getAttribute('data-assignment-id');
+            const assignmentTitle = this.getAttribute('data-assignment-title');
+            const deleteUrl = this.getAttribute('data-delete-url');
+            
+            Swal.fire({
+                title: 'Delete Assignment?',
+                text: `Are you sure you want to delete "${assignmentTitle}"? This action cannot be undone.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6b7280',
+                background: '#1f2937',
+                color: '#fff',
+                iconColor: '#f59e0b'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Create form and submit
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = deleteUrl;
+                    
+                    // Add CSRF token
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = '_token';
+                    csrfInput.value = csrfToken;
+                    form.appendChild(csrfInput);
+                    
+                    // Add method spoofing for DELETE
+                    const methodInput = document.createElement('input');
+                    methodInput.type = 'hidden';
+                    methodInput.name = '_method';
+                    methodInput.value = 'DELETE';
+                    form.appendChild(methodInput);
+                    
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        });
+    });
+    
+    // For removing members
+    document.querySelectorAll('.remove-member-btn').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const memberId = this.getAttribute('data-member-id');
+            const memberName = this.getAttribute('data-member-name');
+            const deleteUrl = "{{ route('teacher.members.destroy', [$classroom->id, ':memberId']) }}".replace(':memberId', memberId);
+            
+            Swal.fire({
+                title: 'Remove Member?',
+                text: `Are you sure you want to remove ${memberName} from this classroom?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, remove them!',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6b7280',
+                background: '#1f2937',
+                color: '#fff',
+                iconColor: '#f59e0b'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Create form and submit
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = deleteUrl;
+                    
+                    // Add CSRF token
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = '_token';
+                    csrfInput.value = csrfToken;
+                    form.appendChild(csrfInput);
+                    
+                    // Add method spoofing for DELETE
+                    const methodInput = document.createElement('input');
+                    methodInput.type = 'hidden';
+                    methodInput.name = '_method';
+                    methodInput.value = 'DELETE';
+                    form.appendChild(methodInput);
+                    
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        });
+    });
 });
 
-// Functions to open and close modals
+// Define the missing openModal and closeModal functions
 function openModal(modalId) {
     const modal = document.getElementById(modalId);
     if (modal) {
         modal.classList.remove('hidden');
+        document.body.classList.add('overflow-hidden');
     }
 }
 
@@ -530,7 +680,11 @@ function closeModal(modalId) {
     const modal = document.getElementById(modalId);
     if (modal) {
         modal.classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
     }
 }
 </script>
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@endpush
 @endsection

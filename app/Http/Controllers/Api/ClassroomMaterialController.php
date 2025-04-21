@@ -645,4 +645,58 @@ class ClassroomMaterialController extends Controller
         
         return response()->json(['message' => 'Material restored successfully', 'data' => $material], Response::HTTP_OK);
     }
+
+    /**
+     * Download a classroom material file
+     */
+    public function download($classroomId, $id)
+    {
+        // Find the material
+        $material = ClassroomMaterial::where('id', $id)
+                                   ->where('classroom_id', $classroomId)
+                                   ->whereNull('delete_at')
+                                   ->first();
+        
+        if (!$material || !$material->file) {
+            return response()->json(['message' => 'File not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        // Verify user is a member of this classroom
+        $classroom = Classroom::find($classroomId);
+        $userId = Auth::id();
+        $isMember = $classroom->create_by == $userId || 
+                    $classroom->members()->where('user_id', $userId)->exists();
+        
+        if (!$isMember) {
+            return response()->json(['message' => 'You are not authorized to download this file'], Response::HTTP_FORBIDDEN);
+        }
+
+        // Ensure the file path is restricted to classroom_materials/files/
+        $filePath = $material->file;
+        
+        // Check if path already contains classroom_materials/files/
+        if (strpos($filePath, 'classroom_materials/files/') === false) {
+            // Extract filename from path
+            $fileName = basename($filePath);
+            // Construct proper path
+            $filePath = 'classroom_materials/files/' . $fileName;
+        }
+        
+        // Construct the full path
+        $fullPath = storage_path('app/public/' . $filePath);
+        
+        // Security check: Ensure we're not accessing files outside intended directory
+        $realPath = realpath($fullPath);
+        $intendedDir = realpath(storage_path('app/public/classroom_materials/files'));
+        
+        if (!$realPath || strpos($realPath, $intendedDir) !== 0) {
+            return response()->json(['message' => 'Invalid file path'], Response::HTTP_FORBIDDEN);
+        }
+        
+        if (!file_exists($fullPath)) {
+            return response()->json(['message' => 'File not found on server'], Response::HTTP_NOT_FOUND);
+        }
+
+        return response()->download($fullPath);
+    }
 }

@@ -12,7 +12,7 @@
                 </svg>
             </div>
             <div class="ml-4">
-                <h2 class="font-bold text-gray-900 dark:text-gray-200">Total Classrooms</h2>
+                <h2 class="font-bold text-gray-900 dark:text-gray-200">Total Kelas</h2>
                 <p class="text-2xl font-black text-gray-900 dark:text-white">{{ $classroomCount }}</p>
             </div>
         </div>
@@ -26,7 +26,7 @@
                 </svg>
             </div>
             <div class="ml-4">
-                <h2 class="font-bold text-gray-900 dark:text-gray-200">Total Students</h2>
+                <h2 class="font-bold text-gray-900 dark:text-gray-200">Total Siswa</h2>
                 <p class="text-2xl font-black text-gray-900 dark:text-white">{{ $studentCount }}</p>
             </div>
         </div>
@@ -51,18 +51,18 @@
     <!-- My Classrooms -->
     <div class="bg-white dark:bg-gray-800 overflow-hidden border-4 border-gray-900 dark:border-gray-600 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.7)] rounded-none lg:col-span-2">
         <div class="px-4 py-5 sm:px-6 flex justify-between items-center border-b-4 border-gray-900 dark:border-gray-600">
-            <h3 class="text-lg font-black text-gray-900 dark:text-white">My Classrooms</h3>
-            <a href="{{ route('teacher.classrooms.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border-3 border-gray-900 rounded-none font-bold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:-translate-y-1 transition-transform">
-                Create New
-            </a>
+            <h3 class="text-lg font-black text-gray-900 dark:text-white">Kelas Saya</h3>
+            <button onclick="openCreateModal()" class="inline-flex items-center px-4 py-2 bg-blue-600 border-3 border-gray-900 rounded-none font-bold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:-translate-y-1 transition-transform">
+            Buat Kelas Baru
+            </button>
         </div>
         <div class="p-6">
             @if(count($classrooms) === 0)
                 <div class="text-center py-4 border-4 border-gray-900 dark:border-gray-600 p-4">
                     <p class="text-gray-700 dark:text-gray-300 font-bold">You haven't created any classrooms yet.</p>
-                    <a href="{{ route('teacher.classrooms.create') }}" class="mt-4 inline-flex items-center px-4 py-2 bg-blue-600 border-3 border-gray-900 rounded-none font-bold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:-translate-y-1 transition-transform">
+                    <button onclick="openCreateModal()" class="mt-4 inline-flex items-center px-4 py-2 bg-blue-600 border-3 border-gray-900 rounded-none font-bold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:-translate-y-1 transition-transform">
                         Create Your First Classroom
-                    </a>
+                    </button>
                 </div>
             @else
                 <div class="space-y-4 max-h-80 overflow-y-auto pr-2 scrollbar-hide">
@@ -129,4 +129,26 @@
         </div>
     </div>
 </div>
+
+<!-- Include the create classroom modal -->
+@include('teacher.classrooms.create-modal')
+
+<!-- Add JavaScript for modal functionality -->
+<script>
+    function openCreateModal() {
+        document.getElementById('createClassroomModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
+    }
+    
+    function closeCreateModal() {
+        document.getElementById('createClassroomModal').classList.add('hidden');
+        document.body.style.overflow = 'auto'; // Re-enable scrolling
+        
+        // Reset form fields and errors
+        document.getElementById('createClassroomForm').reset();
+        document.getElementById('createModalError').classList.add('hidden');
+        document.getElementById('nameError').classList.add('hidden');
+        document.getElementById('descriptionError').classList.add('hidden');
+    }
+</script>
 @endsection

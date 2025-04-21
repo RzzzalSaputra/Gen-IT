@@ -3,13 +3,13 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div class="flex justify-between items-center mb-8">
                 <h2 class="text-3xl font-bold text-white">
-                    My Classrooms
+                    Kelas Saya
                 </h2>
                 <button type="button" onclick="openJoinModal()" class="inline-flex items-center px-5 py-2.5 bg-indigo-600 border border-indigo-500 rounded-xl text-white font-medium shadow-lg shadow-indigo-500/20 hover:bg-indigo-700 focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-indigo-500 transition-all duration-200">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                     </svg>
-                    Join Classroom
+                    Gabung Kelas
                 </button>
             </div>
 
@@ -121,7 +121,7 @@
                                             <!-- Assignment progress card -->
                                             <div class="bg-gray-800/50 rounded-lg p-3">
                                                 <div class="flex justify-between items-center mb-1">
-                                                    <span class="text-xs text-gray-400">Assignments</span>
+                                                    <span class="text-xs text-gray-400">Tugas</span>
                                                     @php
                                                         // Filter to get only active (non-deleted) assignments
                                                         $activeAssignments = $classroom->assignments->filter(function($assignment) {
@@ -129,24 +129,22 @@
                                                         });
                                                         
                                                         $totalAssignments = $activeAssignments->count();
+                                                        $now = \Carbon\Carbon::now();
                                                         
                                                         // Count assignments that have any submission from the current user
-                                                        $submittedAssignments = $activeAssignments
-                                                            ->filter(function($assignment) {
-                                                                // Check if current user has submitted this assignment
-                                                                return $assignment->submissions
-                                                                    ->where('user_id', Auth::id())
-                                                                    ->isNotEmpty();
+                                                        // or are past their due date (considered "completed" either way)
+                                                        $completedAssignments = $activeAssignments
+                                                            ->filter(function($assignment) use ($now) {
+                                                                return $assignment->submissions->where('user_id', Auth::id())->isNotEmpty() ||
+                                                                      ($assignment->due_date && $now->gt($assignment->due_date));
                                                             })->count();
                                                         
-                                                        // Calculate remaining assignments and percentage
-                                                        $nonSubmittedAssignments = $totalAssignments - $submittedAssignments;
-                                                        
+                                                        // Calculate assignment percentage
                                                         $assignmentPercentage = $totalAssignments > 0 
-                                                            ? ($submittedAssignments / $totalAssignments) * 100 
+                                                            ? ($completedAssignments / $totalAssignments) * 100 
                                                             : 0;
                                                     @endphp
-                                                    <span class="text-sm font-medium {{ $scheme['hoverText'] }}">{{ $submittedAssignments }}/{{ $totalAssignments }}</span>
+                                                    <span class="text-sm font-medium {{ $scheme['hoverText'] }}">{{ $completedAssignments }}/{{ $totalAssignments }}</span>
                                                 </div>
                                                 <div class="w-full bg-gray-700/50 rounded-full h-1.5 mt-1">
                                                     <div class="bg-gradient-to-r {{ $scheme['icon'] }} h-1.5 rounded-full" style="width: {{ $assignmentPercentage }}%"></div>
@@ -156,7 +154,7 @@
                                             <!-- Materials progress card -->
                                             <div class="bg-gray-800/50 rounded-lg p-3">
                                                 <div class="flex justify-between items-center mb-1">
-                                                    <span class="text-xs text-gray-400">Materials</span>
+                                                    <span class="text-xs text-gray-400">Materi</span>
                                                     @php
                                                         $totalMaterials = $classroom->materials->count() ?? 0;
                                                         
@@ -175,25 +173,47 @@
                                     <!-- Status indicator for assignments -->
                                     @if($totalAssignments > 0)
                                         @php
-                                            $remainingAssignments = $totalAssignments - $submittedAssignments;
-                                            $statusClass = $remainingAssignments > 0 
-                                                ? 'bg-yellow-900/30 text-yellow-300 border-yellow-500/30' 
-                                                : 'bg-green-900/30 text-green-300 border-green-500/30';
-                                            $indicatorClass = $remainingAssignments > 0 
-                                                ? 'bg-yellow-400' 
-                                                : 'bg-green-400';
+                                            // Calculate missed (overdue) assignments
+                                            $now = \Carbon\Carbon::now();
+                                            $missedAssignments = 0;
+                                            $upcomingAssignments = 0;
+                                            
+                                            foreach($activeAssignments as $assignment) {
+                                                // Check if user hasn't submitted and the due date has passed
+                                                if ($assignment->due_date && $now->gt($assignment->due_date) && 
+                                                    !$assignment->submissions->where('user_id', Auth::id())->count()) {
+                                                    $missedAssignments++;
+                                                } 
+                                                // Still has time to submit
+                                                elseif (!$assignment->submissions->where('user_id', Auth::id())->count()) {
+                                                    $upcomingAssignments++;
+                                                }
+                                            }
+                                            
+                                            // Determine status classes based on missed assignments
+                                            if ($missedAssignments > 0) {
+                                                $statusClass = 'bg-rose-900/30 text-rose-300 border-rose-500/30';
+                                                $indicatorClass = 'bg-rose-400';
+                                                $message = $missedAssignments . ' ' . ($missedAssignments == 1 ? 'tugas terlewat' : 'tugas terlewatkan');
+                                            } elseif ($upcomingAssignments > 0) {
+                                                $statusClass = 'bg-yellow-900/30 text-yellow-300 border-yellow-500/30';
+                                                $indicatorClass = 'bg-yellow-400';
+                                                $message = $upcomingAssignments . ' ' . ($upcomingAssignments == 1 ? 'tugas tersisa' : 'tugas tersisa');
+                                            } else {
+                                                $statusClass = 'bg-green-900/30 text-green-300 border-green-500/30';
+                                                $indicatorClass = 'bg-green-400';
+                                                $message = 'Semua tugas selesai';
+                                            }
                                         @endphp
                                         <div class="inline-flex items-center px-2 py-1 mb-3 {{ $statusClass }} backdrop-blur-sm rounded-lg text-xs">
                                             <span class="w-2 h-2 flex-shrink-0 rounded-full mr-2 {{ $indicatorClass }}"></span>
-                                            {{ $remainingAssignments > 0 
-                                                ? $remainingAssignments.' assignments left' 
-                                                : 'All assignments completed' }}
+                                            {{ $message }}
                                         </div>
                                     @endif
                                     
                                     <div class="flex flex-wrap gap-2 mb-4">
                                         <div class="inline-flex items-center px-2 py-1 {{ $scheme['teacherBadge'] }} backdrop-blur-sm rounded-lg text-xs">
-                                            Teacher: {{ $classroom->creator->name ?? 'Unknown' }}
+                                            Guru: {{ $classroom->creator->name ?? 'Tidak diketahui' }}
                                         </div>
                                     </div>
                                     
@@ -202,7 +222,7 @@
                                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 9l3 3m0 0l-3 3m3-3H8m13 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                                             </svg>
-                                            Enter Classroom
+                                            Masuk Kelas
                                         </a>
                                     </div>
                                 </div>
@@ -216,14 +236,14 @@
                         <svg class="mx-auto h-16 w-16 text-indigo-500/70 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                         </svg>
-                        <h3 class="text-xl font-semibold mb-2 text-indigo-200">No Classrooms Yet</h3>
-                        <p class="text-gray-400 mb-6">Join a classroom to start learning with your teachers and classmates.</p>
+                        <h3 class="text-xl font-semibold mb-2 text-indigo-200">Belum Ada Kelas</h3>
+                        <p class="text-gray-400 mb-6">Gabung kelas untuk mulai belajar bersama guru dan teman sekelas Anda.</p>
                         
                         <button type="button" onclick="openJoinModal()" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 border border-indigo-500 rounded-xl text-white font-medium shadow-lg shadow-indigo-500/20 hover:from-indigo-700 hover:to-purple-700 focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-indigo-500 transition-all duration-200">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                             </svg>
-                            Join a Classroom
+                            Gabung Kelas
                         </button>
                     </div>
                 </div>
@@ -241,7 +261,7 @@
             <div class="relative bg-gradient-to-b from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-2xl border border-indigo-700/30 overflow-hidden shadow-xl transform transition-all w-full max-w-md mx-auto my-8 sm:my-12 p-4 sm:p-6">
                 <div class="absolute top-0 right-0 pt-4 pr-4">
                     <button type="button" onclick="closeJoinModal()" class="text-gray-400 hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                        <span class="sr-only">Close</span>
+                        <span class="sr-only">Tutup</span>
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -254,8 +274,8 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                         </svg>
                     </div>
-                    <h2 class="text-xl sm:text-2xl font-bold text-white mb-1" id="modal-title">Join a Classroom</h2>
-                    <p class="text-sm sm:text-base text-gray-400">Enter the code provided by your teacher</p>
+                    <h2 class="text-xl sm:text-2xl font-bold text-white mb-1" id="modal-title">Gabung Kelas</h2>
+                    <p class="text-sm sm:text-base text-gray-400">Masukkan kode yang diberikan oleh guru Anda</p>
                 </div>
                 
                 <div id="modalError" class="hidden bg-rose-900/50 backdrop-blur-sm border-l-4 border-rose-500 text-rose-300 p-3 sm:p-4 mb-4 sm:mb-6 rounded-lg" role="alert">
@@ -266,25 +286,25 @@
                     @csrf
                     
                     <div class="mb-4 sm:mb-6">
-                        <label for="code" class="block text-sm font-medium text-indigo-300 mb-2">Classroom Code</label>
+                        <label for="code" class="block text-sm font-medium text-indigo-300 mb-2">Kode Kelas</label>
                         <input type="text" 
                                name="code" 
                                id="code" 
                                class="w-full px-3 sm:px-4 py-2 sm:py-3 bg-gray-700/50 border border-indigo-600/30 rounded-xl text-gray-200 placeholder-gray-500 focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all duration-200" 
-                               placeholder="Enter the classroom code" 
+                               placeholder="Masukkan kode kelas" 
                                required>
                         <p id="codeError" class="mt-1 text-xs sm:text-sm text-rose-400 hidden"></p>
                     </div>
 
                     <div class="flex items-center justify-end mt-4 sm:mt-6">
                         <button type="button" onclick="closeJoinModal()" class="mr-3 text-sm text-gray-400 hover:text-gray-300 transition-colors">
-                            Cancel
+                            Batal
                         </button>
                         <button type="submit" class="inline-flex items-center px-4 sm:px-5 py-2 sm:py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 border border-indigo-500 rounded-xl text-white text-sm font-medium shadow-lg shadow-indigo-500/20 hover:from-indigo-700 hover:to-purple-700 focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-purple-500 transition-all duration-200">
                             <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 9l3 3m0 0l-3 3m3-3H8m13 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            Join Classroom
+                            Gabung Kelas
                         </button>
                     </div>
                 </form>

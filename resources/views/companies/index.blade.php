@@ -24,14 +24,14 @@
                                name="_search" 
                                value="{{ request('_search') }}" 
                                class="w-full pl-12 pr-4 py-3 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-gray-200 placeholder-gray-400 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-200" 
-                               placeholder="Search companies...">
+                               placeholder="Cari Perusahaan ...">
                     </div>
                     
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full sm:w-auto">
                         <div class="relative w-full">
                             <select name="province" 
                                    class="w-full bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-gray-200 pl-4 pr-10 py-3 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 truncate">
-                                <option value="" class="truncate">All Provinces</option>
+                                <option value="" class="truncate">Semua Provinsi</option>
                                 @foreach($provinces as $province)
                                     <option value="{{ $province }}" {{ request('province') == $province ? 'selected' : '' }} class="truncate">
                                         {{ $province }}
@@ -48,7 +48,7 @@
                         <div class="relative w-full">
                             <select name="city" 
                                    class="w-full bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-gray-200 pl-4 pr-10 py-3 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 truncate">
-                                <option value="" class="truncate">All Cities</option>
+                                <option value="" class="truncate">Semua Kota</option>
                                 @foreach($cities as $city)
                                     <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }} class="truncate">
                                         {{ $city }}
@@ -166,7 +166,7 @@
                                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                 </svg>
-                                                Details
+                                                Detail
                                             </a>
                                         </div>
                                     </div>

@@ -21,7 +21,7 @@
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                             </svg>
-                            All Institutions
+                            Semua Institusi
                         </a>
                     </li>
                     @foreach($schoolTypes as $type)
@@ -50,12 +50,12 @@
                                name="_search" 
                                value="{{ request('_search') }}" 
                                class="w-full pl-12 pr-4 py-3 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-gray-200 placeholder-gray-400 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-200" 
-                               placeholder="Search educational institutions...">
+                               placeholder="Cari institusi pendidikan...">
                     </div>
                     
                     <div class="relative">
                         <select name="province" class="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-gray-200 pl-4 pr-10 py-3 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 appearance-none">
-                            <option value="">All Provinces</option>
+                            <option value="">Semua Provinsi</option>
                             @foreach($provinces as $province)
                                 <option value="{{ $province }}" {{ request('province') == $province ? 'selected' : '' }}>
                                     {{ $province }}
@@ -71,7 +71,7 @@
                     
                     <div class="relative">
                         <select name="city" class="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-gray-200 pl-4 pr-10 py-3 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 appearance-none">
-                            <option value="">All Cities</option>
+                            <option value="">Semua Kota</option>
                             @foreach($cities as $city)
                                 <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>
                                     {{ $city }}
@@ -194,7 +194,7 @@
                                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                 </svg>
-                                                Details
+                                                Detail
                                             </a>
                                         </div>
                                     </div>

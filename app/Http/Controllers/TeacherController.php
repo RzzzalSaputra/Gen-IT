@@ -328,10 +328,27 @@ class TeacherController extends Controller
             abort(403, 'Unauthorized action. Only teachers can delete materials from this classroom.');
         }
         
-        // Material deletion logic...
-        
-        return redirect()->route('teacher.materials.index', $classroom_id)
-                         ->with('success', 'Material deleted successfully');
+        try {
+            // Get the classroom
+            $classroom = Classroom::findOrFail($classroom_id);
+            
+            // Find the material and perform soft delete
+            $material = $classroom->materials()->findOrFail($id);
+            $material->delete_at = now(); // Soft delete
+            $material->save();
+            
+            return redirect()->route('teacher.classrooms.show', $classroom_id)
+                    ->with('success', 'Material deleted successfully')
+                    ->with('active_tab', 'materials');
+        } catch (\Exception $e) {
+            Log::error('Error deleting material', [
+                'error' => $e->getMessage(),
+                'classroom_id' => $classroom_id,
+                'material_id' => $id
+            ]);
+            
+            return back()->withErrors(['msg' => 'Failed to delete material: ' . $e->getMessage()]);
+        }
     }
 
     /**
@@ -578,10 +595,27 @@ class TeacherController extends Controller
             abort(403, 'Unauthorized action. Only teachers can delete assignments from this classroom.');
         }
         
-        // Assignment deletion logic...
-        
-        return redirect()->route('teacher.assignments.index', $classroom_id)
-                         ->with('success', 'Assignment deleted successfully');
+        try {
+            // Get the classroom
+            $classroom = Classroom::findOrFail($classroom_id);
+            
+            // Find the assignment and perform soft delete
+            $assignment = $classroom->assignments()->findOrFail($id);
+            $assignment->delete_at = now(); // Soft delete
+            $assignment->save();
+            
+            return redirect()->route('teacher.classrooms.show', $classroom_id)
+                    ->with('success', 'Assignment deleted successfully')
+                    ->with('active_tab', 'assignments');
+        } catch (\Exception $e) {
+            Log::error('Error deleting assignment', [
+                'error' => $e->getMessage(),
+                'classroom_id' => $classroom_id,
+                'assignment_id' => $id
+            ]);
+            
+            return back()->withErrors(['msg' => 'Failed to delete assignment: ' . $e->getMessage()]);
+        }
     }
 
     /**

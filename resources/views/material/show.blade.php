@@ -89,7 +89,7 @@
                             <!-- Table of Contents (for long articles) -->
                             @if(strlen($material->content) > 1000)
                                 <div class="mb-10 p-6 bg-gray-900/50 rounded-2xl border border-gray-700/50 shadow-inner">
-                                    <h3 class="text-xl font-bold text-gray-100 mb-4">Table of Contents</h3>
+                                    <h3 class="text-xl font-bold text-gray-100 mb-4">Daftar isi</h3>
                                     <div id="table-of-contents" class="text-blue-400">
                                         <!-- JavaScript will populate this -->
                                     </div>
@@ -187,14 +187,14 @@
                             <div class="mt-16 pt-8 border-t border-gray-700/50">
                                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                                     <div>
-                                        <span class="text-sm font-medium text-gray-400">Last updated:</span>
+                                        <span class="text-sm font-medium text-gray-400">Terakhir Diperbaharui:</span>
                                         <span class="text-gray-300">{{ $material->updated_at->format('M d, Y, h:i A') }}</span>
                                     </div>
                                     <a href="{{ route('materials.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-sm text-white transition-colors duration-200">
                                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                                         </svg>
-                                        Back to Materials
+                                        kembali ke materi
                                     </a>
                                 </div>
                             </div>
@@ -265,7 +265,7 @@
                                 <svg class="w-5 h-5 mr-2 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
                                 </svg>
-                                More Learning Resources
+                                Sumber Belajar Lebih Banyak
                             </h3>
                             <div class="space-y-4">
                                 @foreach(App\Models\Material::where('id', '!=', $material->id)->where('type', $material->type)->take(5)->get() as $relatedMaterial)

@@ -21,7 +21,7 @@
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                             </svg>
-                            All Listings
+                            Daftar Semua Pekerjaan
                         </a>
                     </li>
                     @foreach($jobTypes as $type)
@@ -56,12 +56,12 @@
                             name="_search" 
                             value="{{ request('_search') }}" 
                             class="w-full pl-12 pr-4 py-3 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-gray-200 placeholder-gray-400 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-200" 
-                            placeholder="Search job listings...">
+                            placeholder="Cari daftar pekerjaan ...">
                     </div>
                     
                     <div class="relative">
                         <select name="province" class="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-gray-200 pl-4 pr-10 py-3 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 appearance-none">
-                            <option value="">All Provinces</option>
+                            <option value="">Semua Provinsi</option>
                             @foreach($provinces as $province)
                                 <option value="{{ $province }}" {{ request('province') == $province ? 'selected' : '' }}>
                                     {{ $province }}
@@ -77,7 +77,7 @@
                     
                     <div class="relative">
                         <select name="city" class="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-gray-200 pl-4 pr-10 py-3 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 appearance-none">
-                            <option value="">All Cities</option>
+                            <option value="">Semua Kota</option>
                             @foreach($cities as $city)
                                 <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>
                                     {{ $city }}
@@ -93,7 +93,7 @@
 
                     <div class="relative">
                     <select name="experience" class="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-gray-200 pl-4 pr-10 py-3 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 appearance-none">
-                        <option value="">All Experience</option>
+                        <option value="">Semua Pengalaman</option>
                         @foreach($experienceLevels as $level)
                             <option value="{{ $level->id }}" {{ request('experience') == $level->id ? 'selected' : '' }}>
                                 {{ $level->value }}
@@ -181,14 +181,14 @@
                                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                 </svg>
-                                                {{ $job->created_at->diffForHumans() }}
+                                                {{ $job->created_at->locale('id')->diffForHumans() }}
                                             </div>
                                             
                                             <a href="{{ route('jobs.show', $job->id) }}" class="inline-flex items-center px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors duration-200">
                                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                 </svg>
-                                                Details
+                                                Detail
                                             </a>
                                         </div>
                                     </div>

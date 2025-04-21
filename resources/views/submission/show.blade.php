@@ -10,7 +10,7 @@
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
-                    Back to List
+                    Kembali ke Daftar
                 </a>
             </div>
         </div>
@@ -45,18 +45,29 @@
                             @endif
                         </div>
 
-                        <!-- Approval Details -->
+                        <!-- Approval/Rejection Details -->
                         @if($submission->approve_at)
-                            <div class="bg-blue-900/20 rounded-xl p-3 border border-blue-500/20">
+                            <div class="{{ $submission->statusOption->value === 'declined' ? 'bg-red-900/20 border-red-500/20' : 'bg-blue-900/20 border-blue-500/20' }} rounded-xl p-3 border">
                                 <h4 class="text-sm font-medium text-gray-200 flex items-center mb-1">
-                                    <svg class="w-4 h-4 mr-1 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
-                                    Approval Details
+                                    @if($submission->statusOption->value === 'declined')
+                                        <svg class="w-4 h-4 mr-1 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        Detail Penolakan
+                                    @else
+                                        <svg class="w-4 h-4 mr-1 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        Detail Persetujuan
+                                    @endif
                                 </h4>
                                 <p class="text-gray-300 text-xs">
-                                    By: {{ $submission->approvedBy->name ?? 'System' }}<br>
-                                    {{ $submission->approve_at->format('M j, Y H:i') }}
+                                    @if($submission->statusOption->value === 'declined')
+                                        Ditolak oleh: {{ $submission->approvedBy->name ?? 'Sistem' }}<br>
+                                    @else
+                                        Oleh: {{ $submission->approvedBy->name ?? 'Sistem' }}<br>
+                                    @endif
+                                    {{ $submission->approve_at->format('d M Y H:i') }}
                                 </p>
                             </div>
                         @endif
@@ -68,7 +79,7 @@
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                                 </svg>
-                                Back to Submissions
+                                Kembali ke Submissions
                             </a>
                         </div>
                     </div>
@@ -183,7 +194,7 @@
                                         </iframe>
                                     @else
                                         <div class="p-8 text-center h-full flex items-center justify-center">
-                                            <p class="text-gray-400">Preview not available for this file type.</p>
+                                            <p class="text-gray-400">Preview tidak tersedia untuk jenis file ini.</p>
                                         </div>
                                     @endif
                                 </div>

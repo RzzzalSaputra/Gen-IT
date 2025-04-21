@@ -18,7 +18,7 @@
             <div class="bg-gray-800/60 backdrop-blur-sm rounded-2xl border border-gray-700/50 overflow-hidden shadow-xl">
                 <div class="p-6 sm:p-8">
                     <h3 class="text-2xl font-bold text-gray-100 mb-6">
-                        Submit New Content
+                    Kirim Konten Baru
                     </h3>
 
                     @if(session('error'))
@@ -35,7 +35,7 @@
                             <label for="title" class="block text-sm font-medium text-gray-300 mb-1">Title</label>
                             <input type="text" name="title" id="title" value="{{ old('title') }}" required
                                 class="w-full rounded-lg bg-gray-900/50 border border-gray-700 text-gray-200 px-4 py-2.5 focus:border-blue-500 focus:ring focus:ring-blue-500/30 focus:outline-none transition-colors duration-200"
-                                placeholder="Enter submission title">
+                                placeholder="Masukan Judul Submission">
                             @error('title')
                                 <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
                             @enderror
@@ -46,7 +46,7 @@
                             <label for="content" class="block text-sm font-medium text-gray-300 mb-1">Content</label>
                             <textarea name="content" id="content" rows="6" required
                                 class="w-full rounded-lg bg-gray-900/50 border border-gray-700 text-gray-200 px-4 py-2.5 focus:border-blue-500 focus:ring focus:ring-blue-500/30 focus:outline-none transition-colors duration-200"
-                                placeholder="Enter submission content">{{ old('content') }}</textarea>
+                                placeholder="Masukan Konten Submission">{{ old('content') }}</textarea>
                             @error('content')
                                 <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
                             @enderror
@@ -54,7 +54,7 @@
 
                         <!-- Submission Type -->
                         <div>
-                            <label for="type" class="block text-sm font-medium text-gray-300 mb-1">Submission Type</label>
+                            <label for="type" class="block text-sm font-medium text-gray-300 mb-1">Tipe Submission</label>
                             <select name="type" id="type" required
                                 class="w-full rounded-lg bg-gray-900/50 border border-gray-700 text-gray-200 px-4 py-2.5 focus:border-blue-500 focus:ring focus:ring-blue-500/30 focus:outline-none transition-colors duration-200">
                                 <option value="">Select a type</option>

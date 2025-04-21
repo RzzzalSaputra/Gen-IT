@@ -33,10 +33,10 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 text-emerald-400" viewBox="0 0 20 20" fill="currentColor">
                                         <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z" />
                                     </svg>
-                                    Assignments
+                                    Tugas
                                 </h3>
                                 <p class="text-gray-300 mb-4">
-                                    Track your assignments and access new learning materials
+                                    Pantau tugas Anda dan akses materi pembelajaran baru
                                 </p>
                             </div>
                             @php
@@ -48,17 +48,17 @@
 
                             <span class="inline-flex items-center whitespace-nowrap px-3 py-1 rounded-lg text-sm font-medium {{ $deadlineStatusClass }} backdrop-blur-sm border">
                                 <span class="w-2 h-2 flex-shrink-0 rounded-full mr-2 {{ $deadlineIndicatorClass }}"></span>
-                                {{ $hasUpcomingDeadlines ? ($upcomingDeadlinesCount . ' Left') : 'Complete' }}
+                                {{ $hasUpcomingDeadlines ? ($upcomingDeadlinesCount . ' Tersisa') : 'Selesai' }}
                             </span>
                         </div>
                         
                         <div class="bg-gray-900/50 rounded-xl p-4 mb-4">
                             <div class="flex justify-between items-center mb-2">
-                                <span class="text-sm text-gray-300">New Materials</span>
+                                <span class="text-sm text-gray-300">Materi Baru</span>
                                 <span class="text-lg font-medium text-white">{{ $newMaterialsCount ?? 0 }}</span>
                             </div>
                             <div class="flex justify-between items-center mb-2">
-                                <span class="text-sm text-gray-300">Last Graded</span>
+                                <span class="text-sm text-gray-300">Nilai Terakhir</span>
                                 <span class="text-lg font-medium text-white">{{ $lastGrade ?? 'N/A' }}</span>
                             </div>
                             <div class="w-full bg-gray-700/50 rounded-full h-2.5 mt-2">
@@ -71,7 +71,7 @@
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                             </svg>
-                            View Classrooms
+                            Lihat Kelas
                         </a>
                     </div>
                 </div>
@@ -85,14 +85,17 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
                                         <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
                                     </svg>
-                                    Submissions
+                                    Submission Public
                                 </h3>
                                 <p class="text-gray-300 mb-4">
-                                    Manage your content submissions and check their status
+                                    Kelola submission konten Anda dan periksa statusnya
                                 </p>
                             </div>
                             @php
                                 // For the submission status
+                                $latestSubmissionStatusText = $latestSubmissionStatus == 'accepted' ? 'Diterima' : 
+                                                            ($latestSubmissionStatus == 'rejected' ? 'Ditolak' : 'Pending');
+                                
                                 $submissionStatusClass = $latestSubmissionStatus == 'accepted' ? 'bg-green-900/30 text-green-300 border-green-500/30' : 
                                                        ($latestSubmissionStatus == 'rejected' ? 'bg-red-900/30 text-red-300 border-red-500/30' : 
                                                        'bg-yellow-900/30 text-yellow-300 border-yellow-500/30');
@@ -103,13 +106,13 @@
 
                             <span class="inline-flex items-center whitespace-nowrap px-3 py-1 rounded-lg text-sm font-medium {{ $submissionStatusClass }} backdrop-blur-sm border">
                                 <span class="w-2 h-2 flex-shrink-0 rounded-full mr-2 {{ $indicatorClass }}"></span>
-                                {{ ucfirst($latestSubmissionStatus ?? 'Pending') }}
+                                {{ $latestSubmissionStatusText ?? 'pending' }}
                             </span>
                         </div>
                         
                         <div class="bg-gray-900/50 rounded-xl p-4 mb-4">
                             <div class="flex justify-between items-center mb-2">
-                                <span class="text-sm text-gray-300">Total Submissions</span>
+                                <span class="text-sm text-gray-300">Total Pengumpulan</span>
                                 <span class="text-lg font-medium text-white">{{ $submissionsCount ?? 0 }}</span>
                             </div>
                             <div class="w-full bg-gray-700/50 rounded-full h-2.5">
@@ -122,7 +125,7 @@
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                             </svg>
-                            View Submissions
+                            Lihat Pengumpulan
                         </a>
                     </div>
                 </div>
@@ -137,10 +140,10 @@
                                         <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
                                         <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                                     </svg>
-                                    Messages
+                                    Pesan
                                 </h3>
                                 <p class="text-gray-300 mb-4">
-                                    Manage your communications
+                                    Kelola komunikasi Anda
                                 </p>
                             </div>
                             @php
@@ -151,17 +154,17 @@
 
                             <span class="inline-flex items-center whitespace-nowrap px-3 py-1 rounded-lg text-sm font-medium {{ $messageStatusClass }} backdrop-blur-sm border">
                                 <span class="w-2 h-2 flex-shrink-0 rounded-full mr-2 {{ $messageIndicatorClass }}"></span>
-                                {{ ($pendingMessagesCount ?? 0) > 0 ? 'Pending' : 'Responded' }}
+                                {{ ($pendingMessagesCount ?? 0) > 0 ? 'pending' : 'Ditanggapi' }}
                             </span>
                         </div>
                         
                         <div class="bg-gray-900/50 rounded-xl p-4 mb-4">
                             <div class="flex justify-between items-center mb-2">
-                                <span class="text-sm text-gray-300">Messages Sent</span>
+                                <span class="text-sm text-gray-300">Pesan Terkirim</span>
                                 <span class="text-lg font-medium text-white">{{ $contactsCount ?? 0 }}</span>
                             </div>
                             <div class="flex justify-between items-center mb-2">
-                                <span class="text-sm text-gray-300">Messages Responded</span>
+                                <span class="text-sm text-gray-300">Pesan Ditanggapi</span>
                                 <span class="text-lg font-medium text-white">{{ $respondedMessagesCount ?? 0 }}</span>
                             </div>
                             <div class="w-full bg-gray-700/50 rounded-full h-2.5">
@@ -175,7 +178,7 @@
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                             </svg>
-                            Manage Messages
+                            Kelola Pesan
                         </a>
                     </div>
                 </div>

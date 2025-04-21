@@ -688,7 +688,7 @@ class ClassroomAssignmentController extends Controller
      *
      * @param int $classroomId
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
     public function downloadForStudent($classroomId, $id)
     {

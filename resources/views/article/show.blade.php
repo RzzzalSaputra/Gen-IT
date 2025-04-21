@@ -8,7 +8,7 @@
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
-                Back to Articles
+                Kembali ke Artikel
             </a>
         </div>
     </x-slot>
@@ -38,13 +38,13 @@
                             <svg class="w-5 h-5 mr-2 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
-                            Written by: {{ $article->writer }}
+                            Ditulis Oleh : {{ $article->writer }}
                         </div>
                         <div class="flex items-center">
                             <svg class="w-5 h-5 mr-2 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
-                            Published: {{ \Carbon\Carbon::parse($article->post_time)->format('M d, Y') }}
+                            Diterbitkan: {{ \Carbon\Carbon::parse($article->post_time)->format('M d, Y') }}
                         </div>
                     </div>
                 </div>
@@ -143,7 +143,7 @@
                     <div class="mt-16 pt-8 border-t border-gray-700/50">
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                             <div>
-                                <span class="text-sm font-medium text-gray-400">Last updated:</span>
+                                <span class="text-sm font-medium text-gray-400">Terakhir Diperbaharui:</span>
                                 <span class="text-gray-300">{{ $article->updated_at->format('M d, Y, h:i A') }}</span>
                             </div>
                             <a href="{{ route('articles.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-sm text-white transition-colors duration-200">
@@ -157,14 +157,14 @@
                 </div>
             </div>
             
-            <!-- Related Articles -->
+            <!-- Artikel Terkait -->
             <div class="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50 shadow-xl overflow-hidden">
                 <div class="p-6">
                     <h3 class="text-lg font-semibold text-white mb-4 flex items-center">
                         <svg class="w-5 h-5 mr-2 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
                         </svg>
-                        Related Articles
+                        Artikel Terkait
                     </h3>
                     <div class="space-y-4">
                         @foreach(App\Models\Article::where('id', '!=', $article->id)->latest()->take(5)->get() as $relatedArticle)

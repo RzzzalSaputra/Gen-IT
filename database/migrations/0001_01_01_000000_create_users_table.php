@@ -18,7 +18,7 @@ return new class extends Migration
             $table->rememberToken();
             
             // Tambahan dari SQL schema
-            $table->bigInteger('phone');
+            $table->text('phone');
             $table->string('first_name');
             $table->string('last_name');
             $table->date('birthdate');
