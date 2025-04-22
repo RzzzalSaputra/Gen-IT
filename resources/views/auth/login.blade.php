@@ -5,7 +5,7 @@
             <span class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-indigo-300 tracking-wide">Gen-IT</span>
         </div>
         
-        <h2 class="text-xl font-medium text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400 mb-6 text-center">{{ __('Welcome Back') }}</h2>
+        <h2 class="text-xl font-medium text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400 mb-6 text-center">{{ __('Selamat Datang') }}</h2>
         
         <!-- Session Status -->
         <x-auth-session-status class="mb-4" :status="session('status')" />
@@ -50,7 +50,7 @@
                     
                     <div class="mt-2">
                         <a class="text-sm text-gray-400 hover:text-gray-300" href="{{ route('register') }}">
-                            {{ __("Don't have an account?") }} <span class="text-blue-400 hover:text-blue-300 hover:underline">{{ __('Register here') }}</span>
+                            {{ __("Tidak punya akun?") }} <span class="text-blue-400 hover:text-blue-300 hover:underline">{{ __('Daftar Disini ') }}</span>
                         </a>
                     </div>
                 </div>

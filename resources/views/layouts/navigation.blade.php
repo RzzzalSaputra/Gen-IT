@@ -247,7 +247,7 @@
                         {{ __('Konferensi Video') }}
                     </a>
                     <a href="{{ route('submissions.public') }}" class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
-                        {{ __('Pengajuan Publik') }}
+                        {{ __('Submission Publik') }}
                     </a>
                 </div>
             </div>

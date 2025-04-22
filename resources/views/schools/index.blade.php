@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-2xl text-gray-800 dark:text-gray-200 leading-tight">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+            <h2 class="font-semibold text-xl sm:text-2xl text-gray-800 dark:text-gray-200 leading-tight">
                 {{ __('Educational Institutions') }}
             </h2>
             <div class="text-sm text-gray-500 dark:text-gray-400">
@@ -10,37 +10,37 @@
         </div>
     </x-slot>
 
-    <div class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 pt-16 sm:pt-24">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <!-- Filter Tabs - Simplified -->
-            <div class="mb-8 bg-gray-800/50 backdrop-blur-sm rounded-xl p-2 border border-gray-700/50">
-                <ul class="flex flex-wrap justify-center gap-2 text-sm font-medium">
+    <div class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 pt-12 sm:pt-16 md:pt-24">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-8 sm:py-12">
+            <!-- Filter Tabs - Responsive -->
+            <div class="mb-6 sm:mb-8 bg-gray-800/50 backdrop-blur-sm rounded-xl p-2 border border-gray-700/50 overflow-x-auto">
+                <ul class="flex flex-nowrap sm:flex-wrap justify-start sm:justify-center gap-2 text-sm font-medium min-w-max">
                     <li>
                         <a href="{{ url('/schools') }}" 
-                        class="inline-flex items-center px-6 py-3 rounded-lg {{ !request()->has('type') ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-gray-300 hover:bg-gray-700/50 hover:text-white transition-all duration-200' }}">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        class="inline-flex items-center px-4 sm:px-6 py-3 rounded-lg {{ !request()->has('type') ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-gray-300 hover:bg-gray-700/50 hover:text-white transition-all duration-200' }}">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                             </svg>
-                            Semua Institusi
+                            <span class="whitespace-nowrap">Semua Institusi</span>
                         </a>
                     </li>
                     @foreach($schoolTypes as $type)
                     <li>
                         <a href="{{ url('/schools?type=' . $type->id) }}" 
-                           class="inline-flex items-center px-6 py-3 rounded-lg {{ request()->input('type') == $type->id ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-gray-300 hover:bg-gray-700/50 hover:text-white transition-all duration-200' }}">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                           class="inline-flex items-center px-4 sm:px-6 py-3 rounded-lg {{ request()->input('type') == $type->id ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-gray-300 hover:bg-gray-700/50 hover:text-white transition-all duration-200' }}">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                             </svg>
-                            {{ $type->value }}
+                            <span class="whitespace-nowrap">{{ $type->value }}</span>
                         </a>
                     </li>
                     @endforeach
                 </ul>
             </div>
 
-            <div class="mb-8">
-                <form action="{{ url('/schools') }}" method="GET" class="flex items-center gap-3">
-                    <div class="relative flex-1">
+            <div class="mb-6 sm:mb-8">
+                <form action="{{ url('/schools') }}" method="GET" class="flex flex-col sm:flex-row items-start gap-3">
+                    <div class="relative flex-1 w-full">
                         <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
                             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -53,62 +53,64 @@
                                placeholder="Cari institusi pendidikan...">
                     </div>
                     
-                    <div class="relative">
-                        <select name="province" class="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-gray-200 pl-4 pr-10 py-3 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 appearance-none">
-                            <option value="">Semua Provinsi</option>
-                            @foreach($provinces as $province)
-                                <option value="{{ $province }}" {{ request('province') == $province ? 'selected' : '' }}>
-                                    {{ $province }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3">
-                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                            </svg>
+                    <div class="grid grid-cols-2 sm:flex gap-3 w-full sm:w-auto">
+                        <div class="relative w-full sm:w-auto">
+                            <select name="province" class="w-full sm:w-[180px] md:w-[220px] bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-gray-200 pl-4 pr-10 py-3 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 appearance-none text-sm">
+                                <option value="">Semua Provinsi</option>
+                                @foreach($provinces as $province)
+                                    <option value="{{ $province }}" {{ request('province') == $province ? 'selected' : '' }}>
+                                        {{ $province }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="relative">
-                        <select name="city" class="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-gray-200 pl-4 pr-10 py-3 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 appearance-none">
-                            <option value="">Semua Kota</option>
-                            @foreach($cities as $city)
-                                <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>
-                                    {{ $city }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3">
-                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                            </svg>
+                        
+                        <div class="relative w-full sm:w-auto">
+                            <select name="city" class="w-full sm:w-[180px] md:w-[220px] bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-gray-200 pl-4 pr-10 py-3 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 appearance-none text-sm">
+                                <option value="">Semua Kota</option>
+                                @foreach($cities as $city)
+                                    <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>
+                                        {{ $city }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
                         </div>
-                    </div>
 
-                    <button type="submit" class="inline-flex items-center px-6 py-3 bg-blue-600 rounded-xl border border-blue-500 text-white font-medium hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-blue-500 transition-all duration-200">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                        Filter
-                    </button>
+                        <button type="submit" class="col-span-2 sm:col-span-1 inline-flex items-center justify-center px-6 py-3 bg-blue-600 rounded-xl border border-blue-500 text-white font-medium hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-blue-500 transition-all duration-200">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                            Filter
+                        </button>
+                    </div>
                 </form>
             </div>
 
             <div class="bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-700/50 overflow-hidden shadow-xl">
-                <div class="p-6">
+                <div class="p-4 sm:p-6">
                     @if($schools->isEmpty())
-                        <div class="text-center py-16">
-                            <svg class="w-16 h-16 mx-auto text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="text-center py-12 sm:py-16">
+                            <svg class="w-12 h-12 sm:w-16 sm:h-16 mx-auto text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                             </svg>
-                            <h3 class="text-xl font-semibold mb-2 text-gray-200">No Institutions Found</h3>
+                            <h3 class="text-lg sm:text-xl font-semibold mb-2 text-gray-200">No Institutions Found</h3>
                             <p class="text-gray-400">Educational institutions will appear here once they are added to the system.</p>
                         </div>
                     @else
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                             @foreach($schools as $school)
                                 <div class="group bg-gray-800/30 hover:bg-gray-800/50 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg border border-gray-700/30 hover:border-blue-500/50 transition-all duration-300 hover:shadow-blue-500/5">
-                                    <a href="{{ route('schools.show', $school->id) }}" class="block h-48 relative overflow-hidden">
+                                    <a href="{{ route('schools.show', $school->id) }}" class="block h-36 sm:h-48 relative overflow-hidden">
                                         @if($school->img)
                                             <img src="{{ $school->img }}" 
                                                  alt="{{ $school->name }}" 
@@ -116,8 +118,8 @@
                                         @else
                                             <div class="h-full flex items-center justify-center bg-gradient-to-br from-blue-600/20 to-purple-600/20 p-6">
                                                 <div class="text-center transform group-hover:scale-105 transition-transform duration-300">
-                                                    <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
-                                                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <div class="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
+                                                        <svg class="w-6 h-6 sm:w-8 sm:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                                         </svg>
                                                     </div>
@@ -130,16 +132,16 @@
                                         </h4>
                                     </a>
                                     
-                                    <div class="p-6">
-                                        <h3 class="text-xl font-bold text-gray-100 mb-3 group-hover:text-blue-400 transition-colors duration-200">
+                                    <div class="p-4 sm:p-6">
+                                        <h3 class="text-lg sm:text-xl font-bold text-gray-100 mb-2 sm:mb-3 group-hover:text-blue-400 transition-colors duration-200 line-clamp-2">
                                             {{ $school->name }}
                                         </h3>
                                         
-                                        <div class="text-sm text-gray-400 mb-4 line-clamp-2">
+                                        <div class="text-xs sm:text-sm text-gray-400 mb-3 sm:mb-4 line-clamp-2">
                                             {{ strip_tags($school->description) }}
                                         </div>
                                         
-                                        <div class="flex flex-wrap gap-2 mb-4">
+                                        <div class="flex flex-wrap gap-1 sm:gap-2 mb-3 sm:mb-4">
                                             @if($school->typeOption)
                                                 <div class="inline-flex items-center px-2 py-1 bg-blue-900/30 backdrop-blur-sm rounded-lg text-xs text-blue-300 border border-blue-500/30">
                                                     {{ $school->typeOption->value }}
@@ -147,7 +149,7 @@
                                             @endif
 
                                             <div class="inline-flex items-center px-2 py-1 bg-gray-700/50 backdrop-blur-sm rounded-lg text-xs text-gray-300 border border-gray-600/30">
-                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                                 </svg>
@@ -155,7 +157,7 @@
                                             </div>
                                         </div>
                                         
-                                        <div class="flex justify-between items-center mt-6">
+                                        <div class="flex justify-between items-center mt-4 sm:mt-6">
                                             <div class="flex space-x-2">
                                                 @if($school->website)
                                                 <a href="{{ $school->website }}" target="_blank" class="text-gray-400 hover:text-blue-400 transition-colors duration-200">
@@ -190,8 +192,8 @@
                                                 @endif
                                             </div>
                                             
-                                            <a href="{{ route('schools.show', $school->id) }}" class="inline-flex items-center px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors duration-200">
-                                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <a href="{{ route('schools.show', $school->id) }}" class="inline-flex items-center px-2 sm:px-3 py-1 sm:py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-medium rounded-lg transition-colors duration-200">
+                                                <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                 </svg>
                                                 Detail
@@ -202,7 +204,7 @@
                             @endforeach
                         </div>
                         
-                        <div class="mt-8">
+                        <div class="mt-6 sm:mt-8 overflow-x-auto">
                             {{ $schools->appends(request()->except('page'))->links() }}
                         </div>
                     @endif
@@ -212,17 +214,47 @@
     </div>
 
     <style>
-        /* Fixed widths for the province and city dropdowns */
-        select[name="province"], 
-        select[name="city"] {
-            width: 220px; /* You can adjust this value to fit your design */
-            text-overflow: ellipsis;
-        }
-        
         /* Handle text overflow in dropdowns */
         select option {
             overflow: hidden;
             text-overflow: ellipsis;
+        }
+        
+        /* Improve mobile pagination display */
+        .pagination {
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 0.5rem;
+        }
+        
+        /* Hide scrollbar but keep functionality */
+        .pagination::-webkit-scrollbar {
+            display: none;
+        }
+        
+        /* For Firefox */
+        .pagination {
+            scrollbar-width: none;
+        }
+        
+        /* For horizontal scrollable areas */
+        .overflow-x-auto::-webkit-scrollbar {
+            height: 4px;
+            background-color: rgba(31, 41, 55, 0.5);
+        }
+        
+        .overflow-x-auto::-webkit-scrollbar-thumb {
+            background-color: rgba(59, 130, 246, 0.5);
+            border-radius: 2px;
+        }
+        
+        @media (max-width: 640px) {
+            /* Additional mobile-specific styles */
+            .pagination > * {
+                flex: 0 0 auto;
+            }
         }
     </style>
 

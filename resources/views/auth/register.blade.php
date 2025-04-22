@@ -26,21 +26,21 @@
 
                         <!-- First Name -->
                         <div class="transform transition-all duration-300 hover:translate-x-1">
-                            <x-input-label for="first_name" :value="__('First Name')" class="text-gray-300 mb-1 text-sm" />
+                            <x-input-label for="first_name" :value="__('Nama Depan')" class="text-gray-300 mb-1 text-sm" />
                             <x-text-input id="first_name" class="block w-full bg-gray-800/50 border-gray-700/30 rounded-xl text-gray-100 focus:border-blue-500 focus:ring focus:ring-blue-500/50 transition-all py-2.5 px-4 shadow-inner" type="text" name="first_name" :value="old('first_name')" autocomplete="given-name" placeholder="Enter first name" />
                             <x-input-error :messages="$errors->get('first_name')" class="mt-1" />
                         </div>
 
                         <!-- Last Name -->
                         <div class="transform transition-all duration-300 hover:translate-x-1">
-                            <x-input-label for="last_name" :value="__('Last Name')" class="text-gray-300 mb-1 text-sm" />
+                            <x-input-label for="last_name" :value="__('Nama Belakang')" class="text-gray-300 mb-1 text-sm" />
                             <x-text-input id="last_name" class="block w-full bg-gray-800/50 border-gray-700/30 rounded-xl text-gray-100 focus:border-blue-500 focus:ring focus:ring-blue-500/50 transition-all py-2.5 px-4 shadow-inner" type="text" name="last_name" :value="old('last_name')" autocomplete="family-name" placeholder="Enter last name" />
                             <x-input-error :messages="$errors->get('last_name')" class="mt-1" />
                         </div>
 
                         <!-- Phone Number with Country Code -->
                         <div class="transform transition-all duration-300 hover:translate-x-1">
-                            <x-input-label for="phone" :value="__('Phone Number')" class="text-gray-300 mb-1 text-sm" />
+                            <x-input-label for="phone" :value="__('Nomor Handphone')" class="text-gray-300 mb-1 text-sm" />
                             <div class="flex">
                                 <!-- Country Code Selector -->
                                 <select name="phone_country_code" id="phone_country_code" class="bg-gray-800/50 border-gray-700/30 rounded-l-xl text-gray-100 focus:border-blue-500 focus:ring focus:ring-blue-500/50 transition-all py-2.5 px-3 shadow-inner w-28">
@@ -70,7 +70,7 @@
 
                         <!-- Birthdate -->
                         <div class="transform transition-all duration-300 hover:translate-x-1">
-                            <x-input-label for="birthdate" :value="__('Birthdate')" class="text-gray-300 mb-1 text-sm" />
+                            <x-input-label for="birthdate" :value="__('Tanggal Lahir')" class="text-gray-300 mb-1 text-sm" />
                             <x-text-input id="birthdate" class="block w-full bg-gray-800/50 border-gray-700/30 rounded-xl text-gray-100 focus:border-blue-500 focus:ring focus:ring-blue-500/50 transition-all py-2.5 px-4 shadow-inner" type="date" name="birthdate" :value="old('birthdate')" required />
                             <x-input-error :messages="$errors->get('birthdate')" class="mt-1" />
                         </div>
@@ -166,11 +166,11 @@
                 // Show confirmation dialog
                 Swal.fire({
                     title: 'Confirm Registration',
-                    text: 'Are you sure you want to create your account?',
+                    text: 'Apakah data anda sudah benar ?',
                     icon: 'question',
                     showCancelButton: true,
-                    confirmButtonText: 'Yes, register me!',
-                    cancelButtonText: 'Not yet',
+                    confirmButtonText: 'Ya, Daftar Kan!',
+                    cancelButtonText: 'Batalkan',
                     confirmButtonColor: '#3b82f6',
                     cancelButtonColor: '#6b7280',
                     background: '#1f2937',
@@ -198,7 +198,7 @@
                         // Show processing message
                         Swal.fire({
                             title: 'Processing...',
-                            text: 'Creating your account',
+                            text: 'Membuat akun ',
                             icon: 'info',
                             allowOutsideClick: false,
                             showConfirmButton: false,
