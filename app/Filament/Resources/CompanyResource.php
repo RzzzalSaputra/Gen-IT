@@ -46,7 +46,7 @@ class CompanyResource extends Resource
             FileUpload::make('img')
                 ->label('Logo Perusahaan')
                 ->image()
-                ->directory('company')
+                ->directory('companies/images')
                 ->visibility('public')
                 ->nullable()
                 ->getUploadedFileNameForStorageUsing(function ($file) {

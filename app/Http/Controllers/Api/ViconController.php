@@ -216,22 +216,21 @@ class ViconController extends Controller
             $vicon->link = $request->link;
             $vicon->download = $request->download ?? null;
             $vicon->created_by = Auth::id();
-            $vicon->img = $this->default_folder . '/default.jpg'; // default image path tanpa /storage
+            $vicon->img = $this->default_folder . '/default.jpg';
             $vicon->save();
 
+            $timestamp = now()->format('Ymd_His');
             $random = mt_rand(100, 999);
 
             // Simpan gambar jika ada
             if ($request->hasFile('img')) {
                 $file = $request->file('img');
-                $timestamp = now()->format('Ymd_His');
                 $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
                 $slugName = Str::slug($originalName);
-                $imageName = $random . '_' .   $slugName . '_' . $timestamp . '.' . $file->getClientOriginalExtension();
-                $imagePath = $file->storeAs($this->default_folder, $imageName, 'public');
-
-                // Simpan path TANPA /storage/
-                $vicon->img = $imagePath;
+                $ext = $file->getClientOriginalExtension();
+                $filename = "{$random}_{$slugName}_{$timestamp}.{$ext}";
+                $path = $file->storeAs('vicons/images', $filename, 'public');
+                $vicon->img = 'vicons/images/' . $filename;
                 $vicon->save();
             }
 
@@ -376,9 +375,11 @@ class ViconController extends Controller
                 $vicon->update($updateData);
             }
 
-            // Handle image upload if provided
+            $timestamp = now()->format('Ymd_His');
+            $random = mt_rand(100, 999);
+
+            // Handle image upload
             if ($request->hasFile('img')) {
-                // Delete previous image if it exists and isn't the default
                 if (!empty($vicon->img) && !str_contains($vicon->img, 'default.jpg')) {
                     $oldImagePath = storage_path('app/public/' . $vicon->img);
                     if (file_exists($oldImagePath)) {
@@ -387,13 +388,12 @@ class ViconController extends Controller
                 }
 
                 $file = $request->file('img');
-                $timestamp = now()->format('Ymd_His');
-                $random = mt_rand(100, 999);
                 $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
                 $slugName = Str::slug($originalName);
-                $imageName = $random . '_' . $slugName . '_' . $timestamp . '.' . $file->getClientOriginalExtension();
-                $imagePath = $file->storeAs($this->default_folder, $imageName, 'public');
-                $vicon->update(['img' => $imagePath]);
+                $ext = $file->getClientOriginalExtension();
+                $filename = "{$random}_{$slugName}_{$timestamp}.{$ext}";
+                $path = $file->storeAs('vicons/images', $filename, 'public');
+                $vicon->update(['img' => 'vicons/images/' . $filename]);
             }
 
             DB::commit();

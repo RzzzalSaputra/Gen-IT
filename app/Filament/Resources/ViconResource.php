@@ -79,7 +79,7 @@ class ViconResource extends Resource
                 Forms\Components\FileUpload::make('file')
                     ->label('File (PDF, DOC, dll.)')
                     ->nullable()
-                    ->directory('vicon/files')
+                    ->directory('vicons/files')
                     ->visibility('public')
                     ->getUploadedFileNameForStorageUsing(function ($file) {
                         $timestamp = now()->format('Ymd_His');

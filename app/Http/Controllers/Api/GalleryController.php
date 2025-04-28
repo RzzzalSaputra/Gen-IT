@@ -188,11 +188,11 @@ class GalleryController extends Controller
                 // Membuat nama file dengan format random_slug_timestamp.extension
                 $filename = "{$random}_{$slugName}_{$timestamp}.{$file->getClientOriginalExtension()}";
 
-                // Store the file in the 'gallery' directory inside the public disk
-                $path = $file->storeAs('gallery', $filename, 'public');
+                
+                $path = $file->storeAs('galleries', $filename, 'public');
 
                 // Save the relative path to the file in the database
-                $gallery->file = 'gallery/' . $filename;
+                $gallery->file = 'galleries/' . $filename;
                 $gallery->save();
             }
 
@@ -272,20 +272,17 @@ class GalleryController extends Controller
 
         DB::beginTransaction();
         try {
-            // Cari data gallery berdasarkan ID
             $gallery = Gallery::find($id);
             if (!$gallery) {
                 return response()->json(['message' => 'Gallery item not found'], 404);
             }
 
-            // Update data gallery
             $gallery->update([
                 'title'  => $request->title ?? $gallery->title,
                 'type'   => $request->type ?? $gallery->type,
                 'link'   => $request->link ?? $gallery->link,
             ]);
 
-            // Handle file upload jika ada
             if ($request->hasFile('file')) {
                 // Hapus file lama jika ada
                 if (!empty($gallery->file)) {
@@ -308,10 +305,10 @@ class GalleryController extends Controller
                 $filename = "{$random}_{$slugName}_{$timestamp}.{$file->getClientOriginalExtension()}";
 
                 // Simpan file ke storage/app/public/gallery
-                $path = $file->storeAs('gallery', $filename, 'public');
+                $path = $file->storeAs('galleries', $filename, 'public');
 
                 // Update path file di database
-                $gallery->file = 'gallery/' . $filename;
+                $gallery->file = 'galleries/' . $filename;
                 $gallery->save();
             }
 

@@ -217,8 +217,8 @@ public function store(Request $request)
                 $slugName = \Illuminate\Support\Str::slug($originalName);
                 $ext = $file->getClientOriginalExtension();
                 $filename = "{$random}_{$slugName}_{$timestamp}.{$ext}";
-                $path = $file->storeAs('submissions', $filename, 'public');  // Menyimpan file di public storage
-                $submission->file = 'submissions/' . $filename;  // Path relatif untuk disimpan ke DB
+                $path = $file->storeAs('submissions/files', $filename, 'public');  // Menyimpan file di public storage
+                $submission->file = 'submissions/files/' . $filename;  // Path relatif untuk disimpan ke DB
             }
 
             if ($request->hasFile('img')) {
@@ -227,8 +227,8 @@ public function store(Request $request)
                 $slugName = \Illuminate\Support\Str::slug($originalName);
                 $imgExt = $img->getClientOriginalExtension();
                 $imgName = "{$random}_{$slugName}_{$timestamp}.{$imgExt}";
-                $imgPath = $img->storeAs('submissions', $imgName, 'public');  // Menyimpan gambar di public storage
-                $submission->img = 'submissions/' . $imgName;  // Path relatif untuk disimpan ke DB
+                $imgPath = $img->storeAs('submissions/images', $imgName, 'public');  // Menyimpan gambar di public storage
+                $submission->img = 'submissions/images/' . $imgName;  // Path relatif untuk disimpan ke DB
             }
 
             $submission->save();

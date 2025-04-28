@@ -415,7 +415,6 @@ class PostController extends Controller
                 $timestamp = now()->format('Ymd_His');
                 $random = mt_rand(100, 999);
 
-                // Get original file name and create slug
                 $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
                 $slugName = Str::slug($originalName);
 

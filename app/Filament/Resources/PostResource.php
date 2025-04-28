@@ -79,9 +79,9 @@ class PostResource extends Resource
                 Forms\Components\FileUpload::make('img')
                     ->label('Image')
                     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                    ->directory('posts')  // Menyimpan file dalam direktori posts
-                    ->visibility('public')  // Menetapkan file sebagai publik
-                    ->nullable()  // Memungkinkan untuk tidak mengunggah file
+                    ->directory('posts/images')
+                    ->visibility('public')
+                    ->nullable()
                     ->getUploadedFileNameForStorageUsing(function ($file) {
                         $timestamp = now()->format('Ymd_His');
                         $random = mt_rand(100, 999);

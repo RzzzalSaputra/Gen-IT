@@ -62,9 +62,9 @@ class GalleryResource extends Resource
             Forms\Components\FileUpload::make('file')
                 ->label('File (Image)')
                 ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                ->directory('gallery')  // Menyimpan file dalam direktori gallery
-                ->visibility('public')  // Menetapkan file sebagai publik
-                ->nullable()  // Memungkinkan untuk tidak mengunggah file
+                ->directory('galleries')
+                ->visibility('public')
+                ->nullable()
                 ->getUploadedFileNameForStorageUsing(function ($file) {
                     $timestamp = now()->format('Ymd_His');
                     $random = mt_rand(100, 999);
