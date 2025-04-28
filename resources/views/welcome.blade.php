@@ -10,7 +10,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         .hero-background {
-            background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://img.freepik.com/free-photo/cool-geometric-triangular-figure-neon-laser-light-great-backgrounds_181624-11068.jpg?t=st=1739365548~exp=1739369148~hmac=b15bd6a3bde915d42fdca2128b7e7fe4763ba95b4bed77573f53026a1bc14795&w=2000');
+            background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://img.freepik.com/free-photo/cool-geometric-triangular-figure-neon-laser-light-great-backgrounds_181624-11068.jpg?t=st=1745809710~exp=1745813310~hmac=5ca37140640ea42d670aed6846ec52478ed4c0c8d15b5dcfdaa8375098e4d608&w=2000');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -21,7 +21,7 @@
             width: 100%;
             overflow: hidden;
             position: relative;
-            margin-top: -100px;
+            margin-top: -80px;
         }
         .swiper-slide {
             transition: all 0.5s ease-in-out;
@@ -40,18 +40,18 @@
         .hero-title {
             background: white;
             display: inline-block;
-            padding: 0.5rem 2rem;
-            margin-bottom: 1rem;
+            padding: 0.75rem 1.5rem;
+            margin-bottom: 0.75rem;
         }
         .hero-subtitle {
             background: #435DEEFF;
             display: inline-block;
-            padding: 0.5rem 2rem;
+            padding: 0.75rem 1.5rem;
             color: white;
         }
         .gallery-image {
             width: 100%;
-            height: 280px;
+            height: 240px;
             object-fit: cover;
             border-radius: 8px 8px 0 0;
         }
@@ -59,6 +59,42 @@
             padding: 1rem;
             background-color: rgba(17, 24, 39, 0.8);
             border-radius: 0 0 8px 8px;
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 639px) {
+            .hero-title, .hero-subtitle {
+                padding: 0.5rem 1.5rem;
+                min-width: 200px;
+                text-align: center;
+            }
+            .gallery-slider {
+                margin-top: -50px;
+            }
+        }
+        
+        @media (min-width: 640px) {
+            .gallery-slider {
+                margin-top: -90px;
+            }
+            .gallery-image {
+                height: 260px;
+            }
+            .hero-title, .hero-subtitle {
+                padding: 0.5rem 1.5rem;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            .gallery-slider {
+                margin-top: -100px;
+            }
+            .gallery-image {
+                height: 280px;
+            }
+            .hero-title, .hero-subtitle {
+                padding: 0.5rem 2rem;
+            }
         }
     </style>
 </head>
@@ -72,9 +108,9 @@
             <!-- Background Image -->
             <div class="hero-background">
                 <!-- Content -->
-                <div class="relative h-full flex items-center justify-start content-wrapper px-20">
+                <div class="relative h-full flex items-center justify-start content-wrapper px-6 sm:px-8 md:px-12 lg:px-20">
                     <div class="w-full max-w-3xl">
-                        <h1 class="text-5xl md:text-7xl font-bold mb-8">
+                        <h1 class="text-4xl sm:text-5xl md:text-7xl font-bold mb-4 md:mb-8">
                             <div class="hero-title">
                                 Kami Adalah
                             </div>
@@ -82,7 +118,7 @@
                                 GEN-IT
                             </div>
                         </h1>
-                        <p class="text-xl text-white max-w-2xl">
+                        <p class="text-lg sm:text-lg md:text-xl text-white max-w-2xl">
                             Generasi Teknologi Informasi Kab. Katingan.
                         </p>
                     </div>
@@ -90,7 +126,7 @@
             </div>
 
             <!-- Gallery Slider -->
-            <div class="bg-gradient-to-b from-black/90 to-black/40 backdrop-blur-sm py-16">
+            <div class="bg-gradient-to-b from-black/90 to-black/40 backdrop-blur-sm py-10 md:py-16">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="gallery-slider max-w-5xl mx-auto">
                         <div class="swiper">
@@ -102,8 +138,8 @@
                                             <img src="{{ $gallery->file }}" alt="{{ $gallery->title }}" class="gallery-image">
                                         @endif
                                         <div class="gallery-info">
-                                            <h3 class="text-lg font-semibold text-white text-center">{{ $gallery->title }}</h3>
-                                            <div class="flex justify-center items-center mt-2 text-sm text-gray-400">
+                                            <h3 class="text-base sm:text-lg font-semibold text-white text-center">{{ $gallery->title }}</h3>
+                                            <div class="flex justify-center items-center mt-2 text-xs sm:text-sm text-gray-400">
                                                 <span>{{ $gallery->created_at->diffForHumans() }}</span>
                                             </div>
                                         </div>
@@ -126,8 +162,8 @@
     <script>
         // Initialize Swiper
         const swiper = new Swiper('.swiper', {
-            slidesPerView: 3,
-            spaceBetween: 24,
+            slidesPerView: 1,
+            spaceBetween: 16,
             centeredSlides: true,
             loop: true,
             autoplay: {

@@ -7,6 +7,8 @@
         <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
             <form action="{{ route('teacher.assignments.store', $classroom->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
+                <input type="hidden" name="redirect_hash" value="assignments">
+                
                 <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                     <div class="flex justify-between items-center pb-4 mb-4 border-b border-gray-200 dark:border-gray-700">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white" id="addAssignmentModalLabel">Add New Assignment</h3>

@@ -42,12 +42,6 @@
 
             <div class="flex items-center justify-between mt-6">
                 <div>
-                    @if (Route::has('password.request'))
-                        <a class="text-sm text-blue-400 hover:text-blue-300 font-medium transition-colors hover:underline transform hover:translate-x-1 transition-transform duration-300" href="{{ route('password.request') }}">
-                            {{ __('Forgot your password?') }}
-                        </a>
-                    @endif
-                    
                     <div class="mt-2">
                         <a class="text-sm text-gray-400 hover:text-gray-300" href="{{ route('register') }}">
                             {{ __("Tidak punya akun?") }} <span class="text-blue-400 hover:text-blue-300 hover:underline">{{ __('Daftar Disini ') }}</span>

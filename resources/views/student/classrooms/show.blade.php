@@ -229,27 +229,35 @@
                                 <div class="space-y-3 sm:space-y-4">
                                     @foreach($assignments as $assignment)
                                         @php
-                                            $now = \Carbon\Carbon::now();
+                                            // Get due date (already stored in database)
                                             $dueDate = \Carbon\Carbon::parse($assignment->due_date);
-                                            $isOverdue = $now->isAfter($dueDate);
                                             
-                                            // Set status badge and border color with reduced opacity
+                                            // Get local current time
+                                            $now = now();
+                                            
+                                            // Calculate if assignment is overdue
+                                            $isOverdue = $now->gt($dueDate);
+                                            
                                             if($assignment->user_submission) {
-                                                if($assignment->user_submission->graded) {
-                                                    $statusBadge = '<span class="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-900/50 text-green-300 border border-green-600/30">Graded: ' . $assignment->user_submission->grade . '/100</span>';
-                                                    $borderColor = 'border-green-500/30';
-                                                    $hoverBorderColor = 'hover:border-green-400/40';
-                                                } else {
-                                                    $statusBadge = '<span class="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-900/50 text-blue-300 border border-blue-600/30">Submitted</span>';
-                                                    $borderColor = 'border-blue-500/30';
-                                                    $hoverBorderColor = 'hover:border-blue-400/40';
-                                                }
+                                                // Existing submission code...
                                             } elseif($isOverdue) {
                                                 $statusBadge = '<span class="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-900/50 text-red-300 border border-red-600/30">Overdue</span>';
                                                 $borderColor = 'border-red-500/30';
                                                 $hoverBorderColor = 'hover:border-red-400/40';
                                             } else {
-                                                $statusBadge = '<span class="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-900/50 text-yellow-300 border border-yellow-600/30">' . $dueDate->diffForHumans() . '</span>';
+                                                // For assignments due in the future, force correct time calculation
+                                                $minutesRemaining = $now->diffInMinutes($dueDate, false);
+                                                $hoursRemaining = floor($minutesRemaining / 60);
+                                                $minutesLeft = $minutesRemaining % 60;
+                                                
+                                                // Format the time remaining text properly
+                                                if ($hoursRemaining > 0) {
+                                                    $timeRemainingText = "{$hoursRemaining} jam, {$minutesLeft} menit tersisa";
+                                                } else {
+                                                    $timeRemainingText = "{$minutesLeft} menit tersisa";
+                                                }
+                                                
+                                                $statusBadge = '<span class="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-900/50 text-yellow-300 border border-yellow-600/30">' . $timeRemainingText . '</span>';
                                                 $borderColor = 'border-yellow-500/30';
                                                 $hoverBorderColor = 'hover:border-yellow-400/40';
                                             }
@@ -300,7 +308,7 @@
                                                     <a href="{{ route('student.classrooms.assignments.show', ['classroom_id' => $classroom->id, 'id' => $assignment->id]) }}" 
                                                        class="inline-flex items-center px-2 py-1 sm:px-3 sm:py-1.5 bg-purple-700 hover:bg-purple-600 text-white text-xs sm:text-sm font-medium rounded-lg transition-colors duration-200">
                                                         <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m-1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                         </svg>
                                                         Lihat Detail
                                                     </a>

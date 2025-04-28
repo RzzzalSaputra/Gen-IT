@@ -503,9 +503,10 @@ class TeacherController extends Controller
             ]);
             
             if ($response->getStatusCode() === 201) {
+                // Use the fragment method to add a URL hash
                 return redirect()->route('teacher.classrooms.show', $classroom_id)
                     ->with('success', 'Assignment added successfully')
-                    ->with('active_tab', 'assignments');
+                    ->fragment('assignments');
             }
             
             Log::error('Assignment creation failed with non-201 status', [
@@ -606,7 +607,7 @@ class TeacherController extends Controller
             
             return redirect()->route('teacher.classrooms.show', $classroom_id)
                     ->with('success', 'Assignment deleted successfully')
-                    ->with('active_tab', 'assignments');
+                    ->fragment('assignments');
         } catch (\Exception $e) {
             Log::error('Error deleting assignment', [
                 'error' => $e->getMessage(),

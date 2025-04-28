@@ -130,7 +130,7 @@
     <div class="flex justify-between items-center mb-4">
         <h3 class="text-lg font-medium text-gray-900 dark:text-white">Classroom Assignments</h3>
         <button data-modal-target="addAssignmentModal" data-modal-toggle="addAssignmentModal" class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded text-blue-700 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24  " stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
             Tambah Assignment
@@ -176,7 +176,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            Due: <span class="text-orange-600 dark:text-orange-400">{{ $assignment->due_date ? $assignment->due_date->format('M d, Y, g:i A') : 'No due date' }}</span>
+            Due: <span class="text-orange-600 dark:text-orange-400">{{ $assignment->due_date ? $assignment->due_date->format('M d, Y, H:i') : 'No due date' }}</span>
         </div>
         
         <!-- Time remaining or status -->
@@ -463,6 +463,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Update URL hash without scrolling
         history.replaceState(null, null, `#${tabName}`);
+        
+        // Store the active tab in localStorage
+        localStorage.setItem('classroom_active_tab', tabName);
     }
     
     // Add click event listeners to tabs
@@ -472,13 +475,21 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Handle tab selection on page load
+    // Handle tab selection on page load - priority order:
+    // 1. URL hash
+    // 2. localStorage value
+    // 3. Default to materials tab
     const hash = window.location.hash;
+    const savedTab = localStorage.getItem('classroom_active_tab');
+    
     if (hash && tabs.includes(hash.substring(1))) {
         // If hash exists and is a valid tab, switch to it
         switchToTab(hash.substring(1));
+    } else if (savedTab && tabs.includes(savedTab)) {
+        // If we have a saved tab in localStorage, use that
+        switchToTab(savedTab);
     } else {
-        // Default to materials tab if no hash or invalid hash
+        // Default to materials tab if no hash or localStorage value
         switchToTab('materials');
     }
 
