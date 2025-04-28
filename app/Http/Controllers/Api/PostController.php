@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 
 
@@ -241,18 +242,40 @@ class PostController extends Controller
                 'created_by' => $userId,
             ]);
 
+            // Handle file upload
             if ($request->hasFile('file')) {
                 $file = $request->file('file');
-                $fileName = 'file_' . $post->id . '.' . $file->getClientOriginalExtension();
-                $filePath = $file->storeAs('posts/files', $fileName, 'public');
-                $post->file = '/storage/' . $filePath;
+                $timestamp = now()->format('Ymd_His');
+                $random = mt_rand(100, 999);
+
+                // Get original filename and create slug
+                $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $slugName = Str::slug($originalName);
+
+                // Generate a unique filename
+                $filename = "{$random}_{$slugName}_{$timestamp}.{$file->getClientOriginalExtension()}";
+
+                // Store the file in the 'posts/files' directory inside the public disk
+                $filePath = $file->storeAs('posts/files', $filename, 'public');
+                $post->file = $filePath;
             }
 
+            // Handle image upload
             if ($request->hasFile('img')) {
                 $image = $request->file('img');
-                $imageName = 'img_' . $post->id . '.' . $image->getClientOriginalExtension();
+                $timestamp = now()->format('Ymd_His');
+                $random = mt_rand(100, 999);
+
+                // Get original image filename and create slug
+                $originalName = pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
+                $slugName = Str::slug($originalName);
+
+                // Generate a unique image filename
+                $imageName = "{$random}_{$slugName}_{$timestamp}.{$image->getClientOriginalExtension()}";
+
+                // Store the image in the 'posts/images' directory inside the public disk
                 $imagePath = $image->storeAs('posts/images', $imageName, 'public');
-                $post->img = '/storage/' . $imagePath;
+                $post->img = $imagePath;
             }
 
             $post->save();
@@ -389,10 +412,20 @@ class PostController extends Controller
                 }
 
                 $file = $request->file('file');
-                $timestamp = Carbon::now()->format('Y-m-d_His');
-                $filename = $post->id . '_' . $timestamp . '.' . $file->getClientOriginalExtension();
-                $path = $file->storeAs('posts/files', $filename, 'public');
-                $post->update(['file' => '/storage/posts/files/' . $filename]);
+                $timestamp = now()->format('Ymd_His');
+                $random = mt_rand(100, 999);
+
+                // Get original file name and create slug
+                $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $slugName = Str::slug($originalName);
+
+                // Generate a unique filename
+                $filename = "{$random}_{$slugName}_{$timestamp}.{$file->getClientOriginalExtension()}";
+
+                // Store the file in the 'posts/files' directory inside the public disk
+                $filePath = $file->storeAs('posts/files', $filename, 'public');
+                // Save the relative path (without the storage prefix)
+                $post->update(['file' => 'posts/files/' . $filename]);
             }
 
             // Handle image upload jika ada
@@ -405,10 +438,20 @@ class PostController extends Controller
                 }
 
                 $image = $request->file('img');
-                $timestamp = Carbon::now()->format('Y-m-d_His');
-                $imageName = $post->id . '_' . $timestamp . '.' . $image->getClientOriginalExtension();
+                $timestamp = now()->format('Ymd_His');
+                $random = mt_rand(100, 999);
+
+                // Get original image name and create slug
+                $originalName = pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
+                $slugName = Str::slug($originalName);
+
+                // Generate a unique image filename
+                $imageName = "{$random}_{$slugName}_{$timestamp}.{$image->getClientOriginalExtension()}";
+
+                // Store the image in the 'posts/images' directory inside the public disk
                 $imagePath = $image->storeAs('posts/images', $imageName, 'public');
-                $post->update(['img' => '/storage/posts/images/' . $imageName]);
+                // Save the relative path (without the storage prefix)
+                $post->update(['img' => 'posts/images/' . $imageName]);
             }
 
             DB::commit();

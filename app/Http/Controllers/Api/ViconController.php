@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 use Carbon\Carbon;
 use Illuminate\View\View;
@@ -199,7 +200,7 @@ class ViconController extends Controller
             'img' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'time' => 'required|date',
             'link' => 'required|url',
-            'download' => 'nullable|url'
+            'download' => 'nullable|url',
         ]);
 
         if ($validator->fails()) {
@@ -208,7 +209,6 @@ class ViconController extends Controller
 
         DB::beginTransaction();
         try {
-            // Simpan data Vicon terlebih dahulu
             $vicon = new Vicon();
             $vicon->title = $request->title;
             $vicon->desc = $request->desc;
@@ -216,23 +216,29 @@ class ViconController extends Controller
             $vicon->link = $request->link;
             $vicon->download = $request->download ?? null;
             $vicon->created_by = Auth::id();
-            $vicon->img = '/storage/' . $this->default_folder . '/default.jpg'; 
+            $vicon->img = $this->default_folder . '/default.jpg'; // default image path tanpa /storage
             $vicon->save();
 
-            // Handle upload gambar setelah ID tersedia
+            $random = mt_rand(100, 999);
+
+            // Simpan gambar jika ada
             if ($request->hasFile('img')) {
                 $file = $request->file('img');
-                $timestamp = Carbon::now()->format('Ymd_His');
-                $imageName = $vicon->id . '_' . $timestamp . '.' . $file->getClientOriginalExtension();
+                $timestamp = now()->format('Ymd_His');
+                $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $slugName = Str::slug($originalName);
+                $imageName = $random . '_' .   $slugName . '_' . $timestamp . '.' . $file->getClientOriginalExtension();
                 $imagePath = $file->storeAs($this->default_folder, $imageName, 'public');
-                $vicon->img = '/storage/' . $imagePath;
+
+                // Simpan path TANPA /storage/
+                $vicon->img = $imagePath;
                 $vicon->save();
             }
 
             DB::commit();
             return response()->json(['message' => 'Vicon created successfully', 'data' => $vicon], Response::HTTP_CREATED);
         } catch (\Exception $e) {
-            DB::rollback();
+            DB::rollBack();
             Log::error('Error creating vicon: ' . $e->getMessage());
             return response()->json([
                 'message' => 'Error creating vicon',
@@ -374,17 +380,20 @@ class ViconController extends Controller
             if ($request->hasFile('img')) {
                 // Delete previous image if it exists and isn't the default
                 if (!empty($vicon->img) && !str_contains($vicon->img, 'default.jpg')) {
-                    $oldImagePath = str_replace('/storage/', '', $vicon->img);
-                    if (Storage::disk('public')->exists($oldImagePath)) {
-                        Storage::disk('public')->delete($oldImagePath);
+                    $oldImagePath = storage_path('app/public/' . $vicon->img);
+                    if (file_exists($oldImagePath)) {
+                        unlink($oldImagePath);
                     }
                 }
 
-                $image = $request->file('img');
-                $timestamp = Carbon::now()->format('Y-m-d_His');
-                $imageName = $vicon->id . '_' . $timestamp . '.' . $image->getClientOriginalExtension();
-                $imagePath = $image->storeAs($this->default_folder, $imageName, 'public');
-                $vicon->update(['img' => '/storage/' . $imagePath]);
+                $file = $request->file('img');
+                $timestamp = now()->format('Ymd_His');
+                $random = mt_rand(100, 999);
+                $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $slugName = Str::slug($originalName);
+                $imageName = $random . '_' . $slugName . '_' . $timestamp . '.' . $file->getClientOriginalExtension();
+                $imagePath = $file->storeAs($this->default_folder, $imageName, 'public');
+                $vicon->update(['img' => $imagePath]);
             }
 
             DB::commit();

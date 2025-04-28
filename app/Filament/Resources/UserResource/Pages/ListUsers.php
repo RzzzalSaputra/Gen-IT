@@ -39,7 +39,7 @@ class ListUsers extends ListRecords
                     fn($query) => $query->where('role', 'user')
                 ),
 
-            'teacher' => Tab::make('Teacher')  // Mengganti Manager menjadi Teacher
+            'teacher' => Tab::make('Guru')  // Mengganti Manager menjadi Teacher
                 ->modifyQueryUsing(
                     fn($query) => $query->where('role', 'teacher')
                 ),

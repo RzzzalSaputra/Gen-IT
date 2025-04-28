@@ -264,10 +264,15 @@ class CompanyController extends Controller
 
             // Handle image upload if provided
             if ($request->hasFile('img')) {
-                $image = $request->file('img');
-                $imageName = 'img_' . time() . '.' . $image->getClientOriginalExtension();
-                $imagePath = $image->storeAs('companies/images', $imageName, 'public');
-                $company->img = '/storage/' . $imagePath;
+                $file = $request->file('img');
+                $timestamp = now()->format('Ymd_His');
+                $random = mt_rand(100, 999);
+                $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $slugName = \Illuminate\Support\Str::slug($originalName);
+                $ext = $file->getClientOriginalExtension();
+                $filename = "{$random}_{$slugName}_{$timestamp}.{$ext}";
+                $path = $file->storeAs('companies/images', $filename, 'public');
+                $company->img = 'companies/images/' . $filename;
             }
 
             $company->save();
@@ -383,7 +388,6 @@ class CompanyController extends Controller
 
         DB::beginTransaction();
         try {
-            // Find company by ID
             $company = Company::find($id);
             if (!$company) {
                 return response()->json(['message' => 'Company not found'], 404);
@@ -404,19 +408,23 @@ class CompanyController extends Controller
 
             // Handle image upload if provided
             if ($request->hasFile('img')) {
-                // Delete old image if it's not the default one
-                if (!empty($company->img) && !str_contains($company->img, 'default.jpg')) {
-                    $path = storage_path('app/public/' . str_replace('/storage/', '', $company->img));
-                    if (file_exists($path)) {
-                        unlink($path);
+                // Delete old image
+                if (!empty($company->img)) {
+                    $oldImagePath = storage_path('app/public/' . $company->img);
+                    if (file_exists($oldImagePath)) {
+                        unlink($oldImagePath);
                     }
                 }
 
-                $image = $request->file('img');
-                $timestamp = Carbon::now()->format('Y-m-d_His');
-                $imageName = $company->id . '_' . $timestamp . '.' . $image->getClientOriginalExtension();
-                $imagePath = $image->storeAs('companies/images', $imageName, 'public');
-                $company->update(['img' => '/storage/' . $imagePath]);
+                $file = $request->file('img');
+                $timestamp = now()->format('Ymd_His');
+                $random = mt_rand(100, 999);
+                $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $slugName = \Illuminate\Support\Str::slug($originalName);
+                $ext = $file->getClientOriginalExtension();
+                $filename = "{$random}_{$slugName}_{$timestamp}.{$ext}";
+                $path = $file->storeAs('companies/images', $filename, 'public');
+                $company->update(['img' => 'companies/images/' . $filename]);
             }
 
             DB::commit();
@@ -449,19 +457,34 @@ class CompanyController extends Controller
      *     )
      * )
      */
-    public function destroy(int $id): JsonResponse
+    public function destroy($id)
     {
-        $company = Company::find($id);
+        DB::beginTransaction();
+        try {
+            $company = Company::find($id);
+            if (!$company) {
+                return response()->json(['message' => 'Company not found'], 404);
+            }
 
-        if (!$company) {
-            Log::warning("Company with ID $id not found.");
-            return response()->json(['message' => 'Company not found'], Response::HTTP_NOT_FOUND);
+            // Delete the image file if exists
+            if (!empty($company->img)) {
+                $imagePath = storage_path('app/public/' . $company->img);
+                if (file_exists($imagePath)) {
+                    unlink($imagePath);
+                }
+            }
+
+            $company->delete();
+            DB::commit();
+            return response()->json(['message' => 'Company deleted successfully'], 200);
+        } catch (\Exception $e) {
+            DB::rollback();
+            Log::error('Error deleting company: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Error deleting company',
+                'error' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        Log::info('Soft deleting company:', ['id' => $company->id]);
-        $company->delete();
-
-        return response()->json(['message' => 'Company successfully soft deleted.', 'deleted_at' => $company->deleted_at], Response::HTTP_OK);
     }
 
     /**

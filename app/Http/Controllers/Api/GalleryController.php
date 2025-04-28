@@ -7,6 +7,7 @@ use App\Models\Gallery;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -155,7 +156,7 @@ class GalleryController extends Controller
         $validator = Validator::make($request->all(), [
             'title'   => 'required|string|max:255',
             'type'    => 'required|integer',
-            'file'    => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // File tidak wajib
+            'file'    => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'link'    => 'nullable|url',
         ]);
 
@@ -165,27 +166,33 @@ class GalleryController extends Controller
 
         DB::beginTransaction();
         try {
-            // Buat gallery dengan informasi yang diperlukan
+            // Create gallery item
             $gallery = Gallery::create([
                 'title'      => $request->title,
                 'type'       => $request->type,
                 'link'       => $request->link ?? null,
-                'created_by'  => Auth::id(),
+                'created_by' => Auth::id(),
                 'file'       => $request->file ?? null,
             ]);
 
-            // Handle file upload jika ada
+            // Handle file upload
             if ($request->hasFile('file')) {
                 $file = $request->file('file');
-                $timestamp = Carbon::now()->format('Ymd_His');
-                $filename = $gallery->id . '_' . $timestamp . '.' . $file->getClientOriginalExtension();
+                $timestamp = now()->format('Ymd_His');
+                $random = mt_rand(100, 999);
 
+                // Mengambil nama asli file dan mengubahnya menjadi slug
+                $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $slugName = Str::slug($originalName);
 
-                // Simpan file ke storage/app/public/gallery
+                // Membuat nama file dengan format random_slug_timestamp.extension
+                $filename = "{$random}_{$slugName}_{$timestamp}.{$file->getClientOriginalExtension()}";
+
+                // Store the file in the 'gallery' directory inside the public disk
                 $path = $file->storeAs('gallery', $filename, 'public');
 
-                // Update path file di database
-                $gallery->file = '/storage/gallery/' . $filename;
+                // Save the relative path to the file in the database
+                $gallery->file = 'gallery/' . $filename;
                 $gallery->save();
             }
 
@@ -196,6 +203,7 @@ class GalleryController extends Controller
             return response()->json(['message' => 'Error creating gallery item ', 'error' => $e->getMessage()], 500);
         }
     }
+
 
 
     /**
@@ -279,25 +287,31 @@ class GalleryController extends Controller
 
             // Handle file upload jika ada
             if ($request->hasFile('file')) {
-                
-                // Hapus file jika ada
+                // Hapus file lama jika ada
                 if (!empty($gallery->file)) {
                     $path = storage_path('app/public/' . str_replace('/storage/', '', $gallery->file));
 
                     if (file_exists($path)) {
-                        unlink($path); // Hapus file dengan PHP langsung
+                        unlink($path); // Hapus file lama
                     }
                 }
 
                 $file = $request->file('file');
-                $timestamp = Carbon::now()->format('Y-m-d_His');
-                $filename = $gallery->id . '_' . $timestamp . '.' . $file->getClientOriginalExtension();
+                $timestamp = now()->format('Ymd_His');
+                $random = mt_rand(100, 999);
+
+                // Mengambil nama asli file dan mengubahnya menjadi slug
+                $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $slugName = Str::slug($originalName);
+
+                // Membuat nama file dengan format random_slug_timestamp.extension
+                $filename = "{$random}_{$slugName}_{$timestamp}.{$file->getClientOriginalExtension()}";
 
                 // Simpan file ke storage/app/public/gallery
                 $path = $file->storeAs('gallery', $filename, 'public');
 
                 // Update path file di database
-                $gallery->file = '/storage/gallery/' . $filename;
+                $gallery->file = 'gallery/' . $filename;
                 $gallery->save();
             }
 

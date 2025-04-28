@@ -209,24 +209,29 @@ public function store(Request $request)
         ]);
 
         $timestamp = now()->format('Ymd_His');
+        $random = mt_rand(100, 999);
 
-        if ($request->hasFile('file')) {
-            $file = $request->file('file');
-            $ext = $file->getClientOriginalExtension();
-            $filename = "{$submission->id}_{$timestamp}.{$ext}";
-            $path = $file->storeAs('submissions/files', $filename, 'public');
-            $submission->file = '/storage/' . $path;
-        }
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
+                $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $slugName = \Illuminate\Support\Str::slug($originalName);
+                $ext = $file->getClientOriginalExtension();
+                $filename = "{$random}_{$slugName}_{$timestamp}.{$ext}";
+                $path = $file->storeAs('submissions', $filename, 'public');  // Menyimpan file di public storage
+                $submission->file = 'submissions/' . $filename;  // Path relatif untuk disimpan ke DB
+            }
 
-        if ($request->hasFile('img')) {
-            $img = $request->file('img');
-            $imgExt = $img->getClientOriginalExtension();
-            $imgName = "{$submission->id}_{$timestamp}.{$imgExt}";
-            $imgPath = $img->storeAs('submissions/images', $imgName, 'public');
-            $submission->img = '/storage/' . $imgPath;
-        }
+            if ($request->hasFile('img')) {
+                $img = $request->file('img');
+                $originalName = pathinfo($img->getClientOriginalName(), PATHINFO_FILENAME);
+                $slugName = \Illuminate\Support\Str::slug($originalName);
+                $imgExt = $img->getClientOriginalExtension();
+                $imgName = "{$random}_{$slugName}_{$timestamp}.{$imgExt}";
+                $imgPath = $img->storeAs('submissions', $imgName, 'public');  // Menyimpan gambar di public storage
+                $submission->img = 'submissions/' . $imgName;  // Path relatif untuk disimpan ke DB
+            }
 
-        $submission->save();
+            $submission->save();
         DB::commit();
         
         return redirect()->route('submissions.index')->with('success', 'Your submission has been sent for approval.');
@@ -337,35 +342,42 @@ public function store(Request $request)
             ]);
 
             $timestamp = now()->format('Ymd_His');
+            $random = mt_rand(100, 999);
 
             // Handle file upload
             if ($request->hasFile('file')) {
                 if (!empty($submission->file)) {
-                    $oldFilePath = storage_path('app/public/' . str_replace('/storage/', '', $submission->file));
+                    $oldFilePath = storage_path('app/public/' . $submission->file);
                     if (file_exists($oldFilePath)) {
                         unlink($oldFilePath);
                     }
                 }
 
                 $file = $request->file('file');
-                $filename = "file_{$submission->id}_{$timestamp}." . $file->getClientOriginalExtension();
-                $path = $file->storeAs('submissions/files', $filename, 'public');
-                $submission->update(['file' => '/storage/' . $path]);
+                $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $slugName = \Illuminate\Support\Str::slug($originalName);
+                $ext = $file->getClientOriginalExtension();
+                $filename = "{$random}_{$slugName}_{$timestamp}.{$ext}";
+                $path = $file->storeAs('gallery', $filename, 'public');
+                $submission->update(['file' => 'gallery/' . $filename]);
             }
 
             // Handle image upload
             if ($request->hasFile('img')) {
                 if (!empty($submission->img)) {
-                    $oldImagePath = storage_path('app/public/' . str_replace('/storage/', '', $submission->img));
+                    $oldImagePath = storage_path('app/public/' . $submission->img);
                     if (file_exists($oldImagePath)) {
                         unlink($oldImagePath);
                     }
                 }
 
                 $image = $request->file('img');
-                $imageName = "img_{$submission->id}_{$timestamp}." . $image->getClientOriginalExtension();
-                $imagePath = $image->storeAs('submissions/images', $imageName, 'public');
-                $submission->update(['img' => '/storage/' . $imagePath]);
+                $originalName = pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
+                $slugName = \Illuminate\Support\Str::slug($originalName);
+                $imgExt = $image->getClientOriginalExtension();
+                $imageName = "{$random}_{$slugName}_{$timestamp}.{$imgExt}";
+                $imagePath = $image->storeAs('gallery', $imageName, 'public');
+                $submission->update(['img' => 'gallery/' . $imageName]);
             }
 
             DB::commit();

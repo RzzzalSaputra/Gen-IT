@@ -290,12 +290,18 @@ class SchoolController extends Controller
                 'read_counter' => 0,
             ]);
 
+            $timestamp = now()->format('Ymd_His');
+            $random = mt_rand(100, 999);
+
             // Handle image upload if provided
             if ($request->hasFile('img')) {
-                $image = $request->file('img');
-                $imageName = 'img_' . time() . '.' . $image->getClientOriginalExtension();
-                $imagePath = $image->storeAs('schools/images', $imageName, 'public');
-                $school->img = '/storage/' . $imagePath;
+                $file = $request->file('img');
+                $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $slugName = \Illuminate\Support\Str::slug($originalName);
+                $ext = $file->getClientOriginalExtension();
+                $filename = "{$random}_{$slugName}_{$timestamp}.{$ext}";
+                $path = $file->storeAs('schools/images', $filename, 'public');
+                $school->img = 'schools/images/' . $filename;
             }
 
             $school->save();
@@ -414,7 +420,6 @@ class SchoolController extends Controller
 
         DB::beginTransaction();
         try {
-            // Find school by ID
             $school = School::find($id);
             if (!$school) {
                 return response()->json(['message' => 'School not found'], 404);
@@ -433,20 +438,25 @@ class SchoolController extends Controller
                 $school->update($updateData);
             }
 
+            $timestamp = now()->format('Ymd_His');
+            $random = mt_rand(100, 999);
+
             // Handle image upload if provided
             if ($request->hasFile('img')) {
                 if (!empty($school->img)) {
-                    $path = storage_path('app/public/' . str_replace('/storage/', '', $school->img));
-                    if (file_exists($path)) {
-                        unlink($path);
+                    $oldImagePath = storage_path('app/public/' . $school->img);
+                    if (file_exists($oldImagePath)) {
+                        unlink($oldImagePath);
                     }
                 }
 
-                $image = $request->file('img');
-                $timestamp = Carbon::now()->format('Y-m-d_His');
-                $imageName = $school->id . '_' . $timestamp . '.' . $image->getClientOriginalExtension();
-                $imagePath = $image->storeAs('schools/images', $imageName, 'public');
-                $school->update(['img' => '/storage/' . $imagePath]);
+                $file = $request->file('img');
+                $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $slugName = \Illuminate\Support\Str::slug($originalName);
+                $ext = $file->getClientOriginalExtension();
+                $filename = "{$random}_{$slugName}_{$timestamp}.{$ext}";
+                $path = $file->storeAs('schools/images', $filename, 'public');
+                $school->update(['img' => 'schools/images/' . $filename]);
             }
 
             DB::commit();

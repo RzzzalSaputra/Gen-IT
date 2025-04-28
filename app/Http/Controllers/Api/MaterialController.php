@@ -170,32 +170,31 @@ class MaterialController extends Controller
                 'created_by' => Auth::id(),
             ]);
 
-            // Format timestamp untuk nama file biar unik
             $timestamp = now()->format('Ymd_His');
+            $random = mt_rand(100, 999);
 
             // Handle file upload
             if ($request->hasFile('file')) {
                 $file = $request->file('file');
+                $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $slugName = \Illuminate\Support\Str::slug($originalName);
                 $ext = $file->getClientOriginalExtension();
-                $filename = "{$material->id}_{$timestamp}.{$ext}";
+                $filename = "{$random}_{$slugName}_{$timestamp}.{$ext}";
                 $path = $file->storeAs('materials/files', $filename, 'public');
-
-                // Simpan path file di database
-                $material->file = '/storage/' . $path;
+                $material->file = 'materials/files/' . $filename;
             }
 
             // Handle image upload
             if ($request->hasFile('img')) {
                 $img = $request->file('img');
+                $originalName = pathinfo($img->getClientOriginalName(), PATHINFO_FILENAME);
+                $slugName = \Illuminate\Support\Str::slug($originalName);
                 $imgExt = $img->getClientOriginalExtension();
-                $imgName = "{$material->id}_{$timestamp}.{$imgExt}";
+                $imgName = "{$random}_{$slugName}_{$timestamp}.{$imgExt}";
                 $imgPath = $img->storeAs('materials/images', $imgName, 'public');
-
-                // Simpan path image di database
-                $material->img = '/storage/' . $imgPath;
+                $material->img = 'materials/images/' . $imgName;
             }
 
-            // Simpan perubahan di database
             $material->save();
 
             DB::commit();
@@ -273,36 +272,43 @@ class MaterialController extends Controller
                 'created_by' => Auth::id(), // Update ID pembuat untuk tracking
             ]);
 
+            $timestamp = now()->format('Ymd_His');
+            $random = mt_rand(100, 999);
+
             // Handle file upload
             if ($request->hasFile('file')) {
                 if (!empty($material->file)) {
-                    $oldFilePath = storage_path('app/public/' . str_replace('/storage/', '', $material->file));
+                    $oldFilePath = storage_path('app/public/' . $material->file);
                     if (file_exists($oldFilePath)) {
                         unlink($oldFilePath);
                     }
                 }
 
                 $file = $request->file('file');
-                $timestamp = now()->format('Ymd_His');
-                $filename = "file_{$material->id}_{$timestamp}." . $file->getClientOriginalExtension();
+                $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $slugName = \Illuminate\Support\Str::slug($originalName);
+                $ext = $file->getClientOriginalExtension();
+                $filename = "{$random}_{$slugName}_{$timestamp}.{$ext}";
                 $path = $file->storeAs('materials/files', $filename, 'public');
-                $material->update(['file' => '/storage/' . $path]);
+                $material->update(['file' => 'materials/files/' . $filename]);
             }
 
             // Handle image upload
             if ($request->hasFile('img')) {
                 if (!empty($material->img)) {
-                    $oldImagePath = storage_path('app/public/' . str_replace('/storage/', '', $material->img));
+                    $oldImagePath = storage_path('app/public/' . $material->img);
                     if (file_exists($oldImagePath)) {
                         unlink($oldImagePath);
                     }
                 }
 
                 $image = $request->file('img');
-                $timestamp = now()->format('Ymd_His');
-                $imageName = "img_{$material->id}_{$timestamp}." . $image->getClientOriginalExtension();
+                $originalName = pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
+                $slugName = \Illuminate\Support\Str::slug($originalName);
+                $imgExt = $image->getClientOriginalExtension();
+                $imageName = "{$random}_{$slugName}_{$timestamp}.{$imgExt}";
                 $imagePath = $image->storeAs('materials/images', $imageName, 'public');
-                $material->update(['img' => '/storage/' . $imagePath]);
+                $material->update(['img' => 'materials/images/' . $imageName]);
             }
 
             DB::commit();
