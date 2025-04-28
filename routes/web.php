@@ -161,7 +161,13 @@ Route::prefix('teacher')->middleware(['auth', 'App\Http\Middleware\RoleMiddlewar
     // Submissions/grading
     Route::get('/classrooms/{classroom_id}/assignments/{assignment_id}/submissions', [TeacherController::class, 'submissions'])->name('submissions.index');
     Route::get('/classrooms/{classroom_id}/assignments/{assignment_id}/submissions/{id}', [TeacherController::class, 'showSubmission'])->name('submissions.show');
-    Route::post('/classrooms/{classroom_id}/assignments/{assignment_id}/submissions/{id}/grade', [TeacherController::class, 'gradeSubmission'])->name('submissions.grade');
+    // Add this route for showing the grade form (GET)
+    Route::get('/classrooms/{classroom_id}/assignments/{assignment_id}/submissions/{id}/grade', 
+    [TeacherController::class, 'showGradeForm'])->name('submissions.grade');
+
+    // Keep the existing route for submitting the grade (POST)
+    Route::post('/classrooms/{classroom_id}/assignments/{assignment_id}/submissions/{id}/grade', 
+    [TeacherController::class, 'gradeSubmission'])->name('submissions.process-grade');
     
     // Students management
     Route::get('/classrooms/{classroom_id}/students', [TeacherController::class, 'students'])->name('students.index');

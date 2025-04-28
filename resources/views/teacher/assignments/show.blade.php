@@ -11,18 +11,18 @@
                 <div>
                     <h1 class="text-2xl font-semibold text-gray-800 dark:text-white">{{ $assignment->title }}</h1>
                     <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                        Due: {{ date('M d, Y, h:i A', strtotime($assignment->due_date)) }}
+                        Tenggat: {{ date('d M Y, H:i', strtotime($assignment->due_date)) }}
                         @php
                             $now = \Carbon\Carbon::now();
                             $dueDate = \Carbon\Carbon::parse($assignment->due_date);
                             $isOverdue = $now->isAfter($dueDate);
                             
                             if($isOverdue) {
-                                echo '<span class="ml-2 px-2 py-0.5 bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300 text-xs font-medium rounded-full">Overdue</span>';
+                                echo '<span class="ml-2 px-2 py-0.5 bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300 text-xs font-medium rounded-full">Terlambat</span>';
                             } else {
                                 $diff = $now->diffInDays($dueDate, false);
                                 if($diff <= 3 && $diff >= 0) {
-                                    echo '<span class="ml-2 px-2 py-0.5 bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300 text-xs font-medium rounded-full">Due soon</span>';
+                                    echo '<span class="ml-2 px-2 py-0.5 bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300 text-xs font-medium rounded-full">Segera berakhir</span>';
                                 }
                             }
                         @endphp
@@ -33,20 +33,20 @@
                         <svg class="-ml-1 mr-2 h-5 w-5 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                         </svg>
-                        Edit
+                        Ubah
                     </button>
                     <button data-modal-target="deleteAssignmentModal{{ $assignment->id }}" data-modal-toggle="deleteAssignmentModal{{ $assignment->id }}" class="inline-flex items-center px-3 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
                         <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                         </svg>
-                        Delete
+                        Hapus
                     </button>
                     <a href="{{ route('teacher.classrooms.show', $classroom->id) }}#assignments" 
                        class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                         <svg class="-ml-1 mr-2 h-5 w-5 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                         </svg>
-                        Back to Classroom
+                        Kembali ke Kelas
                     </a>
                 </div>
             </div>
@@ -61,14 +61,14 @@
                 <!-- Assignment File -->
                 @if($assignment->file)
                 <div class="mt-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                    <h3 class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Attached File:</h3>
+                    <h3 class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">File Terlampir:</h3>
                     <div class="flex items-center justify-between">
                         <span class="text-gray-700 dark:text-gray-200">{{ basename($assignment->file) }}</span>
                         <a href="{{ route('teacher.assignments.download', [$classroom->id, $assignment->id]) }}" class="inline-flex items-center px-3 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                             </svg>
-                            Download
+                            Unduh
                         </a>
                     </div>
                 </div>
@@ -77,9 +77,9 @@
                 <!-- Submission Statistics -->
                 <div class="mt-8 border-t border-gray-200 dark:border-gray-700 pt-6">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300">Submission Statistics</h3>
+                        <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300">Statistik Pengumpulan</h3>
                         <a href="{{ route('teacher.submissions.index', [$classroom->id, $assignment->id]) }}" class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            View All Submissions
+                            Lihat Semua Jawaban
                         </a>
                     </div>
                     
@@ -100,7 +100,7 @@
                                     </svg>
                                 </div>
                                 <div class="ml-3">
-                                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Total Students</h4>
+                                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Total Siswa</h4>
                                 </div>
                             </div>
                             <p class="text-2xl font-semibold text-blue-600 dark:text-blue-400">{{ $totalStudents }}</p>
@@ -114,7 +114,7 @@
                                     </svg>
                                 </div>
                                 <div class="ml-3">
-                                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Submitted</h4>
+                                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Dikumpulkan</h4>
                                 </div>
                             </div>
                             <p class="text-2xl font-semibold text-green-600 dark:text-green-400">{{ $submittedCount }}</p>
@@ -128,7 +128,7 @@
                                     </svg>
                                 </div>
                                 <div class="ml-3">
-                                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Not Submitted</h4>
+                                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Belum Dikumpulkan</h4>
                                 </div>
                             </div>
                             <p class="text-2xl font-semibold text-yellow-600 dark:text-yellow-400">{{ $notSubmittedCount }}</p>
@@ -142,7 +142,7 @@
                                     </svg>
                                 </div>
                                 <div class="ml-3">
-                                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Need Grading</h4>
+                                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Perlu Penilaian</h4>
                                 </div>
                             </div>
                             <p class="text-2xl font-semibold text-red-600 dark:text-red-400">{{ $ungradedCount }}</p>
@@ -153,7 +153,7 @@
                     @if($totalStudents > 0)
                     <div class="mt-6">
                         <div class="flex justify-between mb-1">
-                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Submission Rate</span>
+                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Tingkat Pengumpulan</span>
                             <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ round(($submittedCount / $totalStudents) * 100) }}%</span>
                         </div>
                         <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2.5">
@@ -166,7 +166,7 @@
                 <!-- Recent Submissions -->
                 @if($assignment->submissions->count() > 0)
                 <div class="mt-8 border-t border-gray-200 dark:border-gray-700 pt-6">
-                    <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-4">Recent Submissions</h3>
+                    <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-4">Pengumpulan Terbaru</h3>
                     <div class="space-y-4">
                         @foreach($assignment->submissions->take(5) as $submission)
                         <div class="bg-white dark:bg-gray-700 shadow rounded-lg p-4 border border-gray-200 dark:border-gray-600">
@@ -181,21 +181,21 @@
                                     </div>
                                     <div class="ml-3">
                                         <p class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            {{ $submission->user->name ?? 'Student' }}
+                                            {{ $submission->user->name ?? 'Siswa' }}
                                         </p>
                                         <p class="text-xs text-gray-500 dark:text-gray-400">
-                                            Submitted {{ $submission->created_at->diffForHumans() }}
+                                            Dikumpulkan {{ $submission->created_at->diffForHumans() }}
                                         </p>
                                     </div>
                                 </div>
                                 <div>
                                     @if($submission->graded)
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
-                                        Graded: {{ $submission->grade }}/{{ $assignment->max_points ?? 100 }}
+                                        Dinilai: {{ $submission->grade }}/{{ $assignment->max_points ?? 100 }}
                                     </span>
                                     @else
                                     <a href="{{ route('teacher.submissions.show', [$classroom->id, $assignment->id, $submission->id]) }}" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                        Grade
+                                        Nilai
                                     </a>
                                     @endif
                                 </div>
@@ -208,7 +208,7 @@
                     @if($assignment->submissions->count() > 5)
                     <div class="mt-4 text-center">
                         <a href="{{ route('teacher.submissions.index', [$classroom->id, $assignment->id]) }}" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            View All Submissions
+                            Lihat Semua Pengumpulan
                             <svg class="ml-2 -mr-1 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                             </svg>

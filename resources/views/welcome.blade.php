@@ -10,7 +10,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         .hero-background {
-            background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://img.freepik.com/free-photo/cool-geometric-triangular-figure-neon-laser-light-great-backgrounds_181624-11068.jpg?t=st=1745809710~exp=1745813310~hmac=5ca37140640ea42d670aed6846ec52478ed4c0c8d15b5dcfdaa8375098e4d608&w=2000');
+            background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('{{ Storage::url('background/background-welcome.jpg') }}');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;

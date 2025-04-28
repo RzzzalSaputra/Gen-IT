@@ -106,6 +106,10 @@
                                     </div>
                                 </div>
                             </div>
+                            
+                            <!-- Include the edit and delete modals for this specific material -->
+                            @include('teacher.classrooms.partials.modals.edit-material')
+                            @include('teacher.classrooms.partials.modals.delete-material')
                         @endforeach
                     </div>
                 @else
@@ -297,6 +301,9 @@
                         </div>
                     </div>
                 </div>
+                <!-- Include modals for this specific assignment -->
+                @include('teacher.classrooms.partials.modals.edit-assignment')
+                @include('teacher.classrooms.partials.modals.delete-assignment')
             @endforeach
         </div>
     @else
@@ -424,7 +431,13 @@
     </div>
 </div>
 
-<!-- Modals remain unchanged -->
+<!-- Include Modals -->
+@include('teacher.classrooms.partials.modals.edit-classroom')
+@include('teacher.classrooms.partials.modals.add-material')
+@include('teacher.classrooms.partials.modals.add-member')
+@include('teacher.classrooms.partials.modals.add-assignment')
+@include('teacher.classrooms.partials.modals.change-role')
+
 
 <style>
 /* Add some mobile-specific styles */

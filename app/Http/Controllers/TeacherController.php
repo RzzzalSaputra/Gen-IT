@@ -770,6 +770,40 @@ class TeacherController extends Controller
         }
     }
 
+    public function showGradeForm($classroom_id, $assignment_id, $id)
+    {
+        try {
+            if (!$this->isTeacherInClassroom($classroom_id)) {
+                return redirect()->route('teacher.dashboard')
+                    ->with('error', 'You do not have permission to grade submissions in this classroom.');
+            }
+            
+            $classroom = Classroom::findOrFail($classroom_id);
+            
+            // Get the assignment
+            $assignment = $classroom->assignments()->findOrFail($assignment_id);
+            
+            // Get the submission with user information
+            $submission = $assignment->submissions()->with('user')->findOrFail($id);
+            
+            return view('teacher.submissions.grade', compact(
+                'classroom',
+                'assignment',
+                'submission'
+            ));
+        } catch (\Exception $e) {
+            Log::error('Exception in showGradeForm', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'classroom_id' => $classroom_id,
+                'assignment_id' => $assignment_id,
+                'submission_id' => $id
+            ]);
+            
+            return back()->withErrors(['msg' => 'Error retrieving submission for grading: ' . $e->getMessage()]);
+        }
+    }
+
     /**
      * Process the request for a teacher to join a classroom.
      *
