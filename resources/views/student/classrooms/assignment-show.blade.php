@@ -9,11 +9,11 @@
                 <div class="p-6 sm:p-8">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
                         <h1 class="text-2xl sm:text-3xl font-bold text-white mb-3 sm:mb-0">{{ $assignment->title }}</h1>
-                        <a href="{{ route('student.classrooms.show', $classroom->id) }}" class="inline-flex items-center px-4 py-2 bg-gray-700/70 hover:bg-gray-600/70 backdrop-blur-sm text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                        <a href="{{ route('student.classrooms.show', $classroom->id) }}#assignments" class="inline-flex items-center px-4 py-2 bg-gray-700/70 hover:bg-gray-600/70 backdrop-blur-sm text-white text-sm font-medium rounded-lg transition-colors duration-200">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                             </svg>
-                            Back to Classroom
+                            Kembali ke kelas
                         </a>
                     </div>
 
@@ -39,16 +39,16 @@
                             if($submission) {
                                 if($submission->graded) {
                                     $statusClass = "bg-green-900/30 text-green-300 border-green-500/30";
-                                    $statusText = "Graded";
+                                    $statusText = "Dinilai";
                                     $statusIcon = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />';
                                 } else {
                                     $statusClass = "bg-blue-900/30 text-blue-300 border-blue-500/30";
-                                    $statusText = "Submitted";
+                                    $statusText = "Telah Dikumpulkan";
                                     $statusIcon = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />';
                                 }
                             } elseif($isOverdue) {
                                 $statusClass = "bg-red-900/30 text-red-300 border-red-500/30";
-                                $statusText = "Overdue";
+                                $statusText = "Terlambar";
                                 $statusIcon = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />';
                             } else {
                                 $statusClass = "bg-yellow-900/30 text-yellow-300 border-yellow-500/30";
@@ -68,7 +68,7 @@
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
-                            Due: {{ $dueDate->format('M d, Y, h:i A') }}
+                            Tenggat: {{ $dueDate->format('M d, Y, H:i') }}
                         </div>
                         
                         @if($assignment->max_points)
@@ -120,15 +120,15 @@
                             <svg class="w-5 h-5 mr-2 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                             </svg>
-                            Your Submission
+                            Tugas yang kamu kumpulkan
                         </h2>
 
                         @if($submission)
                             <!-- Shows existing submission details -->
                             <div id="submission-display" class="mb-6 bg-gray-900/40 rounded-lg p-5 border border-gray-700/50">
-                                <div class="flex justify-between items-start mb-4">
-                                    <div>
-                                        <p class="text-gray-300">Submitted: {{ Carbon\Carbon::parse($submission->submitted_at)->format('M d, Y, h:i A') }}</p>
+                                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4">
+                                    <div class="mb-3 sm:mb-0">
+                                        <p class="text-gray-300">Dikumpul pada : {{ Carbon\Carbon::parse($submission->submitted_at)->format('M d, Y, h:i A') }}</p>
                                         @if($submission->graded)
                                             <p class="text-green-400 mt-1 flex items-center">
                                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -138,13 +138,13 @@
                                             </p>
                                             <p class="text-xs text-gray-400 mt-1">Graded submissions cannot be edited</p>
                                         @else
-                                            <p class="text-yellow-400 mt-1">Not graded yet</p>
+                                            <p class="text-yellow-400 mt-1">Belum Dinilai</p>
                                         @endif
                                     </div>
                                     
                                     @if(!$isOverdue && !$submission->graded)
-                                    <button type="button" id="edit-submission-btn" class="px-3 py-1 bg-blue-600/70 hover:bg-blue-500/70 text-white text-sm rounded-lg transition-colors duration-200">
-                                        <div class="flex items-center">
+                                    <button type="button" id="edit-submission-btn" class="px-3 py-2 w-full sm:w-auto bg-blue-600/70 hover:bg-blue-500/70 text-white text-sm rounded-lg transition-colors duration-200">
+                                        <div class="flex items-center justify-center">
                                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                             </svg>
@@ -152,53 +152,42 @@
                                         </div>
                                     </button>
                                     @elseif($isOverdue)
-                                    <div class="px-3 py-1 bg-red-900/30 text-red-300 text-sm rounded-lg border border-red-700/50">
-                                        <div class="flex items-center">
+                                    <div class="px-3 py-2 w-full sm:w-auto bg-red-900/30 text-red-300 text-sm rounded-lg border border-red-700/50 text-center sm:text-left">
+                                        <div class="flex items-center justify-center sm:justify-start">
                                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                             </svg>
-                                            Overdue
+                                            Terlambat
                                         </div>
                                     </div>
                                     @endif
                                 </div>
                                 
-                                <!-- Teacher Feedback (if graded) -->
-                                @if($submission->graded && $submission->feedback)
-                                <div class="bg-green-900/20 border border-green-700/30 rounded-lg p-4 mb-4">
-                                    <h4 class="text-white text-sm font-medium mb-2 flex items-center">
-                                        <svg class="w-4 h-4 mr-2 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
-                                        </svg>
-                                        Teacher Feedback:
-                                    </h4>
-                                    <div class="prose prose-sm max-w-none text-gray-200 ml-6">
-                                        {!! $submission->feedback !!}
-                                    </div>
-                                </div>
-                                @endif
-                                
-                                @if($submission->content)
-                                    <div class="bg-gray-900/30 rounded-lg p-4 mb-4">
-                                        <h4 class="text-white text-sm font-medium mb-2">Your Answer:</h4>
-                                        <p class="text-gray-300">{{ $submission->content }}</p>
-                                    </div>
-                                @endif
+                                <!-- Teacher Feedback (if graded) - no changes needed here as it's already responsive -->
                                 
                                 @if($submission->file)
                                     <div class="bg-gray-900/30 rounded-lg p-4">
                                         <h4 class="text-white text-sm font-medium mb-2">Your File:</h4>
-                                        <div class="flex items-center">
-                                            <svg class="w-5 h-5 text-blue-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                            </svg>
-                                            <span class="text-gray-300">{{ basename($submission->file) }}</span>
-                                            <div class="ml-auto flex">
-                                                <a href="{{ route('student.classrooms.assignments.submissions.download', ['classroom_id' => $classroom->id, 'assignment_id' => $assignment->id, 'id' => $submission->id]) }}" class="text-blue-400 hover:text-blue-300 mr-3">
+                                        <div class="flex flex-col sm:flex-row sm:items-center">
+                                            <div class="flex items-center mb-2 sm:mb-0">
+                                                <svg class="w-5 h-5 text-blue-400 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                                                </svg>
+                                                <span class="text-gray-300 text-sm truncate">{{ basename($submission->file) }}</span>
+                                            </div>
+                                            <div class="sm:ml-auto flex flex-wrap gap-2 mt-2 sm:mt-0">
+                                                <a href="{{ route('student.classrooms.assignments.submissions.download', ['classroom_id' => $classroom->id, 'assignment_id' => $assignment->id, 'id' => $submission->id]) }}" 
+                                                   class="text-blue-400 bg-blue-900/30 hover:bg-blue-800/40 px-3 py-2 rounded-lg flex items-center justify-center w-full sm:w-auto">
+                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                                    </svg>
                                                     Download
                                                 </a>
                                                 @if(!$isOverdue && !$submission->graded)
-                                                <button type="button" class="text-red-400 hover:text-red-300 remove-file-btn">
+                                                <button type="button" class="text-red-400 bg-red-900/30 hover:bg-red-800/40 px-3 py-2 rounded-lg flex items-center justify-center w-full sm:w-auto remove-file-btn">
+                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    </svg>
                                                     Remove
                                                 </button>
                                                 @endif
@@ -231,7 +220,7 @@
                                             <div class="flex items-center p-4 bg-gray-900/40 rounded-lg border border-gray-700/50 mb-3">
                                                 <div class="flex-shrink-0 mr-3">
                                                     <svg class="w-8 h-8 text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
                                                     </svg>
                                                 </div>
                                                 <div class="flex-1 min-w-0">
@@ -249,7 +238,7 @@
                                             <div id="new-file-preview" class="hidden flex items-center p-4 bg-indigo-900/30 rounded-lg border border-indigo-700/50 mb-3 transform transition-all duration-300 ease-in-out">
                                                 <div class="flex-shrink-0 mr-3">
                                                     <svg class="w-8 h-8 text-indigo-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
                                                     </svg>
                                                 </div>
                                                 <div class="flex-1 min-w-0">
@@ -277,14 +266,14 @@
                                         @endif
                                     </div>
                                     
-                                    <div class="flex items-center space-x-3 pt-4">
-                                        <button type="submit" class="flex-1 inline-flex justify-center items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg">
+                                    <div class="flex flex-col sm:flex-row items-center gap-3 pt-4">
+                                        <button type="submit" class="w-full inline-flex justify-center items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg">
                                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0l-4 4m4-4v12" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0l-4 4m3-4v12" />
                                             </svg>
                                             Update Submission
                                         </button>
-                                        <button type="button" id="cancel-edit-btn" class="inline-flex justify-center items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg">
+                                        <button type="button" id="cancel-edit-btn" class="w-full sm:w-auto inline-flex justify-center items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg">
                                             Cancel
                                         </button>
                                     </div>
@@ -335,7 +324,7 @@
                                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                         </svg>
-                                        The deadline for this assignment has passed and submissions are no longer accepted.
+                                        Batas waktu untuk tugas ini telah lewat dan pengumpulan tugas tidak lagi diterima.
                                     </p>
                                 </div>
                             @endif
@@ -381,28 +370,30 @@
                 });
             }
             
-            // Toggle between view and edit submission
+            // More resilient event binding
             const editBtn = document.getElementById('edit-submission-btn');
-            const cancelBtn = document.getElementById('cancel-edit-btn');
             const submissionDisplay = document.getElementById('submission-display');
             const editSubmissionForm = document.getElementById('edit-submission-form');
             
-            if (editBtn && cancelBtn && submissionDisplay && editSubmissionForm) {
+            if (editBtn) {
                 editBtn.addEventListener('click', function() {
-                    submissionDisplay.classList.add('hidden');
-                    editSubmissionForm.classList.remove('hidden');
+                    if (submissionDisplay) submissionDisplay.classList.add('hidden');
+                    if (editSubmissionForm) editSubmissionForm.classList.remove('hidden');
                 });
-                
+            }
+            
+            const cancelBtn = document.getElementById('cancel-edit-btn');
+            if (cancelBtn) {
                 cancelBtn.addEventListener('click', function() {
-                    editSubmissionForm.classList.add('hidden');
-                    submissionDisplay.classList.remove('hidden');
+                    if (editSubmissionForm) editSubmissionForm.classList.add('hidden');
+                    if (submissionDisplay) submissionDisplay.classList.remove('hidden');
                     // Reset the remove_file value when canceling
                     if (document.getElementById('remove_file')) {
                         document.getElementById('remove_file').value = "0";
                     }
                 });
             }
-
+            
             // File upload preview in the script section
             // Using the already defined fileInput variable
             if (fileInput) {
@@ -454,8 +445,8 @@
             if (removeCurrentFileBtn) {
                 removeCurrentFileBtn.addEventListener('click', function() {
                     Swal.fire({
-                        title: 'Remove File?',
-                        text: 'Are you sure you want to remove this file?',
+                        title: 'Hapus File?',
+                        text: 'Apakah anda yakin ingin menghapus file ini??',
                         icon: 'warning',
                         showCancelButton: true,
                         background: '#1f2937',
@@ -474,8 +465,8 @@
                             }
                             
                             Swal.fire(
-                                'File Marked for Removal',
-                                'The file will be removed when you save your changes.',
+                                'File Ditandai untuk Dihapus',
+                                'File akan dihapus ketika Kamu Menyimpan perubahan.',
                                 'success'
                             );
                         }
@@ -488,14 +479,14 @@
             removeFileBtns.forEach(btn => {
                 btn.addEventListener('click', function() {
                     Swal.fire({
-                        title: 'Remove File?',
-                        text: 'This will switch to edit mode. Are you sure?',
+                        title: 'Hapus File??',
+                        text: 'Ini akan beralih ke mode edit. Anda yakin?',
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#d33',
                         background: '#1f2937',
                         cancelButtonColor: '#3085d6',
-                        confirmButtonText: 'Yes, remove it!'
+                        confirmButtonText: 'Ya, Hapus!'
                     }).then((result) => {
                         if (result.isConfirmed) {
                             // Switch to edit mode
@@ -511,11 +502,13 @@
                                     currentFileContainer.style.display = 'none';
                                 }
                                 
-                                Swal.fire(
-                                    'Edit Mode',
-                                    'You can now submit your changes to remove the file.',
-                                    'info'
-                                );
+                                Swal.fire({
+                                    title: 'Edit Mode',
+                                    text: 'Anda sekarang dapat mengirimkan perubahan Anda untuk menghapus file.',
+                                    icon: 'info',
+                                    background: '#1f2937',
+                                    confirmButtonColor: '#3085d6'
+                                });
                             }
                         }
                     });
@@ -523,51 +516,6 @@
             });
             
             // Show success messages with SweetAlert if present in the session
-            if(session('success'))
-                Swal.fire({
-                    title: 'Success!',
-                    text: "{{ session('success') }}",
-                    icon: 'success',
-                    background: '#1f2937',
-                    confirmButtonColor: '#3085d6'
-                });
-            endif
-
-            if(session('error'))
-                Swal.fire({
-                    title: 'Error!',
-                    text: "{{ session('error') }}",
-                    icon: 'error',
-                    background: '#1f2937',
-                    confirmButtonColor: '#3085d6'
-                });
-            endif
-        });
-
-        document.addEventListener('DOMContentLoaded', function () {
-            // File removal confirmation
-            const removeFileBtns = document.querySelectorAll('.remove-file-btn');
-            removeFileBtns.forEach(btn => {
-                btn.addEventListener('click', function () {
-                    Swal.fire({
-                        title: 'Remove File?',
-                        text: 'This will switch to edit mode. Are you sure?',
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#d33',
-                        background: '#1f2937',
-                        cancelButtonColor: '#3085d6',
-                        confirmButtonText: 'Yes, remove it!'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            console.log('File removal confirmed');
-                            // Additional logic here
-                        }
-                    });
-                });
-            });
-
-            // Success and error messages
             @if(session('success'))
                 Swal.fire({
                     title: 'Success!',

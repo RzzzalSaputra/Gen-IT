@@ -112,7 +112,7 @@
                                 <div class="group bg-gray-800/30 hover:bg-gray-800/50 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg border border-gray-700/30 hover:border-blue-500/50 transition-all duration-300 hover:shadow-blue-500/5">
                                     <a href="{{ route('schools.show', $school->id) }}" class="block h-36 sm:h-48 relative overflow-hidden">
                                         @if($school->img)
-                                            <img src="{{ $school->img }}" 
+                                            <img src="{{ Storage::url('schools/images/' . basename($school->img)) }}" 
                                                  alt="{{ $school->name }}" 
                                                  class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500">
                                         @else

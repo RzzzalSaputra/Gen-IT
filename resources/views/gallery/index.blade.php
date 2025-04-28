@@ -64,12 +64,11 @@
                             @foreach($galleries as $gallery)
                             <div class="group bg-gray-800/30 hover:bg-gray-800/50 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg border border-gray-700/30 hover:border-blue-500/50 transition-all duration-300 hover:shadow-blue-500/5">
                                 @if($gallery->type == 7 && $gallery->file)
-                                    <div class="h-48 relative overflow-hidden cursor-pointer image-preview-trigger" data-src="{{ $gallery->file }}">
-                                        <img src="{{ $gallery->file }}" alt="{{ $gallery->title }}" 
+                                    <div class="h-48 relative overflow-hidden cursor-pointer image-preview-trigger" data-src="{{ Storage::url($gallery->file) }}">
+                                        <img src="{{ Storage::url($gallery->file) }}" alt="{{ $gallery->title }}" 
                                              class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500">
                                         <div class="absolute top-3 right-3">
                                             <span class="px-2 py-1 text-xs font-medium text-blue-300 bg-blue-900/30 backdrop-blur-sm rounded-lg border border-blue-500/20">
-                                                IMAGE
                                             </span>
                                         </div>
                                     </div>

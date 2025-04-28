@@ -88,7 +88,7 @@
                                 <div class="group bg-gray-800/30 hover:bg-gray-800/50 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg border border-gray-700/30 hover:border-blue-500/50 transition-all duration-300 hover:shadow-blue-500/5">
                                     <a href="{{ route('companies.show', $company->id) }}" class="block h-48 relative overflow-hidden">
                                         @if($company->img)
-                                            <img src="{{ $company->img }}" 
+                                            <img src="{{ asset('storage/' . $company->img) }}" 
                                                  alt="{{ $company->name }}" 
                                                  class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500">
                                         @else

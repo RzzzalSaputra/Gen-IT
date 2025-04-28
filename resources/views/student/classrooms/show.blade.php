@@ -20,13 +20,13 @@
                                 <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
-                                Teacher: {{ $classroom->creator->name ?? 'Unknown' }}
+                                Guru: {{ $classroom->creator->name ?? 'Unknown' }}
                             </div>
                             <div class="inline-flex items-center px-2 sm:px-3 py-1 bg-indigo-900/30 backdrop-blur-sm rounded-lg text-xs sm:text-sm text-indigo-300 border border-indigo-500/30">
                                 <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                                 </svg>
-                                Student
+                                Murid
                             </div>
                         </div>
                     </div>
@@ -39,7 +39,7 @@
                             <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                             </svg>
-                            Leave Classroom
+                            Tinggalkan Kelas
                         </button>
 
                         <!-- Back to Classrooms Button -->
@@ -47,12 +47,12 @@
                             <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                             </svg>
-                            Back to Classrooms
+                            Kembali Ke List Kelas
                         </a>
                     </div>
                 </div>
                 <div class="bg-gray-900/30 backdrop-blur-sm rounded-xl p-3 sm:p-4 mt-4">
-                    <h3 class="text-xs sm:text-sm font-medium text-gray-300 mb-1 sm:mb-2">About this classroom</h3>
+                    <h3 class="text-xs sm:text-sm font-medium text-gray-300 mb-1 sm:mb-2">Tentang Kelas ini</h3>
                     <p class="text-xs sm:text-sm text-gray-400">{{ $classroom->description }}</p>
                 </div>
             </div>
@@ -73,7 +73,7 @@
             @endif
 
             <!-- Tab Navigation -->
-            <div class="mb-4 sm:mb-6" x-data="{ activeTab: 'materials' }">
+            <div class="mb-4 sm:mb-6" x-data="{ activeTab: window.location.hash === '#assignments' ? 'assignments' : 'materials' }">
                 <div class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-2 border border-gray-700/50 mb-4 sm:mb-6">
                     <ul class="flex flex-wrap justify-center gap-1 sm:gap-2 text-xs sm:text-sm font-medium">
                         <li class="w-full sm:w-auto">
@@ -239,19 +239,26 @@
                                             $isOverdue = $now->gt($dueDate);
                                             
                                             if($assignment->user_submission) {
-                                                // Existing submission code...
+                                                // If there's a submission, always show submitted regardless of due date
+                                                $statusBadge = '<span class="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-900/50 text-blue-300 border border-blue-600/30">Telah dikumpulkan</span>';
+                                                $borderColor = 'border-blue-500/30';
+                                                $hoverBorderColor = 'hover:border-blue-400/40';
                                             } elseif($isOverdue) {
-                                                $statusBadge = '<span class="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-900/50 text-red-300 border border-red-600/30">Overdue</span>';
+                                                $statusBadge = '<span class="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-900/50 text-red-300 border border-red-600/30">Terlambat</span>';
                                                 $borderColor = 'border-red-500/30';
                                                 $hoverBorderColor = 'hover:border-red-400/40';
                                             } else {
-                                                // For assignments due in the future, force correct time calculation
+                                                // For assignments due in the future
                                                 $minutesRemaining = $now->diffInMinutes($dueDate, false);
                                                 $hoursRemaining = floor($minutesRemaining / 60);
                                                 $minutesLeft = $minutesRemaining % 60;
                                                 
                                                 // Format the time remaining text properly
-                                                if ($hoursRemaining > 0) {
+                                                if ($hoursRemaining >= 24) {
+                                                    $daysRemaining = floor($hoursRemaining / 24);
+                                                    $hoursLeft = $hoursRemaining % 24;
+                                                    $timeRemainingText = "{$daysRemaining} hari, {$hoursLeft} jam tersisa";
+                                                } elseif ($hoursRemaining > 0) {
                                                     $timeRemainingText = "{$hoursRemaining} jam, {$minutesLeft} menit tersisa";
                                                 } else {
                                                     $timeRemainingText = "{$minutesLeft} menit tersisa";
@@ -283,7 +290,7 @@
                                                             <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                                             </svg>
-                                                            Due: {{ $dueDate->format('M d, Y, h:i A') }}
+                                                            Tenggat: {{ $dueDate->format('M d, Y, H:i') }}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -292,15 +299,15 @@
                                                     <div class="text-xs text-gray-500">
                                                         @if($assignment->user_submission)
                                                             @if($assignment->user_submission->graded)
-                                                                <span class="text-green-400">Completed</span>
+                                                                <span class="text-green-400">Selesai</span>
                                                             @else
-                                                                <span class="text-blue-400">Submitted</span>
+                                                                <span class="text-blue-400">Telah dikumpulkan</span>
                                                             @endif
                                                         @else
                                                             @if($isOverdue)
-                                                                <span class="text-red-400">Missed</span>
+                                                                <span class="text-red-400">Tugas terlewat</span>
                                                             @else
-                                                                <span class="text-yellow-400">Pending</span>
+                                                                <span class="text-yellow-400">Belum Dikerjakan</span>
                                                             @endif
                                                         @endif
                                                     </div>
@@ -337,8 +344,8 @@
     <script>
         function confirmLeaveClassroom() {
             Swal.fire({
-                title: 'Leave Classroom?',
-                text: "Are you sure you want to leave this classroom? You'll lose access to all materials and assignments.",
+                title: 'Tinggalkan Kelas?',
+                text: "Apakah Anda yakin ingin meninggalkan kelas ini? Anda akan kehilangan akses ke semua materi dan tugas.",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#ef4444',

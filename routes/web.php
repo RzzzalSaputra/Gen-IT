@@ -111,7 +111,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/{classroom_id}/assignments/{id}/download', [ClassroomAssignmentController::class, 'downloadForStudent'])->name('assignments.download');
         
         // Submission routes
-        Route::post('/{classroom_id}/assignments/{assignment_id}/submissions', [ClassroomSubmissionController::class, 'storeForStudent'])->name('submissions.store');
+        Route::post('/{classroom_id}/assignments/{assignment_id}/submissions', [ClassroomSubmissionController::class, 'storeForStudent'])->name('assignments.submissions.store');
         Route::get('/{classroom_id}/assignments/{assignment_id}/submissions/{id}', [ClassroomSubmissionController::class, 'showForStudent'])->name('submissions.show');
         Route::get('/{classroom_id}/assignments/{assignment_id}/submissions/{id}/download', [ClassroomSubmissionController::class, 'downloadForStudent'])->name('assignments.submissions.download');
         

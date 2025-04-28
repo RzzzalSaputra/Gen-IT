@@ -16,8 +16,25 @@
 </head>
 <body class="font-sans antialiased">
     <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
-        <!-- Sidebar - Width: 64 (w-64) -->
-        <div class="fixed inset-y-0 left-0 bg-gray-800 w-64 overflow-y-auto z-10 border-r-4 border-gray-900 dark:border-gray-600 shadow-[4px_0px_0px_0px_rgba(0,0,0,0.5)]">
+        <!-- Mobile Navigation Toggle -->
+        <div class="lg:hidden fixed top-0 left-0 right-0 bg-gray-800 z-30 px-4 py-3 flex items-center justify-between border-b-4 border-gray-900 dark:border-gray-600">
+            <div class="flex items-center">
+                <button id="mobile-menu-toggle" class="text-white p-2 focus:outline-none">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                    </svg>
+                </button>
+                <a href="{{ route('teacher.dashboard') }}" class="text-white text-xl font-black ml-2">
+                    <span class="text-blue-500">Gen</span>-IT Teacher
+                </a>
+            </div>
+            <div>
+                <span class="text-sm font-bold text-gray-300">{{ Auth::user()->name }}</span>
+            </div>
+        </div>
+
+        <!-- Sidebar - Hidden on mobile, visible on desktop -->
+        <div id="sidebar" class="fixed inset-y-0 left-0 bg-gray-800 w-64 overflow-y-auto z-10 border-r-4 border-gray-900 dark:border-gray-600 shadow-[4px_0px_0px_0px_rgba(0,0,0,0.5)] transform transition-transform duration-300 lg:translate-x-0 -translate-x-full">
             <div class="flex items-center justify-center h-16 border-b-4 border-gray-900 dark:border-gray-600">
                 <a href="{{ route('teacher.dashboard') }}" class="text-white text-xl font-black">
                     <span class="text-blue-500">Gen</span>-IT Teacher
@@ -60,10 +77,10 @@
             </div>
         </div>
 
-        <!-- Main Content - Adding more left padding (ml-64 + px-6) -->
-        <div class="ml-64 w-auto">
-            <!-- Top Navigation -->
-            <div class="bg-white dark:bg-gray-800 border-b-4 border-gray-900 dark:border-gray-700">
+        <!-- Main Content - Responsive padding -->
+        <div class="lg:ml-64 w-auto transition-all duration-300">
+            <!-- Top Navigation - Hidden on mobile -->
+            <div class="hidden lg:block bg-white dark:bg-gray-800 border-b-4 border-gray-900 dark:border-gray-700">
                 <div class="px-6 py-3 flex items-center justify-between">
                     <div>
                         <h1 class="text-xl font-black text-gray-900 dark:text-white">@yield('header', 'Teacher Dashboard')</h1>
@@ -76,8 +93,15 @@
                 </div>
             </div>
             
-            <!-- Page Content - Increasing padding -->
-            <main class="py-6 px-6">
+            <!-- Mobile Header -->
+            <div class="lg:hidden bg-white dark:bg-gray-800 border-b-4 border-gray-900 dark:border-gray-700 mt-16">
+                <div class="px-4 py-3">
+                    <h1 class="text-xl font-black text-gray-900 dark:text-white">@yield('header', 'Teacher Dashboard')</h1>
+                </div>
+            </div>
+            
+            <!-- Page Content - Responsive padding -->
+            <main class="py-6 px-4 sm:px-6">
                 @if(session('success'))
                     <div class="mb-4 bg-green-100 border-4 border-green-500 text-green-700 px-4 py-3 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)]">
                         {{ session('success') }}
@@ -94,5 +118,29 @@
             </main>
         </div>
     </div>
+
+    <!-- Mobile Navigation Backdrop -->
+    <div id="sidebar-backdrop" class="fixed inset-0 bg-black bg-opacity-50 z-0 lg:hidden hidden" aria-hidden="true"></div>
+
+    <script>
+        // Mobile navigation toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebar-backdrop');
+            
+            if (mobileMenuToggle && sidebar && backdrop) {
+                mobileMenuToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('-translate-x-full');
+                    backdrop.classList.toggle('hidden');
+                });
+                
+                backdrop.addEventListener('click', function() {
+                    sidebar.classList.add('-translate-x-full');
+                    backdrop.classList.add('hidden');
+                });
+            }
+        });
+    </script>
 </body>
 </html>

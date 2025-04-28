@@ -103,27 +103,104 @@
                         </div>
                     @endif
 
-                    <!-- Download Section -->
+                    <!-- File Preview & Download Section -->
                     @if($material->file)
-                        <div class="flex justify-center mt-8">
-                            <a href="{{ route('student.classrooms.materials.download', ['classroom_id' => $classroom->id, 'id' => $material->id]) }}" class="inline-flex items-center px-6 py-3 bg-green-600 hover:bg-green-700 text-white text-base font-medium rounded-lg transition-colors duration-200 shadow-lg shadow-green-500/20">
-                                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                </svg>
-                                Download Material
-                            </a>
-                        </div>
-                    @endif
+                        <div class="bg-gray-900/30 backdrop-blur-sm rounded-xl p-6 mb-8">
+                            @php
+                                $fileExtension = strtolower(pathinfo($material->file, PATHINFO_EXTENSION));
+                                $fileName = basename($material->file);
+                            @endphp
+                            
+                            <!-- File Info Header -->
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between bg-gray-800/50 rounded-lg p-3 border border-gray-700/50 mb-4">
+                                <!-- File Icon and Name -->
+                                <div class="flex items-center gap-3 mb-3 sm:mb-0">
+                                    <div class="p-2 bg-blue-600/20 rounded-lg">
+                                        @switch($fileExtension)
+                                            @case('pdf')
+                                                <svg class="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                                </svg>
+                                                @break
+                                            @case('doc')
+                                            @case('docx')
+                                                <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                </svg>
+                                                @break
+                                            @case('xls')
+                                            @case('xlsx')
+                                                <svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                </svg>
+                                                @break
+                                            @case('ppt')
+                                            @case('pptx')
+                                                <svg class="w-8 h-8 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" />
+                                                </svg>
+                                                @break
+                                            @default
+                                                <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                </svg>
+                                        @endswitch
+                                    </div>
+                                    <div>
+                                        <div class="text-base font-medium text-gray-200">{{ $fileName }}</div>
+                                        <div class="text-xs text-gray-400 flex items-center">
+                                            <span class="uppercase">{{ $fileExtension }}</span>
+                                            @if(isset($material->file_size))
+                                                <span class="mx-1">•</span>
+                                                <span>{{ $material->file_size }}</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Download Button -->
+                                <a href="{{ route('student.classrooms.materials.download', ['classroom_id' => $classroom->id, 'id' => $material->id]) }}" 
+                                   class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-lg shadow-green-500/20">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                    Download Material
+                                </a>
+                            </div>
 
-                    <!-- External Link (if exists and not YouTube) -->
-                    @if($material->link && strpos($material->link, 'youtube.com') === false && strpos($material->link, 'youtu.be') === false)
-                        <div class="flex justify-center mt-8">
-                            <a href="{{ $material->link }}" target="_blank" class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white text-base font-medium rounded-lg transition-colors duration-200 shadow-lg shadow-blue-500/20">
-                                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                </svg>
-                                Visit Resource
-                            </a>
+                            <!-- File Preview Container -->
+                            @if(in_array($fileExtension, ['pdf']))
+                                <div class="bg-gray-800/50 rounded-xl border border-gray-700/50 overflow-hidden h-[500px]">
+                                    <iframe 
+                                        src="{{ Storage::url($material->file) }}" 
+                                        class="w-full h-full"
+                                        frameborder="0">
+                                    </iframe>
+                                </div>
+                            @elseif(in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif']))
+                                <div class="bg-gray-800/50 rounded-xl border border-gray-700/50 overflow-hidden text-center p-4">
+                                    <img 
+                                        src="{{ Storage::url($material->file) }}" 
+                                        alt="{{ $material->title }}" 
+                                        class="max-h-[500px] mx-auto object-contain cursor-pointer image-preview" 
+                                        onclick="openImageModal(this.src)"
+                                    >
+                                </div>
+                            @else
+                                <div class="bg-gray-800/50 rounded-xl border border-gray-700/50 p-8 text-center">
+                                    <svg class="w-16 h-16 text-gray-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    <p class="text-gray-400 mb-4">Preview tidak tersedia untuk jenis file ini.</p>
+                                    <a href="{{ route('student.classrooms.materials.download', ['classroom_id' => $classroom->id, 'id' => $material->id]) }}" 
+                                       class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                        </svg>
+                                        Download to View
+                                    </a>
+                                </div>
+                            @endif
                         </div>
                     @endif
                 </div>

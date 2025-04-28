@@ -135,7 +135,7 @@
                                 <div class="swiper-slide">
                                     <div class="bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-white/10">
                                         @if($gallery->file)
-                                            <img src="{{ $gallery->file }}" alt="{{ $gallery->title }}" class="gallery-image">
+                                        <img src="{{ Storage::url($gallery->file) }}" alt="{{ $gallery->title }}" class="gallery-image">
                                         @endif
                                         <div class="gallery-info">
                                             <h3 class="text-base sm:text-lg font-semibold text-white text-center">{{ $gallery->title }}</h3>
