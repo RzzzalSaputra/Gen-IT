@@ -40,13 +40,15 @@ class SchoolResource extends Resource
                 Forms\Components\FileUpload::make('img')
                     ->label('Gambar Sekolah')
                     ->image()
-                    ->directory('schools')
+                    ->directory('schools/images')
                     ->visibility('public')
                     ->nullable()
                     ->getUploadedFileNameForStorageUsing(function ($file) {
                         $timestamp = now()->format('Ymd_His');
                         $random = mt_rand(100, 999);
-                        return "{$random}_{$timestamp}.{$file->getClientOriginalExtension()}";
+                        $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                        $slugName = \Illuminate\Support\Str::slug($originalName);
+                        return "{$random}_{$slugName}_{$timestamp}.{$file->getClientOriginalExtension()}";
                     })
                     ->deleteUploadedFileUsing(function ($record) {
                         $filePath = storage_path('app/public/' . $record?->img);
