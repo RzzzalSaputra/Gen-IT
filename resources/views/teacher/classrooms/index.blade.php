@@ -26,7 +26,18 @@
                 <div class="p-4 sm:p-6">
                     <h3 class="text-xl sm:text-2xl font-black text-gray-800 dark:text-white mb-3">{{ $classroom->name }}</h3>
                     <p class="text-sm font-bold text-gray-500 dark:text-gray-400 mb-4 px-2 py-1 bg-gray-100 dark:bg-gray-700 border-2 border-gray-900 dark:border-gray-600 inline-block">Kode: {{ $classroom->code }}</p>
-                    <p class="text-gray-600 dark:text-gray-300 mb-6 text-sm sm:text-base font-bold leading-relaxed">{{ Str::limit($classroom->description ?? 'Tidak ada deskripsi', 120) }}</p>
+                    
+                    <!-- Fixed description with proper truncation and overflow handling -->
+                    <p class="text-gray-600 dark:text-gray-300 mb-6 text-sm sm:text-base font-bold leading-relaxed overflow-hidden">
+                        @php
+                            $description = $classroom->description ?? 'Tidak ada deskripsi';
+                            $maxChars = 70; // Smaller limit to ensure it fits
+                            $displayText = strlen($description) > $maxChars ? 
+                                substr($description, 0, $maxChars) . '...' : 
+                                $description;
+                        @endphp
+                        {{ $displayText }}
+                    </p>
                     
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5 space-y-3 sm:space-y-0 text-sm font-bold text-gray-600 dark:text-gray-400">
                         <div class="flex items-center">
@@ -72,7 +83,7 @@
                 <div class="bg-blue-50 dark:bg-blue-900 border-4 border-gray-900 dark:border-gray-600 text-blue-700 dark:text-blue-200 p-6 sm:p-8 rounded-none shadow-[6px_6px_0px_0px_rgba(0,0,0,0.7)]">
                     <div class="flex flex-col sm:flex-row sm:items-center">
                         <svg class="h-12 w-12 text-blue-500 mx-auto sm:mx-0 sm:mr-6 mb-4 sm:mb-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m-1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         <div class="text-center sm:text-left">
                             <p class="text-xl font-black mb-3">Tidak ada kelas ditemukan</p>
@@ -149,13 +160,13 @@
         });
     @endif
     
-    @error('code')
+    @if($errors->has('code'))
         document.addEventListener('DOMContentLoaded', function() {
             openJoinModal();
             document.getElementById('codeError').classList.remove('hidden');
-            document.getElementById('codeError').textContent = "{{ $message }}";
+            document.getElementById('codeError').textContent = "{{ $errors->first('code') }}";
         });
-    @enderror
+    @endif
     
     // Handle create form submission errors
     @if(session('error') && session('form') === 'create')
@@ -166,20 +177,20 @@
         });
     @endif
     
-    @error('name')
+    @if($errors->has('name'))
         document.addEventListener('DOMContentLoaded', function() {
             openCreateModal();
             document.getElementById('nameError').classList.remove('hidden');
-            document.getElementById('nameError').textContent = "{{ $message }}";
+            document.getElementById('nameError').textContent = "{{ $errors->first('name') }}";
         });
-    @enderror
+    @endif
     
-    @error('description')
+    @if($errors->has('description'))
         document.addEventListener('DOMContentLoaded', function() {
             openCreateModal();
             document.getElementById('descriptionError').classList.remove('hidden');
-            document.getElementById('descriptionError').textContent = "{{ $message }}";
+            document.getElementById('descriptionError').textContent = "{{ $errors->first('description') }}";
         });
-    @enderror
+    @endif
 </script>
 @endsection
