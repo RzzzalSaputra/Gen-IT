@@ -101,7 +101,7 @@
                                         <!-- More prominent "View Details" button -->
                                         <a href="{{ route('teacher.materials.show', [$classroom->id, $material->id]) }}" 
                                            class="px-3 py-1 text-xs font-medium bg-blue-50 text-blue-600 rounded-full hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50 transition-colors">
-                                            View Details
+                                            Lihat Detail
                                         </a>
                                     </div>
                                 </div>
@@ -131,12 +131,12 @@
 
             <!-- Assignments Content (hidden by default) -->
             <div id="assignments-content" class="hidden space-y-4 scrollbar-hide" id="assignments-section">                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 space-y-3 sm:space-y-0">
-                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">Classroom Assignments</h3>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">Tugas Kelas</h3>
                     <button data-modal-target="addAssignmentModal" data-modal-toggle="addAssignmentModal" class="w-full sm:w-auto inline-flex items-center justify-center px-3 py-1.5 border border-transparent text-sm font-medium rounded text-blue-700 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                         </svg>
-                        Tambah Assignment
+                        Tambah Tugas
                     </button>
                 </div>
                 
@@ -180,7 +180,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            Due: <span class="text-orange-600 dark:text-orange-400">{{ $assignment->due_date ? $assignment->due_date->format('M d, Y, H:i') : 'No due date' }}</span>
+            Tenggat: <span class="text-orange-600 dark:text-orange-400">{{ $assignment->due_date ? $assignment->due_date->format('M d, Y, H:i') : 'No due date' }}</span>
         </div>
         
         <!-- Time remaining or status -->
@@ -585,7 +585,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Ya, Hapus!',
-                cancelButtonText: 'Batalkan',
+                cancelButtonText: 'Batal',
                 confirmButtonColor: '#d33',
                 cancelButtonColor: '#6b7280',
                 background: '#1f2937',
@@ -634,7 +634,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Ya, Hapus!',
-                cancelButtonText: 'Batalkan',
+                cancelButtonText: 'Batal',
                 confirmButtonColor: '#d33',
                 cancelButtonColor: '#6b7280',
                 background: '#1f2937',
@@ -683,7 +683,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Ya, keluarkan!',
-                cancelButtonText: 'batalkan',
+                cancelButtonText: 'Batal',
                 confirmButtonColor: '#d33',
                 cancelButtonColor: '#6b7280',
                 background: '#1f2937',

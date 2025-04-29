@@ -170,7 +170,7 @@
                     icon: 'question',
                     showCancelButton: true,
                     confirmButtonText: 'Ya, Daftar Kan!',
-                    cancelButtonText: 'Batalkan',
+                    cancelButtonText: 'Batal',
                     confirmButtonColor: '#3b82f6',
                     cancelButtonColor: '#6b7280',
                     background: '#1f2937',

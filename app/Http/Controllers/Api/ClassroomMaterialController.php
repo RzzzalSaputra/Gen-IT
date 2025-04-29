@@ -231,18 +231,20 @@ class ClassroomMaterialController extends Controller
             // Handle file upload if provided
             if ($request->hasFile('file')) {
                 $file = $request->file('file');
-                $timestamp = Carbon::now()->format('Y-m-d_His');
-                $fileName = "file_{$classroomId}_{$timestamp}." . $file->getClientOriginalExtension();
-                $filePath = $file->storeAs('classroom_materials/files', $fileName, 'public');
+                $originalName = $file->getClientOriginalName();
+                $directory = 'classroom_materials/files';
+                $fileName = $this->generateUniqueFilename($directory, $originalName);
+                $filePath = $file->storeAs($directory, $fileName, 'public');
                 $material->file = $filePath;
             }
 
             // Handle image upload if provided
             if ($request->hasFile('img')) {
                 $image = $request->file('img');
-                $timestamp = Carbon::now()->format('Y-m-d_His');
-                $imageName = "img_{$classroomId}_{$timestamp}." . $image->getClientOriginalExtension();
-                $imagePath = $image->storeAs('classroom_materials/images', $imageName, 'public');
+                $originalName = $image->getClientOriginalName();
+                $directory = 'classroom_materials/images';
+                $imageName = $this->generateUniqueFilename($directory, $originalName);
+                $imagePath = $image->storeAs($directory, $imageName, 'public');
                 $material->img = $imagePath;
             }
 
@@ -485,9 +487,10 @@ class ClassroomMaterialController extends Controller
                 }
                 
                 $file = $request->file('file');
-                $timestamp = Carbon::now()->format('Y-m-d_His');
-                $fileName = "file_{$classroomId}_{$id}_{$timestamp}." . $file->getClientOriginalExtension();
-                $filePath = $file->storeAs('classroom_materials/files', $fileName, 'public');
+                $originalName = $file->getClientOriginalName();
+                $directory = 'classroom_materials/files';
+                $fileName = $this->generateUniqueFilename($directory, $originalName);
+                $filePath = $file->storeAs($directory, $fileName, 'public');
                 $updateData['file'] = $filePath;
             }
 
@@ -499,9 +502,10 @@ class ClassroomMaterialController extends Controller
                 }
                 
                 $image = $request->file('img');
-                $timestamp = Carbon::now()->format('Y-m-d_His');
-                $imageName = "img_{$classroomId}_{$id}_{$timestamp}." . $image->getClientOriginalExtension();
-                $imagePath = $image->storeAs('classroom_materials/images', $imageName, 'public');
+                $originalName = $image->getClientOriginalName();
+                $directory = 'classroom_materials/images';
+                $imageName = $this->generateUniqueFilename($directory, $originalName);
+                $imagePath = $image->storeAs($directory, $imageName, 'public');
                 $updateData['img'] = $imagePath;
             }
 
@@ -729,5 +733,28 @@ class ClassroomMaterialController extends Controller
         }
 
         return response()->download($fullPath);
+    }
+
+    /**
+     * Generate a unique filename based on the original name
+     * 
+     * @param string $directory The storage directory path
+     * @param string $originalName The original filename
+     * @return string The unique filename
+     */
+    private function generateUniqueFilename($directory, $originalName)
+    {
+        $filename = pathinfo($originalName, PATHINFO_FILENAME);
+        $extension = pathinfo($originalName, PATHINFO_EXTENSION);
+        $fullPath = $directory . '/' . $filename . '.' . $extension;
+        
+        $counter = 1;
+        // Check if file exists, if so add suffix
+        while (Storage::disk('public')->exists($fullPath)) {
+            $fullPath = $directory . '/' . $filename . '_(' . $counter . ').' . $extension;
+            $counter++;
+        }
+        
+        return basename($fullPath);
     }
 }

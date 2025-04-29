@@ -5,14 +5,24 @@
                 <h2 class="text-3xl font-bold text-white">
                     Kelas Saya
                 </h2>
-                <button type="button" onclick="openJoinModal()" class="inline-flex items-center px-5 py-2.5 bg-indigo-600 border border-indigo-500 rounded-xl text-white font-medium shadow-lg shadow-indigo-500/20 hover:bg-indigo-700 focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-indigo-500 transition-all duration-200">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
-                    Gabung Kelas
-                </button>
+                <div class="flex space-x-3">
+                    @if(Auth::user()->role === 'teacher')
+                    <a href="{{ route('teacher.dashboard') }}" class="inline-flex items-center px-5 py-2.5 bg-emerald-600 border border-emerald-500 rounded-xl text-white font-medium shadow-lg shadow-emerald-500/20 hover:bg-emerald-700 focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-emerald-500 transition-all duration-200">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                        Dashboard Guru
+                    </a>
+                    @endif
+                    <button type="button" onclick="openJoinModal()" class="inline-flex items-center px-5 py-2.5 bg-indigo-600 border border-indigo-500 rounded-xl text-white font-medium shadow-lg shadow-indigo-500/20 hover:bg-indigo-700 focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-indigo-500 transition-all duration-200">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                        Gabung Kelas
+                    </button>
+                </div>
             </div>
-
+            
             @if(session('success'))
                 <div class="bg-emerald-900/50 backdrop-blur-sm border-l-4 border-emerald-500 text-emerald-300 p-4 mb-6 rounded-lg" role="alert">
                     <p>{{ session('success') }}</p>

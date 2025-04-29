@@ -146,19 +146,25 @@ class TeacherController extends Controller
         // Check if the authenticated user is the teacher of this classroom or has teacher role
         $isTeacher = ($classroom->create_by === $user_id) || 
                      $classroom->members()->where('user_id', $user_id)
-                               ->where('role', 'teacher')
-                               ->exists();
+                              ->where('role', 'teacher')
+                              ->exists();
         
         if (!$isTeacher) {
             abort(403, 'Unauthorized action.');
         }
         
-        // Load the materials with filter to exclude deleted ones
-        $materials = $classroom->materials()->whereNull('delete_at')->get();
-        
-        // Load assignments with filter to exclude deleted ones
-        $assignments = $classroom->assignments()->whereNull('delete_at')->get();
-        
+        // Load the materials with filter to exclude deleted ones and order by newest first
+        $materials = $classroom->materials()
+                         ->whereNull('delete_at')
+                         ->orderBy('create_at', 'desc')
+                         ->get();
+    
+        // Load assignments with filter to exclude deleted ones and order by newest first
+        $assignments = $classroom->assignments()
+                           ->whereNull('delete_at')
+                           ->orderBy('create_at', 'desc')
+                           ->get();
+    
         // Properly load members with their user relationship
         $members = $classroom->members()->with('user')->get();
         

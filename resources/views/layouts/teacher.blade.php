@@ -52,7 +52,7 @@
                     <svg class="mr-3 h-6 w-6 text-gray-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                     </svg>
-                    My Classrooms
+                    Kelas Saya
                 </a>
             </nav>
             
@@ -87,7 +87,7 @@
                     </div>
                     <div>
                         <a href="{{ url('/') }}" class="text-sm font-bold text-gray-600 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400 border-b-2 border-transparent hover:border-blue-500">
-                            Back to Main Site
+                            Kembali Ke Website utama
                         </a>
                     </div>
                 </div>
