@@ -106,23 +106,29 @@
             @else
                 <div class="space-y-3 sm:space-y-4 max-h-72 sm:max-h-80 overflow-y-auto pr-1 sm:pr-2 scrollbar-hide">
                     @foreach($recentSubmissions as $submission)
-                        <div class="border-4 {{ $submission->graded ? 'border-green-500' : 'border-yellow-500' }} pl-3 sm:pl-4 bg-white dark:bg-gray-800 p-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.7)] transform hover:-translate-y-1 transition-transform">
-                            <p class="font-black text-gray-900 dark:text-white">
-                                {{ $submission->user ? $submission->user->name : 'Unknown Student' }}
-                            </p>
-                            <p class="text-sm font-bold text-gray-700 dark:text-gray-300">{{ $submission->assignment ? $submission->assignment->title : 'Unknown Assignment' }}</p>
-                            <p class="text-xs font-bold text-gray-700 dark:text-gray-300">
-                                Kelas: {{ $submission->assignment && $submission->assignment->classroom ? $submission->assignment->classroom->name : 'Unknown Classroom' }}
-                            </p>
-                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mt-2 space-y-2 sm:space-y-0">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-none text-xs font-black {{ $submission->graded ? 'bg-green-300 text-black' : 'bg-yellow-300 text-black' }} border-2 border-black dark:border-gray-600 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.7)] w-fit">
-                                    {{ $submission->graded ? 'Graded' : 'Pending' }}
-                                </span>
-                                <span class="text-xs font-bold text-gray-700 dark:text-gray-300">
-                                    {{ $submission->submitted_at ? $submission->submitted_at->diffForHumans() : 'N/A' }}
-                                </span>
+                        <a href="{{ route('teacher.submissions.show', [
+                            'classroom_id' => $submission->assignment->classroom->id,
+                            'assignment_id' => $submission->assignment->id,
+                            'id' => $submission->id
+                        ]) }}" class="block cursor-pointer hover:no-underline">
+                            <div class="border-4 {{ $submission->graded ? 'border-green-500' : 'border-yellow-500' }} pl-3 sm:pl-4 bg-white dark:bg-gray-800 p-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.7)] transform hover:-translate-y-1 transition-transform">
+                                <p class="font-black text-gray-900 dark:text-white">
+                                    {{ $submission->user ? $submission->user->name : 'Unknown Student' }}
+                                </p>
+                                <p class="text-sm font-bold text-gray-700 dark:text-gray-300">{{ $submission->assignment ? $submission->assignment->title : 'Unknown Assignment' }}</p>
+                                <p class="text-xs font-bold text-gray-700 dark:text-gray-300">
+                                    Kelas: {{ $submission->assignment && $submission->assignment->classroom ? $submission->assignment->classroom->name : 'Unknown Classroom' }}
+                                </p>
+                                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mt-2 space-y-2 sm:space-y-0">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-none text-xs font-black {{ $submission->graded ? 'bg-green-300 text-black' : 'bg-yellow-300 text-black' }} border-2 border-black dark:border-gray-600 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.7)] w-fit">
+                                        {{ $submission->graded ? 'Graded' : 'Pending' }}
+                                    </span>
+                                    <span class="text-xs font-bold text-gray-700 dark:text-gray-300">
+                                        {{ $submission->submitted_at ? $submission->submitted_at->diffForHumans() : 'N/A' }}
+                                    </span>
+                                </div>
                             </div>
-                        </div>
+                        </a>
                     @endforeach
                 </div>
             @endif

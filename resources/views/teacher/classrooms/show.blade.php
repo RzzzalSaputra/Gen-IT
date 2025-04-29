@@ -8,7 +8,7 @@
     <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-6 space-y-3 sm:space-y-0">
         <div>
             <h1 class="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-white">{{ $classroom ? $classroom->name : 'Classroom' }}</h1>
-            <p class="text-gray-600 dark:text-gray-400">Class Code: {{ $classroom ? $classroom->code : 'N/A' }}</p>
+            <p class="text-gray-600 dark:text-gray-400">Kode Kelas: {{ $classroom ? $classroom->code : 'N/A' }}</p>
         </div>
         <button data-modal-target="editClassroomModal" data-modal-toggle="editClassroomModal" class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring ring-blue-300 disabled:opacity-25 transition">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -32,13 +32,13 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 sm:h-5 w-4 sm:w-5 mr-1 sm:mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                     </svg>
-                    Assignments
+                    Tugas
                 </button>
                 <button id="members-tab" class="border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 whitespace-nowrap py-3 sm:py-4 px-4 sm:px-6 border-b-2 font-medium text-xs sm:text-sm flex items-center flex-1 sm:flex-none justify-center sm:justify-start">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 sm:h-5 w-4 sm:w-5 mr-1 sm:mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                     </svg>
-                    Members
+                    Anggota Kelas
                 </button>
             </nav>
         </div>
@@ -46,7 +46,7 @@
         <!-- Tab Contents -->
         <div class="p-4 sm:p-6">
             <!-- Materials Content -->
-            <div id="materials-content" class="space-y-4" id="materials-section">
+            <div id="materials-content" class="space-y-4 scrollbar-hide" id="materials-section">
                 <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 space-y-3 sm:space-y-0">
                     <h3 class="text-lg font-medium text-gray-900 dark:text-white">Materi Pelajaran</h3>
                     <button data-modal-target="addMaterialModal" data-modal-toggle="addMaterialModal" class="w-full sm:w-auto inline-flex items-center justify-center px-3 py-1.5 border border-transparent text-sm font-medium rounded text-blue-700 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800">
@@ -130,8 +130,7 @@
             </div>
 
             <!-- Assignments Content (hidden by default) -->
-            <div id="assignments-content" class="hidden space-y-4" id="assignments-section">
-                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 space-y-3 sm:space-y-0">
+            <div id="assignments-content" class="hidden space-y-4 scrollbar-hide" id="assignments-section">                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 space-y-3 sm:space-y-0">
                     <h3 class="text-lg font-medium text-gray-900 dark:text-white">Classroom Assignments</h3>
                     <button data-modal-target="addAssignmentModal" data-modal-toggle="addAssignmentModal" class="w-full sm:w-auto inline-flex items-center justify-center px-3 py-1.5 border border-transparent text-sm font-medium rounded text-blue-700 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -142,7 +141,7 @@
                 </div>
                 
                 @if(isset($assignments) && $assignments->count() > 0)
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 scrollbar-hide">
                         @foreach($assignments as $assignment)
                             <div class="group bg-white dark:bg-gray-800 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg border border-gray-200 dark:border-gray-700 
     @php
@@ -324,9 +323,8 @@
 </div>
 
             <!-- Members Content (hidden by default) -->
-            <div id="members-content" class="hidden space-y-4" id="members-section">
-                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 space-y-3 sm:space-y-0">
-                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">Classroom Members</h3>
+            <div id="members-content" class="hidden space-y-4 scrollbar-hide" id="members-section">                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 space-y-3 sm:space-y-0">
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">Anggota Kelas</h3>
                     <button data-modal-target="addMemberModal" data-modal-toggle="addMemberModal" class="w-full sm:w-auto inline-flex items-center justify-center px-3 py-1.5 border border-transparent text-sm font-medium rounded text-blue-700 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -341,11 +339,11 @@
                             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
                                 <thead class="bg-gray-50 dark:bg-gray-800">
                                     <tr>
-                                        <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">User</th>
+                                        <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Anggota</th>
                                         <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider hidden sm:table-cell">Email</th>
-                                        <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider hidden md:table-cell">Joined Date</th>
+                                        <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider hidden md:table-cell">Tanggal Join</th>
                                         <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Role</th>
-                                        <th scope="col" class="px-4 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                                        <th scope="col" class="px-4 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-600">
@@ -440,21 +438,48 @@
 
 
 <style>
+/* Improved scrollbar hiding */
+.scrollbar-hide {
+    -ms-overflow-style: none !important;  /* IE and Edge */
+    scrollbar-width: none !important;  /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+    display: none !important;  /* Chrome, Safari, Opera */
+    width: 0 !important;
+    height: 0 !important;
+}
+
+/* Hide scrollbars on the entire content area */
+.bg-white.dark\:bg-gray-800.overflow-hidden {
+    overflow: hidden !important;
+}
+
+/* Specifically hide scrollbar on tab navigation */
+.border-b.border-gray-200.dark\:border-gray-700.overflow-x-auto {
+    -ms-overflow-style: none !important;
+    scrollbar-width: none !important;
+    overflow-x: auto !important;
+}
+.border-b.border-gray-200.dark\:border-gray-700.overflow-x-auto::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+/* Ensure tab panels don't create unwanted scrollbars */
+[id$="-content"] {
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+}
+
 /* Add some mobile-specific styles */
 @media (max-width: 640px) {
-    .scrollbar-hide {
-        -ms-overflow-style: none;  /* IE and Edge */
-        scrollbar-width: none;  /* Firefox */
-    }
-    .scrollbar-hide::-webkit-scrollbar {
-        display: none;  /* Chrome, Safari, Opera */
-    }
-    
     /* Make touch targets bigger on mobile */
     button, a {
         touch-action: manipulation;
     }
 }
+
 </style>
 
 <!-- JavaScript unchanged -->
@@ -555,12 +580,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const deleteUrl = this.getAttribute('data-delete-url');
             
             Swal.fire({
-                title: 'Delete Material?',
-                text: `Are you sure you want to delete "${materialTitle}"? This action cannot be undone.`,
+                title: 'Hapus Materi?',
+                text: `Apakah kamu yakin ingin menghapus "${materialTitle}"? Tindakan ini tidak dapat dibatalkan.`,
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Yes, delete it!',
-                cancelButtonText: 'Cancel',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batalkan',
                 confirmButtonColor: '#d33',
                 cancelButtonColor: '#6b7280',
                 background: '#1f2937',
@@ -604,12 +629,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const deleteUrl = this.getAttribute('data-delete-url');
             
             Swal.fire({
-                title: 'Delete Assignment?',
-                text: `Are you sure you want to delete "${assignmentTitle}"? This action cannot be undone.`,
+                title: 'Hapus Tugas?',
+                text: `Apakah kamu yakin ingin menghapus "${assignmentTitle}"? Tindakan ini tidak dapat dibatalkan.`,
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Yes, delete it!',
-                cancelButtonText: 'Cancel',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batalkan',
                 confirmButtonColor: '#d33',
                 cancelButtonColor: '#6b7280',
                 background: '#1f2937',
@@ -653,12 +678,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const deleteUrl = "{{ route('teacher.members.destroy', [$classroom->id, ':memberId']) }}".replace(':memberId', memberId);
             
             Swal.fire({
-                title: 'Remove Member?',
-                text: `Are you sure you want to remove ${memberName} from this classroom?`,
+                title: 'Hapus Anggota?',
+                text: `Apakah kamu yakin ingin mengeluarkan ${memberName} dari kelas ini?`,
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Yes, remove them!',
-                cancelButtonText: 'Cancel',
+                confirmButtonText: 'Ya, keluarkan!',
+                cancelButtonText: 'batalkan',
                 confirmButtonColor: '#d33',
                 cancelButtonColor: '#6b7280',
                 background: '#1f2937',

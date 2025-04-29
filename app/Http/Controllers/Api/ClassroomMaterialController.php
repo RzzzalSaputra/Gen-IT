@@ -405,33 +405,16 @@ class ClassroomMaterialController extends Controller
      */
     public function update(Request $request, $classroomId, $id)
     {
-        // Find the classroom
-        $classroom = Classroom::find($classroomId);
-        if (!$classroom) {
-            return response()->json(['message' => 'Classroom not found'], Response::HTTP_NOT_FOUND);
-        }
-
         // Find the material
-        $material = ClassroomMaterial::where('id', $id)
-                                   ->where('classroom_id', $classroomId)
-                                   ->whereNull('delete_at')
-                                   ->first();
-        
+        $material = ClassroomMaterial::find($id);
         if (!$material) {
             return response()->json(['message' => 'Material not found'], Response::HTTP_NOT_FOUND);
         }
 
-        // Verify user is the material creator or a teacher
-        $userId = Auth::id();
-        $canUpdate = $material->create_by == $userId || 
-                     $classroom->create_by == $userId ||
-                     $classroom->members()
-                             ->where('user_id', $userId)
-                             ->where('role', 'teacher')
-                             ->exists();
-        
-        if (!$canUpdate) {
-            return response()->json(['message' => 'You are not authorized to update this material'], Response::HTTP_FORBIDDEN);
+        // Check classroom ownership
+        $classroom = Classroom::find($classroomId);
+        if (!$classroom || $material->classroom_id != $classroomId) {
+            return response()->json(['message' => 'Classroom not found or material does not belong to this classroom'], Response::HTTP_NOT_FOUND);
         }
 
         // Validate the request
@@ -442,6 +425,9 @@ class ClassroomMaterialController extends Controller
             'link' => 'nullable|string|url',
             'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'type' => 'nullable|exists:options,id',
+            'remove_file' => 'nullable|boolean',
+            'remove_img' => 'nullable|boolean',
+            'remove_link' => 'nullable|boolean',
         ]);
 
         if ($validator->fails()) {
@@ -453,15 +439,44 @@ class ClassroomMaterialController extends Controller
             $updateData = [];
             
             // Update basic fields if provided
-            foreach(['title', 'content', 'link', 'type'] as $field) {
-                if ($request->has($field)) {
-                    $updateData[$field] = $request->$field;
-                }
+            if ($request->has('title')) {
+                $updateData['title'] = $request->title;
+            }
+            
+            if ($request->has('content')) {
+                $updateData['content'] = $request->content;
+            }
+            
+            if ($request->has('type')) {
+                $updateData['type'] = $request->type;
             }
             
             // Always update the update_at timestamp
             $updateData['update_at'] = now();
             
+            // Handle file removal/replacement
+            if ($request->boolean('remove_file')) {
+                if ($material->file) {
+                    Storage::disk('public')->delete($material->file);
+                }
+                $updateData['file'] = null;
+            }
+            
+            // Handle image removal/replacement
+            if ($request->boolean('remove_img')) {
+                if ($material->img) {
+                    Storage::disk('public')->delete($material->img);
+                }
+                $updateData['img'] = null;
+            }
+            
+            // Handle link removal
+            if ($request->boolean('remove_link')) {
+                $updateData['link'] = null;
+            } else if ($request->has('link')) {
+                $updateData['link'] = $request->link;
+            }
+
             // Handle file upload if provided
             if ($request->hasFile('file')) {
                 // Delete old file if exists
@@ -494,10 +509,26 @@ class ClassroomMaterialController extends Controller
             $material->update($updateData);
             
             DB::commit();
+            
+            // For web route, redirect back with success message
+            if (!$request->expectsJson()) {
+                return redirect()
+                    ->route('teacher.materials.show', ['classroom_id' => $classroomId, 'id' => $id])
+                    ->with('success', 'Material updated successfully');
+            }
+            
             return response()->json(['message' => 'Material updated successfully', 'data' => $material], Response::HTTP_OK);
         } catch (\Exception $e) {
             DB::rollback();
             Log::error('Error updating classroom material: ' . $e->getMessage());
+            
+            if (!$request->expectsJson()) {
+                return redirect()
+                    ->back()
+                    ->withInput()
+                    ->with('error', 'Error updating material: ' . $e->getMessage());
+            }
+            
             return response()->json([
                 'message' => 'Error updating classroom material',
                 'error' => $e->getMessage()

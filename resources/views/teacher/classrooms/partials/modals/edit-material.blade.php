@@ -5,7 +5,7 @@
         <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
         
         <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
-            <form action="{{ route('teacher.materials.update', [$classroom->id, $material->id]) }}" method="POST" enctype="multipart/form-data">
+            <form id="editMaterialForm{{ $material->id }}" action="{{ route('teacher.materials.update', [$classroom->id, $material->id]) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
@@ -17,6 +17,11 @@
                             </svg>
                         </button>
                     </div>
+                    
+                    <!-- Hidden fields for removal tracking -->
+                    <input type="hidden" name="remove_file" id="remove_file{{ $material->id }}" value="0">
+                    <input type="hidden" name="remove_img" id="remove_img{{ $material->id }}" value="0">
+                    <input type="hidden" name="remove_link" id="remove_link{{ $material->id }}" value="0">
                     
                     <!-- Preserve the type value as hidden input -->
                     <input type="hidden" name="type" value="{{ $material->type }}">
@@ -36,13 +41,29 @@
                         <div class="mb-4">
                             <label for="editMaterialFile{{ $material->id }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Attachment</label>
                             @if($material->file)
-                                <div class="mb-2">
-                                    <a href="{{ asset('storage/' . $material->file) }}" target="_blank" class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm leading-4 font-medium rounded-md text-blue-600 dark:text-blue-400 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                        <svg class="h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                        </svg>
-                                        Current File
+                                <div class="mb-2 flex items-center justify-between bg-gray-50 dark:bg-gray-700 rounded-md p-2">
+                                    <a href="{{ asset('storage/' . $material->file) }}" target="_blank" class="flex items-center group">
+                                        <div class="flex-shrink-0 h-10 w-10 flex items-center justify-center bg-blue-100 dark:bg-blue-900 rounded-md mr-3">
+                                            <svg class="h-6 w-6 text-blue-600 dark:text-blue-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            </svg>
+                                        </div>
+                                        <div class="truncate">
+                                            <p class="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 truncate">
+                                                {{ basename($material->file) }}
+                                            </p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">
+                                                Click to view or download
+                                            </p>
+                                        </div>
                                     </a>
+                                    <button type="button" 
+                                            onclick="document.getElementById('remove_file{{ $material->id }}').value='1'; this.parentElement.classList.add('hidden');"
+                                            class="ml-2 text-red-500 hover:text-red-700">
+                                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
                                 </div>
                             @endif
                             <input type="file" name="file" id="editMaterialFile{{ $material->id }}"
@@ -53,8 +74,15 @@
                         <div class="mb-4">
                             <label for="editMaterialImage{{ $material->id }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Cover Image</label>
                             @if($material->img)
-                                <div class="mb-2">
+                                <div class="mb-2 flex items-center justify-between">
                                     <img src="{{ asset('storage/' . $material->img) }}" alt="Current Image" class="h-20 w-auto object-cover rounded">
+                                    <button type="button" 
+                                            onclick="document.getElementById('remove_img{{ $material->id }}').value='1'; this.parentElement.classList.add('hidden');"
+                                            class="ml-2 text-red-500 hover:text-red-700">
+                                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
                                 </div>
                             @endif
                             <input type="file" name="img" id="editMaterialImage{{ $material->id }}" accept="image/*"
@@ -65,11 +93,23 @@
                     
                     <div class="mb-4">
                         <label for="editMaterialLink{{ $material->id }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">External Link</label>
-                        <input type="url" name="link" id="editMaterialLink{{ $material->id }}" value="{{ $material->link }}" placeholder="https://example.com"
-                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        <div class="flex items-center">
+                            <input type="url" name="link" id="editMaterialLink{{ $material->id }}" value="{{ $material->link }}" placeholder="https://example.com"
+                                class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            @if($material->link)
+                                <button type="button" 
+                                        onclick="document.getElementById('remove_link{{ $material->id }}').value='1'; document.getElementById('editMaterialLink{{ $material->id }}').value='';"
+                                        class="ml-2 text-red-500 hover:text-red-700">
+                                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            @endif
+                        </div>
                     </div>
                 </div>
                 
+                <!-- Fixed button section -->
                 <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                     <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
                         Save Changes

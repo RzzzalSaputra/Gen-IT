@@ -174,10 +174,21 @@ class TeacherController extends Controller
             abort(403, 'Unauthorized action. Only teachers can update this classroom.');
         }
         
-        $classroom = Classroom::findOrFail($id);
-        // Validation and update logic...
+        // Validate the request
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+        ]);
         
-        // Rest of your update logic
+        $classroom = Classroom::findOrFail($id);
+        
+        // Update the classroom with the form data
+        $classroom->update([
+            'name' => $request->name,
+            'description' => $request->description,
+            'update_at' => now(),
+        ]);
+        
         return redirect()->route('teacher.classrooms.show', $id)
                          ->with('success', 'Classroom updated successfully');
     }
@@ -406,68 +417,40 @@ class TeacherController extends Controller
     }
 
     /**
-     * Update the specified material in the classroom
+     * Update the specified material.
      */
     public function updateMaterial(Request $request, $classroom_id, $id)
     {
-        Log::debug('Starting material update', ['classroom_id' => $classroom_id, 'material_id' => $id, 'user_id' => Auth::id()]);
-        
+        // Check if teacher is in the classroom
+        if (!$this->isTeacherInClassroom($classroom_id)) {
+            return redirect()->route('teacher.classrooms.index')->with('error', 'You do not have permission to access this classroom');
+        }
+
         try {
-            if (!$this->isTeacherInClassroom($classroom_id)) {
-                Log::warning('Permission denied: User is not a teacher in this classroom', [
-                    'user_id' => Auth::id(),
-                    'classroom_id' => $classroom_id
-                ]);
-                return redirect()->route('teacher.dashboard')
-                    ->with('error', 'You do not have permission to update materials in this classroom.');
+            // Forward the request to the API controller
+            $materialController = app()->make(ClassroomMaterialController::class);
+            $response = $materialController->update($request, $classroom_id, $id);
+            
+            // Return redirect or response based on the request
+            if ($request->expectsJson()) {
+                return $response;
             }
             
-            // Get the classroom first
-            $classroom = Classroom::findOrFail($classroom_id);
-            
-            // Check if material exists, belongs to this classroom, and is not soft deleted
-            $material = $classroom->materials()
-                ->whereNull('delete_at')
-                ->findOrFail($id);
-            
-            // Remove the type field from the request to ensure it doesn't get changed
-            $requestData = $request->except(['type']);
-            
-            // Create a new request with the filtered data
-            $filteredRequest = new Request($requestData);
-            
-            Log::debug('Permissions verified, calling material controller with filtered data', [
-                'filtered_fields' => array_keys($requestData)
-            ]);
-            
-            // Pass filtered request, classroom_id, and material_id to the update method
-            $response = $this->materialController->update($filteredRequest, $classroom_id, $id);
-            
-            Log::info('Material controller response', [
-                'status_code' => $response->getStatusCode(),
-                'content' => json_decode($response->getContent(), true)
-            ]);
-            
-            if ($response->getStatusCode() === 200) {
-                return redirect()->route('teacher.materials.show', [$classroom_id, $id])
-                    ->with('success', 'Material updated successfully');
+            // If redirected here with success message, pass it along
+            if (session('success')) {
+                return redirect()->route('teacher.materials.show', [
+                    'classroom_id' => $classroom_id,
+                    'id' => $id
+                ])->with('success', session('success'));
             }
             
-            Log::error('Material update failed with non-200 status', [
-                'status_code' => $response->getStatusCode(),
-                'response' => $response->getContent()
-            ]);
-            
-            return back()->withErrors(['msg' => 'Failed to update material: ' . $response->getContent()]);
-        } catch (\Exception $e) {
-            Log::error('Exception in updateMaterial', [
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
+            return redirect()->route('teacher.materials.show', [
                 'classroom_id' => $classroom_id,
-                'material_id' => $id
-            ]);
-            
-            return back()->withErrors(['msg' => 'Error processing request: ' . $e->getMessage()]);
+                'id' => $id
+            ])->with('success', 'Material updated successfully');
+        } catch (\Exception $e) {
+            Log::error('Error updating material: ' . $e->getMessage());
+            return back()->with('error', 'Error updating material: ' . $e->getMessage());
         }
     }
 
@@ -882,5 +865,25 @@ class TeacherController extends Controller
                          ->where('user_id', $user_id)
                          ->where('role', 'teacher')
                          ->exists();
+    }
+
+    /**
+     * Download the submission file
+     */
+    public function downloadSubmission($classroom_id, $assignment_id, $id)
+    {
+        // Check if teacher is in the classroom
+        if (!$this->isTeacherInClassroom($classroom_id)) {
+            return redirect()->route('teacher.classrooms.index')
+                ->with('error', 'You do not have permission to access this classroom');
+        }
+
+        try {
+            // Forward the request to the API controller
+            return $this->submissionController->download($classroom_id, $assignment_id, $id);
+        } catch (\Exception $e) {
+            Log::error('Error downloading submission file: ' . $e->getMessage());
+            return back()->with('error', 'Error downloading file: ' . $e->getMessage());
+        }
     }
 }

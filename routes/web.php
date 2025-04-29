@@ -132,7 +132,6 @@ Route::prefix('teacher')->middleware(['auth', 'App\Http\Middleware\RoleMiddlewar
     Route::get('/classrooms/{id}', [TeacherController::class, 'showClassroom'])->name('classrooms.show');
     Route::get('/classrooms/{id}/edit', [TeacherController::class, 'editClassroom'])->name('classrooms.edit');
     Route::put('/classrooms/{id}', [TeacherController::class, 'updateClassroom'])->name('classrooms.update');
-    Route::delete('/classrooms/{id}', [TeacherController::class, 'destroyClassroom'])->name('teacher.classrooms.destroy');
     Route::delete('/classrooms/{id}', [TeacherController::class, 'destroyClassroom'])->name('classrooms.destroy');
     
     // Materials management
@@ -144,7 +143,8 @@ Route::prefix('teacher')->middleware(['auth', 'App\Http\Middleware\RoleMiddlewar
     Route::get('/classrooms/{classroom_id}/materials/{id}', [TeacherController::class, 'showMaterial'])->name('materials.show');
     Route::delete('/classrooms/{classroom_id}/materials/{id}', [TeacherController::class, 'destroyMaterial'])->name('materials.destroy');
     Route::delete('/classrooms/{classroom}/materials/{id}', [TeacherController::class, 'destroyMaterial'])->name('teacher.materials.destroy');
-    
+    Route::get('/classrooms/{classroom_id}/materials/{id}/download', [TeacherController::class, 'downloadMaterial'])->name('classrooms.materials.download');
+
     // Assignments management
     Route::get('/classrooms/{classroom_id}/assignments', [TeacherController::class, 'assignments'])->name('assignments.index');
     Route::get('/classrooms/{classroom_id}/assignments/create', [TeacherController::class, 'createAssignment'])->name('assignments.create');
@@ -154,26 +154,16 @@ Route::prefix('teacher')->middleware(['auth', 'App\Http\Middleware\RoleMiddlewar
     Route::get('/classrooms/{classroom_id}/assignments/{id}', [TeacherController::class, 'showAssignment'])->name('assignments.show');
     Route::delete('/classrooms/{classroom_id}/assignments/{id}', [TeacherController::class, 'destroyAssignment'])->name('assignments.destroy');
     Route::delete('/classrooms/{classroom}/assignments/{id}', [TeacherController::class, 'destroyAssignment'])->name('teacher.assignments.destroy');
-    
-    // Add this new route for downloading assignments
     Route::get('/classrooms/{classroom_id}/assignments/{id}/download', [TeacherController::class, 'downloadAssignment'])->name('assignments.download');
     
     // Submissions/grading
     Route::get('/classrooms/{classroom_id}/assignments/{assignment_id}/submissions', [TeacherController::class, 'submissions'])->name('submissions.index');
     Route::get('/classrooms/{classroom_id}/assignments/{assignment_id}/submissions/{id}', [TeacherController::class, 'showSubmission'])->name('submissions.show');
-    // Add this route for showing the grade form (GET)
-    Route::get('/classrooms/{classroom_id}/assignments/{assignment_id}/submissions/{id}/grade', 
-    [TeacherController::class, 'showGradeForm'])->name('submissions.grade');
-
-    // Keep the existing route for submitting the grade (POST)
-    Route::post('/classrooms/{classroom_id}/assignments/{assignment_id}/submissions/{id}/grade', 
-    [TeacherController::class, 'gradeSubmission'])->name('submissions.process-grade');
+    Route::get('/classrooms/{classroom_id}/assignments/{assignment_id}/submissions/{id}/grade', [TeacherController::class, 'showGradeForm'])->name('submissions.grade');
+    Route::get('/classrooms/{classroom_id}/assignments/{assignment_id}/submissions/{id}/download', [TeacherController::class, 'downloadSubmission'])->name('submissions.download');
+    Route::post('/classrooms/{classroom_id}/assignments/{assignment_id}/submissions/{id}/grade', [TeacherController::class, 'gradeSubmission'])->name('submissions.process-grade');
     
     // Students management
-    Route::get('/classrooms/{classroom_id}/students', [TeacherController::class, 'students'])->name('students.index');
-    
-    // teacher join
-
     Route::post('/classrooms/join', [TeacherController::class, 'processJoinClassroom'])
     ->name('classrooms.process-join');
     
@@ -181,6 +171,8 @@ Route::prefix('teacher')->middleware(['auth', 'App\Http\Middleware\RoleMiddlewar
     Route::post('/classrooms/{classroom_id}/members', [TeacherController::class, 'storeMember'])->name('members.store');
     Route::put('/classrooms/{classroom_id}/members/{id}/role', [TeacherController::class, 'updateMemberRole'])->name('members.update.role');
     Route::delete('/classrooms/{classroom_id}/members/{id}', [TeacherController::class, 'destroyMember'])->name('members.destroy');
+    Route::get('/classrooms/{classroom_id}/students', [TeacherController::class, 'students'])->name('students.index');
+
 });
 
 

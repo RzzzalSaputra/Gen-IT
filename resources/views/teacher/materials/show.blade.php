@@ -45,15 +45,53 @@
 
                 <!-- Material Link -->
                 @if($material->link)
-                <div class="mt-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                    <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">External Link:</h3>
-                    <a href="{{ $material->link }}" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center">
-                        <svg class="mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                        </svg>
-                        {{ $material->link }}
-                    </a>
-                </div>
+                    @php
+                        $isYoutubeLink = strpos($material->link, 'youtube.com') !== false || strpos($material->link, 'youtu.be') !== false;
+                        $videoId = '';
+                        
+                        if ($isYoutubeLink) {
+                            if (strpos($material->link, 'youtube.com/watch?v=') !== false) {
+                                $parts = parse_url($material->link);
+                                parse_str($parts['query'] ?? '', $query);
+                                $videoId = $query['v'] ?? '';
+                            } elseif (strpos($material->link, 'youtu.be/') !== false) {
+                                $videoId = substr($material->link, strrpos($material->link, '/') + 1);
+                            }
+                        }
+                    @endphp
+
+                    @if($isYoutubeLink && $videoId)
+                        <div class="mt-6 mx-auto max-w-3xl">
+                            <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Video Embed:</h3>
+                            <div class="relative w-full aspect-video rounded-lg overflow-hidden">
+                                <iframe 
+                                    src="https://www.youtube.com/embed/{{ $videoId }}" 
+                                    class="absolute inset-0 w-full h-full rounded-lg"
+                                    frameborder="0" 
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                    allowfullscreen>
+                                </iframe>
+                            </div>
+                            <div class="mt-2">
+                                <a href="{{ $material->link }}" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center text-sm">
+                                    <svg class="mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                    </svg>
+                                    Open on YouTube
+                                </a>
+                            </div>
+                        </div>
+                    @else
+                        <div class="mt-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">External Link:</h3>
+                            <a href="{{ $material->link }}" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center">
+                                <svg class="mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg>
+                                {{ $material->link }}
+                            </a>
+                        </div>
+                    @endif
                 @endif
 
                 <!-- Material Image - Removed "Cover Image:" text -->
@@ -67,15 +105,79 @@
                 @if($material->file)
                 <div class="mt-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                     <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Attached File:</h3>
-                    <div class="flex items-center justify-between">
-                        <span class="text-gray-700 dark:text-gray-300">{{ basename($material->file) }}</span>
-                        <a href="{{ route('materials.download', $material->id) }}" class="inline-flex items-center px-3 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    @php
+                        $fileExtension = strtolower(pathinfo($material->file, PATHINFO_EXTENSION));
+                        $fileName = basename($material->file);
+                    @endphp
+                    
+                    <!-- File Info Header -->
+                    <div class="flex items-center justify-between mb-4">
+                        <!-- File Icon and Name -->
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                                @switch($fileExtension)
+                                    @case('pdf')
+                                        <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                        </svg>
+                                        @break
+                                    @case('doc')
+                                    @case('docx')
+                                        <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                        @break
+                                    @case('xls')
+                                    @case('xlsx')
+                                        <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                        @break
+                                    @default
+                                        <svg class="w-6 h-6 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                @endswitch
+                            </div>
+                            <span class="text-gray-700 dark:text-gray-300">{{ $fileName }}</span>
+                        </div>
+                        
+                        <!-- Download Button - FIXED ROUTE -->
+                        <a href="{{ route('teacher.classrooms.materials.download', ['classroom_id' => $classroom->id, 'id' => $material->id]) }}" 
+                           class="inline-flex items-center px-3 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                             </svg>
                             Download
                         </a>
                     </div>
+
+                    <!-- File Preview -->
+                    @if(in_array($fileExtension, ['pdf']))
+                        <div class="bg-gray-50 dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden h-[400px]">
+                            <iframe src="{{ Storage::url($material->file) }}" class="w-full h-full" frameborder="0"></iframe>
+                        </div>
+                    @elseif(in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif']))
+                        <div class="bg-gray-50 dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden p-4 text-center">
+                            <img src="{{ Storage::url($material->file) }}" alt="{{ $material->title }}" 
+                                 class="max-h-[400px] mx-auto object-contain cursor-pointer" 
+                                 onclick="openImagePreview(this.src)">
+                        </div>
+                    @else
+                        <div class="bg-gray-50 dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-700 p-6 text-center">
+                            <svg class="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <p class="text-gray-600 dark:text-gray-400 mb-3">Preview not available for this file type.</p>
+                            <a href="{{ route('teacher.classrooms.materials.download', ['classroom_id' => $classroom->id, 'id' => $material->id]) }}" 
+                               class="inline-flex items-center px-3 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                                Download to View
+                            </a>
+                        </div>
+                    @endif
                 </div>
                 @endif
             </div>
@@ -113,5 +215,36 @@ function closeModal(modalId) {
         modal.classList.add('hidden');
     }
 }
+
+// Image Preview functions
+function openImagePreview(src) {
+    document.getElementById('previewImage').src = src;
+    document.getElementById('imagePreviewModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden'; // Prevent scrolling
+}
+
+function closeImagePreview() {
+    document.getElementById('imagePreviewModal').classList.add('hidden');
+    document.body.style.overflow = ''; // Enable scrolling
+}
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeImagePreview();
+    }
+});
 </script>
+
+<!-- Image Preview Modal -->
+<div id="imagePreviewModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 hidden" onclick="closeImagePreview()">
+    <div class="relative max-w-4xl max-h-screen p-4">
+        <button onclick="event.stopPropagation(); closeImagePreview()" class="absolute top-2 right-2 bg-gray-800 rounded-full p-2 text-white hover:bg-gray-700">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+        <img id="previewImage" src="" alt="Preview" class="max-w-full max-h-[80vh] object-contain">
+    </div>
+</div>
 @endsection
