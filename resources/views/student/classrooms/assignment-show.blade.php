@@ -48,7 +48,7 @@
                                 }
                             } elseif($isOverdue) {
                                 $statusClass = "bg-red-900/30 text-red-300 border-red-500/30";
-                                $statusText = "Terlambar";
+                                $statusText = "Terlambat";
                                 $statusIcon = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />';
                             } else {
                                 $statusClass = "bg-yellow-900/30 text-yellow-300 border-yellow-500/30";
