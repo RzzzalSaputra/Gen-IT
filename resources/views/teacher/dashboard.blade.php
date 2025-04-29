@@ -40,7 +40,7 @@
                 </svg>
             </div>
             <div class="ml-4">
-                <h2 class="font-bold text-gray-900 dark:text-gray-200">Pending Submissions</h2>
+                <h2 class="font-bold text-gray-900 dark:text-gray-200">Belum Dinilai</h2>
                 <p class="text-xl sm:text-2xl font-black text-gray-900 dark:text-white">{{ $pendingSubmissions }}</p>
             </div>
         </div>
@@ -121,7 +121,7 @@
                                 </p>
                                 <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mt-2 space-y-2 sm:space-y-0">
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-none text-xs font-black {{ $submission->graded ? 'bg-green-300 text-black' : 'bg-yellow-300 text-black' }} border-2 border-black dark:border-gray-600 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.7)] w-fit">
-                                        {{ $submission->graded ? 'Graded' : 'Pending' }}
+                                        {{ $submission->graded ? 'Dinilai' : 'Belum Dinilai' }}
                                     </span>
                                     <span class="text-xs font-bold text-gray-700 dark:text-gray-300">
                                         {{ $submission->submitted_at ? $submission->submitted_at->diffForHumans() : 'N/A' }}
