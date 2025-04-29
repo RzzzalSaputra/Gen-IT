@@ -30,14 +30,6 @@ class UserWidget extends BaseWidget
                 ->descriptionIcon('heroicon-m-user-group')
                 ->icon('heroicon-o-users')
                 ->color('success')
-                ->chart([
-                    $totalUsers - 50, 
-                    $totalUsers - 30, 
-                    $totalUsers - 20, 
-                    $totalUsers - 10, 
-                    $totalUsers - 5, 
-                    $totalUsers
-                ])
                 ->extraAttributes([
                     'class' => 'cursor-pointer transition hover:scale-105',
                 ]),
@@ -56,11 +48,6 @@ class UserWidget extends BaseWidget
                 ->descriptionIcon('heroicon-m-chart-pie')
                 ->icon('heroicon-o-user-circle')
                 ->color('primary')
-                ->chart([
-                    $admins,
-                    $teachers, 
-                    $regularUsers
-                ])
                 ->extraAttributes([
                     'class' => 'cursor-pointer transition hover:scale-105',
                 ]),

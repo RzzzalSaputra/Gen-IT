@@ -21,7 +21,7 @@
                     @if($material->img)
                         <div class="-mt-10 -mx-10 mb-10">
                             <div class="relative h-64 md:h-80 overflow-hidden">
-                                <img src="{{ $material->img }}" alt="{{ $material->title }}" 
+                                <img src="{{ asset('storage/' . $material->img) }}" alt="{{ $material->title }}" 
                                     class="w-full h-full object-cover">
                                 <div class="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-80"></div>
                             </div>
@@ -272,7 +272,7 @@
                                     <a href="{{ route('materials.show', $relatedMaterial->id) }}" class="flex items-start p-3 hover:bg-gray-700/30 rounded-lg transition-colors duration-200">
                                         @if($relatedMaterial->img)
                                             <div class="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 mr-3">
-                                                <img src="{{ $relatedMaterial->img }}" alt="{{ $relatedMaterial->title }}" class="w-full h-full object-cover">
+                                                <img src="{{ asset('storage/' . $relatedMaterial->img) }}" alt="{{ $relatedMaterial->title }}" class="w-full h-full object-cover">
                                             </div>
                                         @else
                                             <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-800/30 to-blue-800/30 flex-shrink-0 mr-3 flex items-center justify-center border border-purple-700/30">

@@ -62,7 +62,9 @@ class MaterialResource extends Resource
                     ->label('Konten')
                     ->required()
                     ->columnSpanFull()
-                    ->visible(fn(callable $get) => (int)$get('layout') === 9 || (int)$get('layout') === 10),
+                    ->disableToolbarButtons([
+                        'attachFiles',
+                    ]),
 
                 Forms\Components\FileUpload::make('img')
                     ->label('Gambar Thumbnail')

@@ -29,7 +29,7 @@
                             @foreach($vicons as $vicon)
                                 <div class="group bg-gray-800/30 hover:bg-gray-800/50 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg border border-gray-700/30 hover:border-blue-500/50 transition-all duration-300 hover:shadow-blue-500/5">
                                     <div class="h-48 overflow-hidden bg-gray-700">
-                                        <img src="{{ $vicon->img }}" alt="{{ $vicon->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                                        <img src="{{ asset('storage/' . $vicon->img) }}" alt="{{ $vicon->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                                     </div>
                                     
                                     <div class="p-6">

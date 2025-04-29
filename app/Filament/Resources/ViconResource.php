@@ -36,18 +36,15 @@ class ViconResource extends Resource
                     ->columnSpanFull()
                     ->maxLength(255),
 
-                Forms\Components\RichEditor::make('desc')
+                Forms\Components\Textarea::make('desc')
                     ->label('Deskripsi')
                     ->columnSpanFull()
-                    ->disableToolbarButtons([
-                        'attachFiles',
-                    ])
                     ->required(),
 
                 Forms\Components\FileUpload::make('img')
                     ->label('Gambar Thumbnail')
                     ->image()
-                    ->directory('vicon/images')
+                    ->directory('vicons/images')
                     ->visibility('public')
                     ->nullable()
                     ->getUploadedFileNameForStorageUsing(function ($file) {
@@ -76,27 +73,10 @@ class ViconResource extends Resource
                     ->url()
                     ->required(),
 
-                Forms\Components\FileUpload::make('file')
-                    ->label('File (PDF, DOC, dll.)')
-                    ->nullable()
-                    ->directory('vicons/files')
-                    ->visibility('public')
-                    ->getUploadedFileNameForStorageUsing(function ($file) {
-                        $timestamp = now()->format('Ymd_His');
-                        $random = mt_rand(100, 999);
-
-                        $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-                        $slugName = Str::slug($originalName);
-
-                        return "{$random}_{$slugName}_{$timestamp}.{$file->getClientOriginalExtension()}";
-                    })
-                    ->deleteUploadedFileUsing(function ($record) {
-                        $filePath = storage_path('app/public/' . $record?->img);
-
-                        if (file_exists($filePath)) {
-                            unlink($filePath);
-                        }
-                    }),
+                Forms\Components\Textarea::make('download')
+                    ->label('Unduhan')
+                    ->placeholder('Masukkan informasi unduhan')
+                    ->columnSpanFull(),
 
                 Forms\Components\Hidden::make('created_by')
                     ->default(fn() => Auth::id())

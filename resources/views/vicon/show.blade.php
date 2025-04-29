@@ -17,7 +17,7 @@
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Hero Image Section - Now with max-height -->
             <div class="max-h-64 bg-gray-800/50 rounded-3xl overflow-hidden border border-gray-700/50 shadow-2xl mb-8">
-                <img src="{{ $vicon->img }}" alt="{{ $vicon->title }}" class="w-full h-64 object-cover object-center">
+                <img src="{{ asset('storage/' . $vicon->img) }}" alt="{{ $vicon->title }}" class="w-full h-64 object-cover object-center">
             </div>
             
             <!-- Main Content -->

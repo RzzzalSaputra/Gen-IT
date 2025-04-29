@@ -33,9 +33,13 @@ class SchoolResource extends Resource
                     ->required()
                     ->maxLength(255),
 
-                Forms\Components\Textarea::make('description')
-                    ->label('Deskripsi')
-                    ->required(),
+                Forms\Components\RichEditor::make('description')
+                    ->label('Deskripsi Sekolah')
+                    ->required()
+                    ->columnSpanFull()
+                    ->disableToolbarButtons([
+                        'attachFiles',
+                    ]),
 
                 Forms\Components\FileUpload::make('img')
                     ->label('Gambar Sekolah')

@@ -115,7 +115,7 @@
                                         </a>
                                     @elseif($layoutType == 'Text with Image' && $material->img)
                                         <a href="{{ route('materials.show', $material->id) }}" class="block h-48 relative overflow-hidden">
-                                            <img src="{{ $material->img }}" 
+                                            <img src="{{ asset('storage/' . $material->img) }}" 
                                                  alt="{{ $material->title }}" 
                                                  class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500">
                                             <div class="absolute inset-0 bg-gradient-to-t from-gray-900/80 to-transparent"></div>

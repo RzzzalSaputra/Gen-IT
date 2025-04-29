@@ -21,7 +21,7 @@
                     @if($company->img)
                         <div class="-mt-10 -mx-10 mb-10">
                             <div class="relative h-64 md:h-80 overflow-hidden">
-                                <img src="{{ $company->img }}" alt="{{ $company->name }}" 
+                                <img src="{{ asset('storage/' . $company->img) }}" alt="{{ $company->name }}" 
                                     class="w-full h-full object-cover">
                                 <div class="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-80"></div>
                             </div>
@@ -254,7 +254,7 @@
                                         <div class="flex items-start">
                                             @if($relatedCompany->img)
                                                 <div class="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 mr-3">
-                                                    <img src="{{ $relatedCompany->img }}" alt="{{ $relatedCompany->name }}" class="w-full h-full object-cover">
+                                                    <img src="{{ asset('storage/' . $relatedCompany->img) }}" alt="{{ $relatedCompany->name }}" class="w-full h-full object-cover">
                                                 </div>
                                             @else
                                                 <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-800/30 to-purple-800/30 flex-shrink-0 mr-3 flex items-center justify-center border border-blue-700/30">

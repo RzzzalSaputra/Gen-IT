@@ -40,18 +40,25 @@ class JobResource extends Resource
                     ->required()
                     ->maxLength(255),
 
-                Forms\Components\Textarea::make('description')
+                Forms\Components\RichEditor::make('description')
                     ->label('Deskripsi Pekerjaan')
+                    ->required()
                     ->columnSpanFull()
-                    ->required(),
+                    ->disableToolbarButtons([
+                        'attachFiles',
+                    ]),
 
-                Forms\Components\Textarea::make('requirment')
+                Forms\Components\RichEditor::make('requirment')
                     ->label('Persyaratan Pekerjaan')
+                    ->required()
                     ->columnSpanFull()
-                    ->required(),
+                    ->disableToolbarButtons([
+                        'attachFiles',
+                    ]),
 
                 Forms\Components\TextInput::make('salary_range')
                     ->label('Rentang Gaji')
+                    ->prefix('Rp')
                     ->numeric()
                     ->required(),
 

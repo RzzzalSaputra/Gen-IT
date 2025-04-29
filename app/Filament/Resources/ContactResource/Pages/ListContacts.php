@@ -14,11 +14,7 @@ class ListContacts extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()
-                ->label('Buat Kontak Baru')
-                ->icon('heroicon-o-plus')
-                ->color('primary')
-                ->url(ContactResource::getUrl('create')),
+            
         ];
     }
 
