@@ -151,7 +151,7 @@
                                             Edit Submission
                                         </div>
                                     </button>
-                                    @elseif($isOverdue)
+                                    @elseif($isOverdue && \Carbon\Carbon::parse($submission->submitted_at)->isAfter($dueDate))
                                     <div class="px-3 py-2 w-full sm:w-auto bg-red-900/30 text-red-300 text-sm rounded-lg border border-red-700/50 text-center sm:text-left">
                                         <div class="flex items-center justify-center sm:justify-start">
                                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

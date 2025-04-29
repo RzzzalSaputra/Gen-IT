@@ -17,8 +17,19 @@
                             $dueDate = \Carbon\Carbon::parse($assignment->due_date);
                             $isOverdue = $now->isAfter($dueDate);
                             
+                            // Calculate submission statistics
+                            $totalStudents = $classroom->members()->where('role', 'student')->count();
+                            $submittedCount = $assignment->submissions()->count();
+                            $notSubmittedCount = $totalStudents - $submittedCount;
+                            
                             if($isOverdue) {
-                                echo '<span class="ml-2 px-2 py-0.5 bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300 text-xs font-medium rounded-full">Terlambat</span>';
+                                if($notSubmittedCount === 0) {
+                                    // All submissions received
+                                    echo '<span class="ml-2 px-2 py-0.5 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 text-xs font-medium rounded-full">Selesai</span>';
+                                } else {
+                                    // Some students haven\'t submitted
+                                    echo '<span class="ml-2 px-2 py-0.5 bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300 text-xs font-medium rounded-full">Terlambat</span>';
+                                }
                             } else {
                                 $diff = $now->diffInDays($dueDate, false);
                                 if($diff <= 3 && $diff >= 0) {
@@ -85,9 +96,6 @@
                     
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                         @php
-                            $totalStudents = $classroom->members()->where('role', 'student')->count();
-                            $submittedCount = $assignment->submissions()->count();
-                            $notSubmittedCount = $totalStudents - $submittedCount;
                             $gradedCount = $assignment->submissions()->where('graded', true)->count();
                             $ungradedCount = $submittedCount - $gradedCount;
                         @endphp

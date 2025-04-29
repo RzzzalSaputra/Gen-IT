@@ -239,16 +239,45 @@
                                             $isOverdue = $now->gt($dueDate);
                                             
                                             if($assignment->user_submission) {
-                                                // If there's a submission, always show submitted regardless of due date
-                                                $statusBadge = '<span class="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-900/50 text-blue-300 border border-blue-600/30">Telah dikumpulkan</span>';
-                                                $borderColor = 'border-blue-500/30';
-                                                $hoverBorderColor = 'hover:border-blue-400/40';
+                                                if($assignment->user_submission->graded) {
+                                                    // Graded submission - green styling
+                                                    $statusBadge = '<span class="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-900/50 text-green-300 border border-green-600/30">Dinilai</span>';
+                                                    $borderColor = 'border-green-500/30';
+                                                    $hoverBorderColor = 'hover:border-green-400/50';
+                                                    $buttonBgColor = 'bg-green-700 hover:bg-green-600';
+                                                    $cardHoverClass = 'hover:bg-green-900/30';
+                                                    $titleTextColor = 'text-green-400';
+                                                    $buttonText = 'Lihat Nilai';
+                                                    $buttonIcon = '<svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                                                                  </svg>';
+                                                } else {
+                                                    // Ungraded submission - blue styling
+                                                    $statusBadge = '<span class="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-900/50 text-blue-300 border border-blue-600/30">Telah dikumpulkan</span>';
+                                                    $borderColor = 'border-blue-500/30';
+                                                    $hoverBorderColor = 'hover:border-blue-400/50';
+                                                    $buttonBgColor = 'bg-blue-700 hover:bg-blue-600';
+                                                    $cardHoverClass = 'hover:bg-blue-900/30';
+                                                    $titleTextColor = 'text-blue-400';
+                                                    $buttonText = 'Lihat Detail';
+                                                    $buttonIcon = '<svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m-1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                                    </svg>';
+                                                }
                                             } elseif($isOverdue) {
+                                                // Late - red styling
                                                 $statusBadge = '<span class="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-900/50 text-red-300 border border-red-600/30">Terlambat</span>';
                                                 $borderColor = 'border-red-500/30';
-                                                $hoverBorderColor = 'hover:border-red-400/40';
+                                                $hoverBorderColor = 'hover:border-red-400/50';
+                                                $buttonBgColor = 'bg-red-700 hover:bg-red-600';
+                                                $cardHoverClass = 'hover:bg-red-900/30';
+                                                $titleTextColor = 'text-red-400';
+                                                $buttonText = 'Lihat Detail';
+                                                $buttonIcon = '<svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>';
                                             } else {
-                                                // For assignments due in the future
+                                                // Upcoming - yellow styling
                                                 $minutesRemaining = $now->diffInMinutes($dueDate, false);
                                                 $hoursRemaining = floor($minutesRemaining / 60);
                                                 $minutesLeft = $minutesRemaining % 60;
@@ -266,62 +295,48 @@
                                                 
                                                 $statusBadge = '<span class="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-900/50 text-yellow-300 border border-yellow-600/30">' . $timeRemainingText . '</span>';
                                                 $borderColor = 'border-yellow-500/30';
-                                                $hoverBorderColor = 'hover:border-yellow-400/40';
+                                                $hoverBorderColor = 'hover:border-yellow-400/50';
+                                                $buttonBgColor = 'bg-yellow-700 hover:bg-yellow-600';
+                                                $cardHoverClass = 'hover:bg-yellow-900/30';
+                                                $titleTextColor = 'text-yellow-400';
+                                                $buttonText = 'Lihat Detail';
+                                                $buttonIcon = '<svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m-1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>';
                                             }
                                         @endphp
 
-                                        <div class="group bg-gray-800/30 hover:bg-gray-800/50 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg border-2 {{ $borderColor }} {{ $hoverBorderColor }} transition duration-300">
-                                            <div class="p-3 sm:p-5">
-                                                <div class="flex flex-wrap justify-between items-start gap-2">
-                                                    <h4 class="font-medium text-sm sm:text-base text-gray-100 group-hover:text-purple-400 transition-colors duration-200 mb-1 sm:mb-2">{{ $assignment->title }}</h4>
-                                                    <div>
-                                                        {!! $statusBadge !!}
-                                                    </div>
-                                                </div>
-                                                
-                                                <!-- Description moved BEFORE date -->
-                                                <div class="mt-1 sm:mt-2 text-xs sm:text-sm text-gray-400 line-clamp-2 mb-2 sm:mb-4">
-                                                    {{ Str::limit(strip_tags($assignment->description), 120) }}
-                                                </div>
-                                                
-                                                <div class="mb-2 sm:mb-3">
-                                                    <div class="text-xs sm:text-sm text-gray-400">
-                                                        <span class="flex items-center">
-                                                            <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                            </svg>
-                                                            Tenggat: {{ $dueDate->format('M d, Y, H:i') }}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div class="flex flex-wrap justify-between items-center gap-2 mt-2 sm:mt-4">
-                                                    <div class="text-xs text-gray-500">
-                                                        @if($assignment->user_submission)
-                                                            @if($assignment->user_submission->graded)
-                                                                <span class="text-green-400">Selesai</span>
-                                                            @else
-                                                                <span class="text-blue-400">Telah dikumpulkan</span>
-                                                            @endif
-                                                        @else
-                                                            @if($isOverdue)
-                                                                <span class="text-red-400">Tugas terlewat</span>
-                                                            @else
-                                                                <span class="text-yellow-400">Belum Dikerjakan</span>
-                                                            @endif
-                                                        @endif
-                                                    </div>
-                                                    
-                                                    <a href="{{ route('student.classrooms.assignments.show', ['classroom_id' => $classroom->id, 'id' => $assignment->id]) }}" 
-                                                       class="inline-flex items-center px-2 py-1 sm:px-3 sm:py-1.5 bg-purple-700 hover:bg-purple-600 text-white text-xs sm:text-sm font-medium rounded-lg transition-colors duration-200">
-                                                        <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m-1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                        </svg>
-                                                        Lihat Detail
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <!-- Assignment Card with Improved Spacing -->
+<div class="border {{ $borderColor }} {{ $hoverBorderColor }} {{ $cardHoverClass }} rounded-xl p-5 sm:p-6 mb-5 transition-colors duration-200">
+    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+        <div class="mb-3 sm:mb-0">
+            <!-- Assignment title with larger font -->
+            <h3 class="font-medium text-lg sm:text-xl {{ $titleTextColor }} transition-colors duration-200">{{ $assignment->title }}</h3>
+            
+            <!-- Due date with white text for better readability -->
+            <div class="flex items-center text-white text-xs sm:text-sm mt-2 sm:mt-3">
+                <svg class="w-3.5 h-3.5 mr-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                Tenggat: {{ date('M d, Y, H:i', strtotime($assignment->due_date)) }}
+            </div>
+            
+            <!-- Status badge with increased spacing -->
+            <div class="mt-3 sm:mt-4">
+                {!! $statusBadge !!}
+            </div>
+        </div>
+        
+        <!-- Button with improved sizing -->
+        <div class="mt-4 sm:mt-0">
+            <a href="{{ route('student.classrooms.assignments.show', ['classroom_id' => $classroom->id, 'id' => $assignment->id]) }}" 
+               class="inline-flex items-center justify-center px-4 py-2.5 sm:px-5 sm:py-3 {{ $buttonBgColor }} text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                {!! $buttonIcon !!}
+                {{ $buttonText }}
+            </a>
+        </div>
+    </div>
+</div>
                                     @endforeach
                                 </div>
                             @else
