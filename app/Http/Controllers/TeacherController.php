@@ -106,20 +106,25 @@ class TeacherController extends Controller
         $teacher_id = Auth::id();
         
         // Get classrooms created by the teacher
-        $createdClassrooms = Classroom::where('create_by', $teacher_id)->get();
+        $createdClassrooms = Classroom::where('create_by', $teacher_id)
+            ->orderBy('create_at', 'desc')
+            ->get();
         
         // Get classrooms where the teacher is a member with 'teacher' role
         $joinedClassrooms = Classroom::whereHas('members', function($query) use ($teacher_id) {
             $query->where('user_id', $teacher_id)
                   ->where('role', 'teacher');
-        })->get();
+        })
+        ->orderBy('create_at', 'desc')
+        ->get();
         
-        // Merge the collections and remove duplicates
-        $classrooms = $createdClassrooms->concat($joinedClassrooms)->unique('id');
+        // Merge the collections, remove duplicates, and ensure sorting is maintained
+        $classrooms = $createdClassrooms->concat($joinedClassrooms)
+            ->unique('id')
+            ->sortByDesc('create_at');
         
         return view('teacher.classrooms.index', compact('classrooms'));
     }
-    
     public function createClassroom()
     {
         return view('teacher.classrooms.create');

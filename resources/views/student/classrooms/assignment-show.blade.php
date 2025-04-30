@@ -136,7 +136,7 @@
                                                 </svg>
                                                 Grade: {{ $submission->grade }}/{{ $assignment->max_points ?? 100 }}
                                             </p>
-                                            <p class="text-xs text-gray-400 mt-1">Graded submissions cannot be edited</p>
+                                            <p class="text-xs text-gray-400 mt-1">Tugas yang sudah dinilai tidak dapat diedit</p>
                                         @else
                                             <p class="text-yellow-400 mt-1">Belum Dinilai</p>
                                         @endif
@@ -164,10 +164,32 @@
                                 </div>
                                 
                                 <!-- Teacher Feedback (if graded) - no changes needed here as it's already responsive -->
+                                @if($submission->graded && $submission->feedback)
+                                <div class="mb-6 bg-green-900/30 border border-green-700/50 rounded-lg p-5">
+                                    <h4 class="text-white text-base font-medium mb-3 flex items-center">
+                                        <svg class="w-5 h-5 mr-2 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                                        </svg>
+                                        Feedback dari Guru:
+                                    </h4>
+                                    <div class="prose prose-sm max-w-none bg-gray-800/50 rounded-lg p-4 text-gray-200">
+                                        {!! nl2br(e($submission->feedback)) !!}
+                                    </div>
+                                </div>
+                                @endif
+                                <!-- Submission Content/Notes Display -->
+                                @if($submission->content)
+                                    <div class="bg-gray-900/30 rounded-lg p-4 mb-3">
+                                        <h4 class="text-white text-sm font-medium mb-2">Jawaban</h4>
+                                        <div class="prose prose-sm max-w-none bg-gray-800/50 rounded-lg p-4 text-gray-200">
+                                            {!! nl2br(e($submission->content)) !!}
+                                        </div>
+                                    </div>
+                                @endif
                                 
                                 @if($submission->file)
                                     <div class="bg-gray-900/30 rounded-lg p-4">
-                                        <h4 class="text-white text-sm font-medium mb-2">Your File:</h4>
+                                        <h4 class="text-white text-sm font-medium mb-2">File Yang Dikirim:</h4>
                                         <div class="flex flex-col sm:flex-row sm:items-center">
                                             <div class="flex items-center mb-2 sm:mb-0">
                                                 <svg class="w-5 h-5 text-blue-400 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -206,7 +228,7 @@
                                     <input type="hidden" name="remove_file" id="remove_file" value="0">
                                     
                                     <div>
-                                        <label for="content" class="block text-sm font-medium text-gray-300 mb-1">Submission Notes</label>
+                                        <label for="content" class="block text-sm font-medium text-gray-300 mb-1">Jawaban</label>
                                         <textarea id="content" name="content" rows="4" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg p-3 text-gray-200 focus:ring-blue-500 focus:border-blue-500">{{ $submission->content }}</textarea>
                                     </div>
                                     
@@ -254,14 +276,14 @@
                                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                                                 </svg>
-                                                <span id="upload-label">{{ $submission->file ? 'Replace file' : 'Choose file' }}</span>
+                                                <span id="upload-label">{{ $submission->file ? 'Ganti File' : 'Choose file' }}</span>
                                             </label>
                                             <input id="file" name="file" type="file" class="hidden">
                                         </div>
                                         
                                         @if($submission->file)
                                             <p class="mt-2 text-xs text-gray-400 italic">
-                                                Leave empty to keep existing file
+                                                Biarkan kosong apabila tidak ingin menganti file
                                             </p>
                                         @endif
                                     </div>
@@ -434,7 +456,7 @@
                         
                         // Reset the upload button text
                         if (uploadLabel) {
-                            uploadLabel.textContent = 'Replace file';
+                            uploadLabel.textContent = 'Ganti File';
                         }
                     }
                 });
