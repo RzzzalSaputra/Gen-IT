@@ -8,7 +8,7 @@
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                 </svg>
-                Back to Submissions
+                Kembali ke Submission
             </a>
         </div>
     </x-slot>
@@ -57,9 +57,9 @@
                             <label for="type" class="block text-sm font-medium text-gray-300 mb-1">Tipe Submission</label>
                             <select name="type" id="type" required
                                 class="w-full rounded-lg bg-gray-900/50 border border-gray-700 text-gray-200 px-4 py-2.5 focus:border-blue-500 focus:ring focus:ring-blue-500/30 focus:outline-none transition-colors duration-200">
-                                <option value="">Select a type</option>
-                                <option value="1" data-type-value="document">Document</option>
-                                <option value="2" data-type-value="image">Image</option>
+                                <option value="">Pilih tipe</option>
+                                <option value="1" data-type-value="document">Dokumen</option>
+                                <option value="2" data-type-value="image">Gambar</option>
                                 <option value="3" data-type-value="video">Video</option>
                                 <option value="5" data-type-value="link">Link</option>
                             </select>
@@ -79,7 +79,7 @@
                                     <svg class="w-6 h-6 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                                     </svg>
-                                    <span id="file-name" class="text-gray-400">Choose a file (PDF, DOC, DOCX)</span>
+                                    <span id="file-name" class="text-gray-400">Pilih File (PDF, DOC, DOCX)</span>
                                     <input id="file" name="file" type="file" class="sr-only" accept=".pdf,.doc,.docx">
                                 </label>
                             </div>
@@ -96,7 +96,7 @@
                                     <svg class="w-6 h-6 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                     </svg>
-                                    <span id="img-name" class="text-gray-400">Choose an image (JPEG, PNG, JPG, GIF)</span>
+                                    <span id="img-name" class="text-gray-400">Pilih File (JPEG, PNG, JPG, GIF)</span>
                                     <input id="img" name="img" type="file" class="sr-only" accept="image/jpeg,image/png,image/gif">
                                 </label>
                             </div>
@@ -197,8 +197,8 @@
                     if (!validTypes.includes(file.type)) {
                         Swal.fire({
                             icon: 'error',
-                            title: 'Invalid File Type',
-                            text: 'Please upload a PDF, DOC, or DOCX file only.',
+                            title: 'Jenis File Tidak Valid',
+                            text: 'Harap unggah file PDF, DOC, atau DOCX saja.',
                             background: '#1f2937',
                             color: '#f3f4f6',
                             confirmButtonColor: '#3b82f6'
@@ -208,14 +208,14 @@
                     } else if (file.size > maxSize) {
                         Swal.fire({
                             icon: 'error',
-                            title: 'File Too Large',
-                            text: 'Document file size should not exceed 5MB.',
+                            title: 'File Terlalu besar',
+                            text: 'Ukuran file dokumen tidak boleh melebihi 5MB.',
                             background: '#1f2937',
                             color: '#f3f4f6',
                             confirmButtonColor: '#3b82f6'
                         });
                         this.value = '';
-                        fileNameLabel.textContent = 'Choose a file (PDF, DOC, DOCX)';
+                        fileNameLabel.textContent = 'Pilih File (PDF, DOC, DOCX)';
                     }
                 }
             });
@@ -236,7 +236,7 @@
             imgInput.addEventListener('change', function() {
                 imgNameLabel.textContent = this.files.length > 0 
                     ? this.files[0].name 
-                    : 'Choose an image (JPEG, PNG, JPG, GIF)';
+                    : 'Pilih Gambar (JPEG, PNG, JPG, GIF)';
                     
                 // Image validation and preview
                 if (this.files.length > 0) {
@@ -247,26 +247,26 @@
                     if (!validTypes.includes(file.type)) {
                         Swal.fire({
                             icon: 'error',
-                            title: 'Invalid Image Type',
-                            text: 'Please upload a JPEG, PNG, or GIF image only.',
+                            title: 'Jenis Gambar Tidak Valid',
+                            text: 'Harap unggah gambar JPEG, PNG, atau GIF saja.',
                             background: '#1f2937',
                             color: '#f3f4f6',
                             confirmButtonColor: '#3b82f6'
                         });
                         this.value = '';
-                        imgNameLabel.textContent = 'Choose an image (JPEG, PNG, JPG, GIF)';
+                        imgNameLabel.textContent = 'Pilih gambar (JPEG, PNG, JPG, GIF)';
                         imgPreviewContainer.innerHTML = '';
                     } else if (file.size > maxSize) {
                         Swal.fire({
                             icon: 'error',
-                            title: 'Image Too Large',
-                            text: 'Image file size should not exceed 2MB.',
+                            title: 'Gambar Terlalu Besar',
+                            text: 'Ukuran file gambar tidak boleh melebihi 2MB.',
                             background: '#1f2937',
                             color: '#f3f4f6',
                             confirmButtonColor: '#3b82f6'
                         });
                         this.value = '';
-                        imgNameLabel.textContent = 'Choose an image (JPEG, PNG, JPG, GIF)';
+                        imgNameLabel.textContent = 'Pilih gambar (JPEG, PNG, JPG, GIF)';
                         imgPreviewContainer.innerHTML = '';
                     } else {
                         // Show image preview
@@ -294,7 +294,7 @@
         // Function to remove image preview
         window.removeImagePreview = function() {
             imgInput.value = '';
-            imgNameLabel.textContent = 'Choose an image (JPEG, PNG, JPG, GIF)';
+            imgNameLabel.textContent = 'Pilih gambar (JPEG, PNG, JPG, GIF)';
             imgPreviewContainer.innerHTML = '';
         };
         
@@ -311,20 +311,20 @@
                 const title = document.getElementById('title').value.trim();
                 if (!title) {
                     valid = false;
-                    errorMessage = 'Title is required';
+                    errorMessage = 'Judul diperlukan';
                 }
                 
                 // Check content
                 const content = document.getElementById('content').value.trim();
                 if (!content) {
                     valid = false;
-                    errorMessage = errorMessage || 'Content is required';
+                    errorMessage = errorMessage || 'Konten diperlukan';
                 }
                 
                 // Check type
                 if (!typeSelect.value) {
                     valid = false;
-                    errorMessage = errorMessage || 'Please select a submission type';
+                    errorMessage = errorMessage || 'Silakan pilih jenis pengiriman';
                 }
                 
                 // Check visible field requirements based on type
@@ -338,13 +338,13 @@
                         const link = document.getElementById('link').value.trim();
                         if (!link) {
                             valid = false;
-                            errorMessage = errorMessage || 'Please enter a valid link';
+                            errorMessage = errorMessage || 'Harap masukkan tautan yang valid';
                         } else {
                             try {
                                 new URL(link);
                             } catch (err) {
                                 valid = false;
-                                errorMessage = errorMessage || 'Please enter a valid URL including http:// or https://';
+                                errorMessage = errorMessage || 'Harap masukkan URL yang valid termasuk http:// atau https://';
                             }
                         }
                     }
@@ -352,20 +352,20 @@
                     // File validation
                     if (typeValue === 'document' && document.getElementById('file').files.length === 0) {
                         valid = false;
-                        errorMessage = errorMessage || 'Please upload a document';
+                        errorMessage = errorMessage || 'Silakan unggah dokumen';
                     }
                     
                     // Image validation
                     if (typeValue === 'image' && document.getElementById('img').files.length === 0) {
                         valid = false;
-                        errorMessage = errorMessage || 'Please upload an image';
+                        errorMessage = errorMessage || 'Silakan unggah gambar';
                     }
                 }
                 
                 if (!valid) {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Validation Error',
+                        title: 'Kesalahan Validasi',
                         text: errorMessage,
                         background: '#1f2937',
                         color: '#f3f4f6',
@@ -375,11 +375,11 @@
                     // Show confirmation dialog
                     Swal.fire({
                         title: 'Submit Confirmation',
-                        text: 'Are you sure you want to submit this content?',
+                        text: 'Apakah Anda yakin ingin mengirimkan konten ini?',
                         icon: 'question',
                         showCancelButton: true,
-                        confirmButtonText: 'Yes, submit it!',
-                        cancelButtonText: 'Cancel',
+                        confirmButtonText: 'Ya, kirimkan saja!',
+                        cancelButtonText: 'Batal',
                         background: '#1f2937',
                         color: '#f3f4f6',
                         confirmButtonColor: '#3b82f6',
@@ -390,8 +390,8 @@
                         if (result.isConfirmed) {
                             // Show loading while form submits
                             Swal.fire({
-                                title: 'Submitting...',
-                                html: 'Please wait while we process your submission.',
+                                title: 'Mengirimkan...',
+                                html: 'Harap tunggu sementara kami memproses kiriman Anda.',
                                 allowOutsideClick: false,
                                 showConfirmButton: false,
                                 didOpen: () => {

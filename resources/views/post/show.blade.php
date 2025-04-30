@@ -18,7 +18,7 @@
             <!-- Post Header with Image (if available) -->
             <div class="bg-gradient-to-r from-blue-900/30 via-indigo-900/30 to-purple-900/30 backdrop-blur-sm rounded-3xl border border-blue-500/20 shadow-xl shadow-blue-500/5 overflow-hidden mb-10">
                 @if($post->img)
-                <div class="w-full h-64 md:h-80 lg:h-96 bg-cover bg-center" style="background-image: url('{{ $post->img }}')">
+                <div class="w-full h-64 md:h-80 lg:h-96 bg-cover bg-center" style="background-image: url('{{ Storage::url($post->img) }}')">
                 </div>
                 @endif
                 

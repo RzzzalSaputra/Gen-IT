@@ -30,7 +30,7 @@
                                 Video Conference
                             </span>
                             <span class="text-gray-400 text-sm">
-                                {{ \Carbon\Carbon::parse($vicon->time)->format('M d, Y - H:i') }}
+                                {{ \Carbon\Carbon::parse($vicon->time)->locale('id')->translatedFormat('d M Y - H:i') }}
                             </span>
                         </div>
                         
@@ -63,9 +63,9 @@
                                     Tanggal & Waktu
                                 </h3>
                                 <div class="text-gray-300">
-                                    <p class="mb-1">{{ \Carbon\Carbon::parse($vicon->time)->format('l, F d, Y') }}</p>
-                                    <p class="mb-1">{{ \Carbon\Carbon::parse($vicon->time)->format('h:i A') }}</p>
-                                    <p class="text-gray-400 text-sm italic">{{ \Carbon\Carbon::parse($vicon->time)->diffForHumans() }}</p>
+                                    <p class="mb-1">{{ \Carbon\Carbon::parse($vicon->time)->locale('id')->translatedFormat('l, d F Y') }}</p>
+                                    <p class="mb-1">{{ \Carbon\Carbon::parse($vicon->time)->locale('id')->format('H:i') }}</p>
+                                    <p class="text-gray-400 text-sm italic">{{ \Carbon\Carbon::parse($vicon->time)->locale('id')->diffForHumans() }}</p>
                                 </div>
                             </div>
                             
@@ -78,7 +78,7 @@
                                 </h3>
                                 <div class="text-gray-300">
                                     <p class="mb-2">Gunakan tombol di bawah ini untuk bergabung dengan Zoom atau mengunduh materi terkait.</p>
-                                    <p class="text-gray-400 text-sm">Dibuat oleh: {{ $vicon->created_at->format('M d, Y') }}</p>
+                                    <p class="text-gray-400 text-sm">Dibuat oleh: {{ $vicon->created_at->locale('id')->translatedFormat('d M Y') }}</p>
                                 </div>
                             </div>
                         </div>

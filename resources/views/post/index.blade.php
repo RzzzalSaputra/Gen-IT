@@ -50,7 +50,7 @@
                             @foreach($posts as $post)
                                 <div class="group bg-gray-800/30 hover:bg-gray-800/50 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg border border-gray-700/30 hover:border-blue-500/50 transition-all duration-300 hover:shadow-blue-500/5">
                                     @if($post->img)
-                                    <div class="h-48 bg-cover bg-center" style="background-image: url('{{ $post->img }}')">
+                                    <div class="h-48 bg-cover bg-center" style="background-image: url('{{ Storage::url($post->img) }}')">
                                     </div>
                                     @else
                                     <div class="h-48 flex items-center justify-center bg-gradient-to-br from-blue-600/20 to-purple-600/20 p-6">
@@ -93,11 +93,11 @@
                                         
                                         @if($post->file)
                                         <div class="mt-4 pt-3 border-t border-gray-700/30">
-                                            <a href="{{ $post->file }}" target="_blank" class="flex items-center text-sm text-gray-300 hover:text-blue-300 transition-colors duration-200">
+                                            <a class="flex items-center text-sm text-gray-300 hover:text-blue-300 transition-colors duration-200">
                                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                                 </svg>
-                                                Attached document
+                                                Dokumen Terlampir
                                             </a>
                                         </div>
                                         @endif
