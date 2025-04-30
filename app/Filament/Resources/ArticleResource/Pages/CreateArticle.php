@@ -15,4 +15,9 @@ class CreateArticle extends CreateRecord
         $data['created_by'] = Auth::id(); // Pake Facade Auth
         return $data;
     }
+
+        protected function getRedirectUrl(): string
+        {
+            return $this->getResource()::getUrl('index');
+        }
 }

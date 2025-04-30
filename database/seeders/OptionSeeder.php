@@ -16,10 +16,6 @@ class OptionSeeder extends Seeder
             ['type' => 'user_role', 'value' => 'admin'],
             ['type' => 'user_role', 'value' => 'user'],
             
-            // Post layout options
-            ['type' => 'post_layout', 'value' => 'default'],
-            ['type' => 'post_layout', 'value' => 'text+gambar'],
-            
             ['type' => 'gallery_type', 'value' => 'image'],
             ['type' => 'gallery_type', 'value' => 'video'],
             

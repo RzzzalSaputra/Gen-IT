@@ -9,4 +9,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateVicon extends CreateRecord
 {
     protected static string $resource = ViconResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

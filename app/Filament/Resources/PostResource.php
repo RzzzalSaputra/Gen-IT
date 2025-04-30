@@ -32,84 +32,106 @@ class PostResource extends Resource
     {
         return $form
             ->schema([
-                // Dropdown untuk memilih layout
                 Forms\Components\Select::make('layout')
                     ->label('Layout')
                     ->options(Option::where('type', 'post_layout')->pluck('value', 'id'))
-                    ->required(),
+                    ->required()
+                    ->reactive(),
 
-                // Kolom untuk judul
                 Forms\Components\TextInput::make('title')
                     ->label('Judul')
                     ->required()
                     ->columnSpanFull()
-                    ->helperText('Judul artikel maksimal 255 karakter dan wajib diisi.')
                     ->maxLength(255),
 
-            Forms\Components\TextInput::make('slug')
-                ->label('Slug')
-                ->unique(Post::class, 'slug', ignoreRecord: true) // Mengecek keunikan slug di tabel Post
-                ->required()
-                ->columnSpanFull()
-                ->maxLength(255)
-                ->helperText('Slug wajib unik dan akan digunakan di URL. Tekan Generate untuk membuat slug otomatis dari judul.')
-                ->suffixAction(
-                    Forms\Components\Actions\Action::make('generate_slug')
-                        ->label('Generate')
-                        ->color('primary')
-                        ->icon('heroicon-o-arrow-path')
-                        ->action(function (callable $set, callable $get) {
-                            $title = $get('title');
-                            if ($title) {
-                                $set('slug', Str::slug($title)); // Membuat slug otomatis dari judul
-                            }
-                        })
-                ),
+                Forms\Components\TextInput::make('slug')
+                    ->label('Slug')
+                    ->unique(Post::class, 'slug', ignoreRecord: true)
+                    ->required()
+                    ->columnSpanFull()
+                    ->maxLength(255)
+                    ->suffixAction(
+                        Forms\Components\Actions\Action::make('generate_slug')
+                            ->label('Generate')
+                            ->color('primary')
+                            ->icon('heroicon-o-arrow-path')
+                            ->action(function (callable $set, callable $get) {
+                                $title = $get('title');
+                                if ($title) {
+                                    $set('slug', Str::slug($title));
+                                }
+                            })
+                    ),
 
-            Forms\Components\RichEditor::make('content')
-                ->label('Konten')
-                ->required()
-                ->columnSpanFull()
-                ->disableToolbarButtons([
-                    'attachFiles',
-                ])
-                ->helperText('Isi utama dari artikel. Harus diisi ya!'),
+                Forms\Components\RichEditor::make('content')
+                    ->label('Konten')
+                    ->required()
+                    ->columnSpanFull()
+                    ->disableToolbarButtons([
+                        'attachFiles',
+                    ]),
 
-                // Kolom untuk gambar (image) dengan upload
                 Forms\Components\FileUpload::make('img')
                     ->label('Image')
                     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                     ->directory('posts/images')
                     ->visibility('public')
                     ->nullable()
+                    ->visible(fn (callable $get) => $get('layout') == 35)
                     ->getUploadedFileNameForStorageUsing(function ($file) {
                         $timestamp = now()->format('Ymd_His');
                         $random = mt_rand(100, 999);
-
-                        // Mengambil nama asli file dan mengubahnya menjadi slug
                         $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
                         $slugName = Str::slug($originalName);
-
-                        // Membuat nama file dengan format random_slug_timestamp.extension
                         return "{$random}_{$slugName}_{$timestamp}.{$file->getClientOriginalExtension()}";
                     })
                     ->deleteUploadedFileUsing(function ($record) {
-                        // Mengakses path file yang benar di database (sesuaikan dengan nama kolom yang digunakan)
-                        $filePath = storage_path('app/public/' . $record?->file);  // Pastikan ini mengakses kolom yang benar
-
-                        // Hapus file jika ada
-                        if (file_exists($filePath)) {
-                            unlink($filePath);
+                        if ($record && $record->img) {
+                            $filePath = storage_path('app/public/' . $record->img);
+                            if (is_file($filePath)) {
+                                unlink($filePath);
+                            }
                         }
                     }),
 
-                // Kolom untuk video (link eksternal)
+                Forms\Components\FileUpload::make('file')
+                    ->label('File')
+                    ->acceptedFileTypes([
+                        'application/pdf',                                                         // PDF
+                        'application/msword',                                                     // DOC
+                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // DOCX
+                        'application/vnd.ms-excel',                                               // XLS
+                        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',      // XLSX
+                        'application/vnd.ms-powerpoint',                                          // PPT
+                        'application/vnd.openxmlformats-officedocument.presentationml.presentation' // PPTX
+                    ])
+                    ->helperText('Mendukung file: PDF, Word, Excel, dan PowerPoint')
+                    ->directory('posts/files')
+                    ->visibility('public')
+                    ->nullable()
+                    ->visible(fn (callable $get) => $get('layout') == 37)
+                    ->getUploadedFileNameForStorageUsing(function ($file) {
+                        $timestamp = now()->format('Ymd_His');
+                        $random = mt_rand(100, 999);
+                        $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                        $slugName = Str::slug($originalName);
+                        return "{$random}_{$slugName}_{$timestamp}.{$file->getClientOriginalExtension()}";
+                    })
+                    ->deleteUploadedFileUsing(function ($record) {
+                        if ($record && $record->file) {
+                            $filePath = storage_path('app/public/' . $record->file);
+                            if (is_file($filePath)) {
+                                unlink($filePath);
+                            }
+                        }
+                    }),
+
                 Forms\Components\TextInput::make('video_url')
                     ->label('External Video Link')
                     ->url()
-                    ->nullable(),
+                    ->nullable()
+                    ->visible(fn (callable $get) => $get('layout') == 36),
 
-                // Kolom untuk menyimpan ID pembuat post
                 Forms\Components\Hidden::make('created_by')
                     ->default(Auth::id())
                     ->required(),
@@ -125,17 +147,6 @@ class PostResource extends Resource
                     ->label('Judul')
                     ->sortable()
                     ->searchable(),
-
-                // Kolom untuk menampilkan gambar
-                Tables\Columns\ImageColumn::make('img')
-                    ->label('Image')
-                    ->sortable(),
-
-                // Kolom untuk menampilkan URL video
-                Tables\Columns\TextColumn::make('video_url')
-                    ->label('Video URL')
-                    ->limit(50)
-                    ->url(fn($state) => $state, true),
 
                 // Kolom untuk menampilkan siapa yang membuat post
                 Tables\Columns\TextColumn::make('created_by')
