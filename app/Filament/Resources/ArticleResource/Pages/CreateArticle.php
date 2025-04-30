@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\ArticleResource\Pages;
 
 use App\Filament\Resources\ArticleResource;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Auth;
 
@@ -19,5 +20,13 @@ class CreateArticle extends CreateRecord
         protected function getRedirectUrl(): string
         {
             return $this->getResource()::getUrl('index');
+        }
+
+        protected function getCreatedNotification(): ?Notification
+        {
+            return Notification::make()
+                ->title('Artikel Berhasil Dibuat')
+                ->success()
+                ->body("Yey! Artikel berhasil dibuat! (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧");
         }
 }

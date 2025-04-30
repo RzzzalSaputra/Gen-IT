@@ -10,6 +10,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
+use Filament\Notifications\Notification;
 
 class ArticleResource extends Resource
 {
@@ -96,10 +97,6 @@ class ArticleResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->label('Judul'),
-                
-                Tables\Columns\TextColumn::make('writer')
-                    ->searchable()
-                    ->label('Penulis'),
 
                 Tables\Columns\TextColumn::make('post_time')
                     ->dateTime()
@@ -118,7 +115,17 @@ class ArticleResource extends Resource
             ->filters([])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->successNotification(
+                        Notification::make()
+                            ->title('Artikel Berhasil Dihapus')
+                            ->success()
+                            ->body('(≧◡≦) ♡ Bye-bye artikel, semoga ketemu lagi!')
+                            ->danger()
+                            ->icon('heroicon-o-trash')
+                            ->iconPosition('left')
+                            ->iconColor('danger')
+                    ),
                 Tables\Actions\RestoreAction::make(),
             ])
             ->bulkActions([
