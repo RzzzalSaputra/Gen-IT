@@ -9,7 +9,7 @@
         <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
             <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                 <div class="flex justify-between items-center pb-4 mb-4 border-b border-gray-200 dark:border-gray-700">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white" id="editClassroomModalLabel">Edit Classroom</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white" id="editClassroomModalLabel">Edit Kelas</h3>
                     <button type="button" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300" onclick="document.getElementById('editClassroomModal').classList.add('hidden')">
                         <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -21,13 +21,13 @@
                     @csrf
                     @method('PUT')
                     <div class="mb-4">
-                        <label for="classroomName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Classroom Name</label>
+                        <label for="classroomName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nama Kelas</label>
                         <input type="text" name="name" id="classroomName" value="{{ $classroom->name }}" required
                             class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                     </div>
                     
                     <div class="mb-4">
-                        <label for="classroomDescription" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description</label>
+                        <label for="classroomDescription" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Deskripsi</label>
                         <textarea name="description" id="classroomDescription" rows="3"
                             class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">{{ $classroom->description }}</textarea>
                     </div>
@@ -65,12 +65,12 @@
             e.preventDefault();
             
             Swal.fire({
-                title: 'Are you sure?',
-                text: "You are about to delete this classroom. This action cannot be undone!",
+                title: 'Apakah kamu yakin?',
+                text: "Anda akan menghapus kelas ini. Tindakan ini tidak dapat dibatalkan!",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#ef4444',
-                cancelButtonColor: '#3b82f6',
+                cancelButtonColor: '#3b82f6',   
                 confirmButtonText: 'Yes, delete it!',
                 cancelButtonText: 'Cancel',
                 background: '#1f2937',  // Dark background
