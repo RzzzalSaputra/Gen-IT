@@ -10,7 +10,7 @@
                 @method('PUT')
                 <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                     <div class="flex justify-between items-center pb-4 mb-4 border-b border-gray-200 dark:border-gray-700">
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white" id="editMaterialModalLabel{{ $material->id }}">Edit Material</h3>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white" id="editMaterialModalLabel{{ $material->id }}">Edit Materi</h3>
                         <button type="button" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300" onclick="document.getElementById('editMaterialModal{{ $material->id }}').classList.add('hidden')">
                             <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -27,19 +27,19 @@
                     <input type="hidden" name="type" value="{{ $material->type }}">
                     
                     <div class="mb-4">
-                        <label for="editMaterialTitle{{ $material->id }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Title</label>
+                        <label for="editMaterialTitle{{ $material->id }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Judul</label>
                         <input type="text" name="title" id="editMaterialTitle{{ $material->id }}" value="{{ $material->title }}" required
                             class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                     </div>
                     
                     <div class="mb-4">
-                        <label for="editMaterialContent{{ $material->id }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Content</label>
+                        <label for="editMaterialContent{{ $material->id }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Konten</label>
                         <textarea class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" id="editMaterialContent{{ $material->id }}" name="content" rows="5" required>{{ $material->content }}</textarea>
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="mb-4">
-                            <label for="editMaterialFile{{ $material->id }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Attachment</label>
+                            <label for="editMaterialFile{{ $material->id }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Lampiran</label>
                             @if($material->file)
                                 <div class="mb-2 flex items-center justify-between bg-gray-50 dark:bg-gray-700 rounded-md p-2">
                                     <a href="{{ asset('storage/' . $material->file) }}" target="_blank" class="flex items-center group">
@@ -50,10 +50,15 @@
                                         </div>
                                         <div class="truncate">
                                             <p class="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 truncate">
-                                                {{ basename($material->file) }}
+                                                @php
+                                                    $filename = basename($material->file);
+                                                    $displayName = strlen($filename) > 20 ? substr($filename, 0, 17) . '...' : $filename;
+                                                @endphp
+                                                {{ $displayName }}
+                                                <span class="sr-only">{{ $filename }}</span>
                                             </p>
                                             <p class="text-xs text-gray-500 dark:text-gray-400">
-                                                Click to view or download
+                                                Klik untuk lihat / Download
                                             </p>
                                         </div>
                                     </a>
@@ -68,11 +73,11 @@
                             @endif
                             <input type="file" name="file" id="editMaterialFile{{ $material->id }}"
                                 class="mt-1 block w-full text-sm text-gray-700 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 dark:file:bg-blue-900 dark:file:text-blue-300 hover:file:bg-blue-100 dark:hover:file:bg-blue-800">
-                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Upload a new file to replace the current one</p>
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Unggah file baru untuk menggantikan file saat ini</p>
                         </div>
                         
                         <div class="mb-4">
-                            <label for="editMaterialImage{{ $material->id }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Cover Image</label>
+                            <label for="editMaterialImage{{ $material->id }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Gambar</label>
                             @if($material->img)
                                 <div class="mb-2 flex items-center justify-between">
                                     <img src="{{ asset('storage/' . $material->img) }}" alt="Current Image" class="h-20 w-auto object-cover rounded">
@@ -87,14 +92,14 @@
                             @endif
                             <input type="file" name="img" id="editMaterialImage{{ $material->id }}" accept="image/*"
                                 class="mt-1 block w-full text-sm text-gray-700 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 dark:file:bg-blue-900 dark:file:text-blue-300 hover:file:bg-blue-100 dark:hover:file:bg-blue-800">
-                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Upload a new image to replace the current one</p>
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Unggah Gambar baru untuk menggantikan file saat ini</p>
                         </div>
                     </div>
                     
                     <div class="mb-4">
-                        <label for="editMaterialLink{{ $material->id }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">External Link</label>
+                        <label for="editMaterialLink{{ $material->id }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Link Youtube</label>
                         <div class="flex items-center">
-                            <input type="url" name="link" id="editMaterialLink{{ $material->id }}" value="{{ $material->link }}" placeholder="https://example.com"
+                            <input type="url" name="link" id="editMaterialLink{{ $material->id }}" value="{{ $material->link }}" placeholder="https://www.youtube.com/watch?v=example"
                                 class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                             @if($material->link)
                                 <button type="button" 
