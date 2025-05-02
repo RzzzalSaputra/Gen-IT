@@ -21,6 +21,11 @@ class SubmissionResource extends Resource
     protected static ?string $navigationLabel = 'Pengajuan';
     protected static ?string $pluralLabel = 'Pengajuan';
 
+    public static function canCreate(): bool
+    {
+        return false;
+    }
+    
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::count();

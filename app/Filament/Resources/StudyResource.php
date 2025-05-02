@@ -11,6 +11,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Notifications\Notification;
 
 class StudyResource extends Resource
 {
@@ -102,7 +103,17 @@ class StudyResource extends Resource
             ->filters([])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->successNotification(
+                        Notification::make()
+                            ->title('Program Studi Berhasil Dihapus')
+                            ->success()
+                            ->body('(≧◡≦) ♡ Bye-bye program studi, semoga ketemu lagi!')
+                            ->danger()
+                            ->icon('heroicon-o-trash')
+                            ->iconPosition('left')
+                            ->iconColor('danger')
+                    ),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),

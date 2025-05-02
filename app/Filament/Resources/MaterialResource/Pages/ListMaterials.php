@@ -26,16 +26,16 @@ class ListMaterials extends ListRecords
         return [
             'all' => Tab::make('Semua'),
 
-            'text-only' => Tab::make('Text Only')
+            'text-only' => Tab::make('Teks')
                 ->modifyQueryUsing(fn($query) => $query->where('layout', 9)),
 
-            'text-with-image' => Tab::make('Text + Image')
+            'text-with-image' => Tab::make('Teks dan Gambar')
                 ->modifyQueryUsing(fn($query) => $query->where('layout', 10)),
 
             'video-content' => Tab::make('Video')
                 ->modifyQueryUsing(fn($query) => $query->where('layout', 11)),
 
-            'file-only' => Tab::make('File Only')
+            'file-only' => Tab::make('File')
                 ->modifyQueryUsing(fn($query) => $query->where('layout', 12)),
         ];
     }

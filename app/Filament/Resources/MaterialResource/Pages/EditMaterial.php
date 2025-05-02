@@ -5,6 +5,7 @@ namespace App\Filament\Resources\MaterialResource\Pages;
 use App\Filament\Resources\MaterialResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use Filament\Notifications\Notification;
 
 class EditMaterial extends EditRecord
 {
@@ -15,5 +16,13 @@ class EditMaterial extends EditRecord
         return [
             Actions\DeleteAction::make(),
         ];
+    }
+
+    protected function getSavedNotification(): ?Notification
+    {
+        return Notification::make()
+            ->title('Materi Berhasil Diperbarui')
+            ->success()
+            ->body('✨ Oh, ini lebih keren sekarang! (︶^︶)');
     }
 }

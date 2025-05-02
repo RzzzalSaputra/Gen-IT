@@ -36,15 +36,17 @@ class ArticleResource extends Resource
                             ->label('Judul')
                             ->required()
                             ->maxLength(255)
-                            ->helperText('Judul artikel maksimal 255 karakter dan wajib diisi.'),
+                            ->helperText('Wajib diisi ya~ Judulnya buat artikelnya (⌒‿⌒). Maksimal 255 karakter.')
+                            ->columnSpanFull(),
 
                         Forms\Components\TextInput::make('slug')
                             ->label('Slug')
                             ->unique(Article::class, 'slug', ignoreRecord: true)
                             ->required()
                             ->maxLength(255)
-                            ->helperText('Slug wajib unik dan akan digunakan di URL. Tekan Generate untuk membuat slug otomatis dari judul.')
-                            ->suffixAction(
+                            ->columnSpanFull()
+                            ->helperText('Slug itu alamat artikelnya, jadi harus unik~ Tekan "Generate" biar otomatis muncul dari judulnya! (｡•̀ᴗ-)✧. Maksimal 255 karakter.')
+                    ->suffixAction(
                                 Forms\Components\Actions\Action::make('generate_slug')
                                     ->label('Generate')
                                     ->color('primary')
@@ -65,7 +67,7 @@ class ArticleResource extends Resource
                     ->disableToolbarButtons([
                         'attachFiles',
                     ])
-                    ->helperText('Isi utama dari artikel. Harus diisi ya!'),
+                    ->helperText('Isi artikelnya di sini yaa~ Jangan sampai kosong, pembaca udah nggak sabar (っ˘ω˘ς )'),
 
                 Forms\Components\Textarea::make('summary')
                     ->label('Ringkasan')
@@ -73,18 +75,18 @@ class ArticleResource extends Resource
                     ->columnSpanFull()
                     ->nullable()
                     ->required()
-                    ->helperText('Ringkasan artikel, maksimal 500 karakter dan wajib diisi.'),
+                    ->helperText('Tulisin ringkasan manis tentang artikel ini~ max 500 karakter aja yaa (⁄ ⁄>⁄ ▽ ⁄<⁄ ⁄)'),
 
                 Forms\Components\TextInput::make('writer')
                     ->label('Penulis')
                     ->required()
                     ->maxLength(255)
-                    ->helperText('Nama penulis artikel. Wajib diisi dan maksimal 255 karakter.'),
+                    ->helperText('Siapa penulisnya nih~? Tulisin namamu dengan bangga! (>ᴗ<)'),
 
                 Forms\Components\DateTimePicker::make('post_time')
                     ->label('Tanggal Posting')
                     ->required()
-                    ->helperText('Waktu kapan artikel ini akan dianggap dipublikasikan.'),
+                    ->helperText('Pilih kapan artikelnya tayang~ Biar bisa muncul pas waktunya tiba (๑˃ᴗ˂)ﻭ'),
             ]);
     }
 

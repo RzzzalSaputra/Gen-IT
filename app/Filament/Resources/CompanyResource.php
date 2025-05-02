@@ -11,6 +11,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Forms\Components\FileUpload;
+use Filament\Notifications\Notification;
 
 class CompanyResource extends Resource
 {
@@ -141,7 +142,17 @@ class CompanyResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->successNotification(
+                        Notification::make()
+                            ->title('Perusahaan Berhasil Dihapus')
+                            ->success()
+                            ->body('(≧◡≦) ♡ Bye-bye perusahaan, semoga ketemu lagi!')
+                            ->danger()
+                            ->icon('heroicon-o-trash')
+                            ->iconPosition('left')
+                            ->iconColor('danger')
+                    ),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),

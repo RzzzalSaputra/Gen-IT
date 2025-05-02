@@ -11,6 +11,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Notifications\Notification;
 
 class JobResource extends Resource
 {
@@ -135,7 +136,20 @@ class JobResource extends Resource
                     ->dateTime()
                     ->sortable(),
             ])
-            
+            ->actions([
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->successNotification(
+                        Notification::make()
+                            ->title('Lowongan Kerja Berhasil Dihapus')
+                            ->success()
+                            ->body('(≧◡≦) ♡ Bye-bye lowongan kerja, semoga ketemu lagi!')
+                            ->danger()
+                            ->icon('heroicon-o-trash')
+                            ->iconPosition('left')
+                            ->iconColor('danger')
+                    ),
+            ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
             ])

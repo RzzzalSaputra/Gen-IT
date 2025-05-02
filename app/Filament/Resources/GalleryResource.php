@@ -9,11 +9,11 @@ use App\Models\User;
 use Filament\Forms;
 use Illuminate\Support\Str;
 use Filament\Forms\Form;
-use Filament\Forms\Components\Select;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
+use Filament\Notifications\Notification;
 
 class GalleryResource extends Resource
 {
@@ -38,7 +38,6 @@ class GalleryResource extends Resource
                 ->required()
                 ->reactive()
                 ->afterStateHydrated(function (Forms\Components\Select $component, $state, callable $get, callable $set) {
-                    // Kalau state type belum ada, kita coba atur otomatis berdasar field yg sudah terisi
                     if (!$state) {
                         if ($get('link')) {
                             $videoOption = Option::where('type', 'gallery_type')->where('value', 'video')->first();
@@ -61,7 +60,18 @@ class GalleryResource extends Resource
 
             Forms\Components\FileUpload::make('file')
                 ->label('File (Image)')
-                ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                ->acceptedFileTypes([
+                    'image/jpeg',   // JPG standar
+                    'image/jpg',    // Alias dari JPEG
+                    'image/png',    // Gambar transparan
+                    'image/webp',   // Format modern, ukuran kecil
+                    'image/gif',    // Bisa animasi
+                    'image/svg+xml', // Gambar vektor
+                    'image/bmp',    // Format lama, kualitas tinggi
+                    'image/tiff',   // Gambar cetak profesional
+                    'image/avif',   // Format baru, hemat ukuran
+                    'image/heif',   // Umum di iPhone
+                ])
                 ->directory('galleries')
                 ->visibility('public')
                 ->nullable()
@@ -112,7 +122,8 @@ class GalleryResource extends Resource
                     ->searchable(),
 
                 Tables\Columns\ImageColumn::make('file')
-                    ->label('File'),
+                    ->label('Gambar')
+                    ->size(350),
 
                 Tables\Columns\TextColumn::make('link')
                     ->label('External Link')
@@ -132,7 +143,17 @@ class GalleryResource extends Resource
             ->filters([])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\DeleteAction::make()
+                ->successNotification(
+                    Notification::make()
+                        ->title('Galeri Berhasil Dihapus')
+                        ->success()
+                        ->body('(≧◡≦) ♡ Bye-bye galeri, semoga ketemu lagi!')
+                        ->danger()
+                        ->icon('heroicon-o-trash')
+                        ->iconPosition('left')
+                        ->iconColor('danger')
+                ),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),

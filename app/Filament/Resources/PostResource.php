@@ -14,6 +14,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
+use Filament\Notifications\Notification;
 
 class PostResource extends Resource
 {
@@ -163,7 +164,17 @@ class PostResource extends Resource
             ->filters([])  // Bisa menambahkan filter jika diperlukan
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->successNotification(
+                        Notification::make()
+                            ->title('Postingan Berhasil Dihapus')
+                            ->success()
+                            ->body('(≧◡≦) ♡ Bye-bye postingan, semoga ketemu lagi!')
+                            ->danger()
+                            ->icon('heroicon-o-trash')
+                            ->iconPosition('left')
+                            ->iconColor('danger')
+                    ),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),

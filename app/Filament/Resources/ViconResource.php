@@ -12,6 +12,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
+use Filament\Notifications\Notification;
 
 class ViconResource extends Resource
 {
@@ -93,20 +94,10 @@ class ViconResource extends Resource
                     ->sortable()
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('desc')
-                    ->label('Deskripsi')
-                    ->limit(50)
-                    ->sortable()
-                    ->searchable(),
-
                 Tables\Columns\TextColumn::make('time')
                     ->label('Waktu Terjadwal')
                     ->sortable()
                     ->dateTime(),
-
-                Tables\Columns\TextColumn::make('link')
-                    ->label('Tautan Meeting')
-                    ->url(fn(string $state): string => $state, true),
 
                 Tables\Columns\TextColumn::make('created_by')
                     ->label('Dibuat Oleh')
@@ -121,7 +112,17 @@ class ViconResource extends Resource
             ->filters([])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->successNotification(
+                        Notification::make()
+                            ->title('Video Conference Berhasil Dihapus')
+                            ->success()
+                            ->body('(≧◡≦) ♡ Bye-bye video conference, semoga ketemu lagi!')
+                            ->danger()
+                            ->icon('heroicon-o-trash')
+                            ->iconPosition('left')
+                            ->iconColor('danger')
+                    ),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),

@@ -11,6 +11,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
@@ -85,7 +86,7 @@ class MaterialResource extends Resource
                 })
                 ->deleteUploadedFileUsing(function ($record) {
                     // Mengakses path file yang benar di database (sesuaikan dengan nama kolom yang digunakan)
-                    $filePath = storage_path('app/public/' . $record?->file);  // Pastikan ini mengakses kolom yang benar
+                    $filePath = storage_path('app/public/' . $record?->img);  // Pastikan ini mengakses kolom yang benar
 
                     // Hapus file jika ada
                     if (file_exists($filePath)) {
@@ -158,18 +159,11 @@ class MaterialResource extends Resource
                     ->sortable()
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('layout')
-                    ->label('Tata Letak')
-                    ->sortable()
-                    ->formatStateUsing(fn($state) => Option::find($state)?->value),
-
                 Tables\Columns\TextColumn::make('type')
                     ->label('Jenis Materi')
                     ->sortable()
+                    ->searchable()
                     ->formatStateUsing(fn($state) => Option::find($state)?->value),
-
-                Tables\Columns\ImageColumn::make('img')
-                    ->label('Thumbnail'),
 
                 Tables\Columns\TextColumn::make('read_counter')
                     ->label('Dibaca')
@@ -192,7 +186,17 @@ class MaterialResource extends Resource
             ->filters([])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->successNotification(
+                        Notification::make()
+                            ->title('Materi Berhasil Dihapus')
+                            ->success()
+                            ->body('(≧◡≦) ♡ Bye-bye materi, semoga ketemu lagi!')
+                            ->danger()
+                            ->icon('heroicon-o-trash')
+                            ->iconPosition('left')
+                            ->iconColor('danger')
+                    ),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),

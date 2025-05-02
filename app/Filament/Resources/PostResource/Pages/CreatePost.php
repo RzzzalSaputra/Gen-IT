@@ -4,6 +4,7 @@ namespace App\Filament\Resources\PostResource\Pages;
 
 use App\Filament\Resources\PostResource;
 use Filament\Resources\Pages\CreateRecord;
+use Filament\Notifications\Notification;
 
 class CreatePost extends CreateRecord
 {
@@ -12,5 +13,13 @@ class CreatePost extends CreateRecord
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index');
+    }
+
+    protected function getCreatedNotification(): ?Notification
+    {
+        return Notification::make()
+            ->title('Postingan Berhasil Dibuat')
+            ->success()
+            ->body("Yey! Postingan berhasil dibuat! (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧");
     }
 }
