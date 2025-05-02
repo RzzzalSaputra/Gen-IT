@@ -42,15 +42,20 @@
 
             <div class="flex items-center justify-between mt-6">
                 <div>
+                    @if (Route::has('password.request'))
+                        <a class="text-sm text-blue-400 hover:text-blue-300 font-medium transition-colors hover:underline transform hover:translate-x-1 transition-transform duration-300" href="{{ route('password.request') }}">
+                            {{ __('Lupa password?') }}
+                        </a>
+                    @endif
                     <div class="mt-2">
                         <a class="text-sm text-gray-400 hover:text-gray-300" href="{{ route('register') }}">
-                            {{ __("Tidak punya akun?") }} <span class="text-blue-400 hover:text-blue-300 hover:underline">{{ __('Daftar Disini ') }}</span>
+                            {{ __("Tidak punya akun?") }} <span class="text-blue-400 hover:text-blue-300 hover:underline">{{ __('Daftar Disini') }}</span>
                         </a>
                     </div>
                 </div>
 
                 <x-primary-button class="ml-4 px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 focus:ring-4 focus:ring-blue-300/50 text-white font-medium rounded-xl transition-all shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40 transform hover:scale-105 duration-300">
-                    {{ __('Log in') }}
+                    {{ __('LOG IN') }}
                 </x-primary-button>
             </div>
         </form>
