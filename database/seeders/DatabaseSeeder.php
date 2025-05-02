@@ -30,16 +30,13 @@ class DatabaseSeeder extends Seeder
             // Basic app options
             ['type' => 'contact_status', 'value' => 'pending'],
             ['type' => 'contact_status', 'value' => 'responded'],
+            ['type' => 'contact_status', 'value' => 'declined'],
+
             ['type' => 'user_role', 'value' => 'admin'],
             ['type' => 'user_role', 'value' => 'user'],
+            ['type' => 'user_role', 'value' => 'teacher'],
             
-            // Post layout options
-            ['type' => 'post_layout', 'value' => 'Text Only'],
-            ['type' => 'post_layout', 'value' => 'Text with Image'],
-            ['type' => 'post_layout', 'value' => 'Text with Video'],
-            ['type' => 'post_layout', 'value' => 'Text with File'],
 
-            // Gallery types
             ['type' => 'gallery_type', 'value' => 'image'],
             ['type' => 'gallery_type', 'value' => 'video'],
             
@@ -48,7 +45,7 @@ class DatabaseSeeder extends Seeder
             ['type' => 'layout', 'value' => 'Text with Image'],
             ['type' => 'layout', 'value' => 'Video Content'],
             ['type' => 'layout', 'value' => 'File Only'],
-
+            
             // Material types
             ['type' => 'material_type', 'value' => 'Training'],
             ['type' => 'material_type', 'value' => 'Workshop'],
@@ -68,7 +65,7 @@ class DatabaseSeeder extends Seeder
             ['type' => 'job_type', 'value' => 'Contract'],
             ['type' => 'job_type', 'value' => 'Freelance'],
 
-            // Experience levels
+            // Experience levels 
             ['type' => 'experience_level', 'value' => 'Junior'],
             ['type' => 'experience_level', 'value' => 'Mid-level'],
             ['type' => 'experience_level', 'value' => 'Senior'],
@@ -79,7 +76,21 @@ class DatabaseSeeder extends Seeder
             ['type' => 'work_type', 'value' => 'Work from Office'],
             ['type' => 'work_type', 'value' => 'Work from Home'],
             ['type' => 'work_type', 'value' => 'Hybrid'],
+
+            // Post types
+            ['type' => 'post_layout', 'value' => 'Text Only'],
+            ['type' => 'post_layout', 'value' => 'Text with Image'],
+            ['type' => 'post_layout', 'value' => 'Text with Video'],
+            ['type' => 'post_layout', 'value' => 'Text with File'],
             
+            // Submission types
+            ['type' => 'submission_type', 'value' => 'file'],
+            ['type' => 'submission_type', 'value' => 'video'],
+            ['type' => 'submission_type', 'value' => 'text'],
+            ['type' => 'submission_status', 'value' => 'pending'],
+            ['type' => 'submission_status', 'value' => 'accepted'],
+            ['type' => 'submission_status', 'value' => 'declined'],
+
             // Study levels
             ['type' => 'study_level', 'value' => 'SMA'],
             ['type' => 'study_level', 'value' => 'SMK'],
@@ -88,16 +99,8 @@ class DatabaseSeeder extends Seeder
             ['type' => 'study_level', 'value' => 'S1'],
             ['type' => 'study_level', 'value' => 'S2'],
             ['type' => 'study_level', 'value' => 'S3'],
-            
-            // submission types
-            ['type' => 'submission_type', 'value' => 'file'],
-            ['type' => 'submission_type', 'value' => 'video'],
-            ['type' => 'submission_type', 'value' => 'text'],
-            ['type' => 'submission_status', 'value' => 'pending'],
-            ['type' => 'submission_status', 'value' => 'accepted'],
-            ['type' => 'submission_status', 'value' => 'declined'],
 
-            // classroom types
+            // Classroom types
             ['type' => 'classroom', 'value' => 'classroom'],
         ];
 
