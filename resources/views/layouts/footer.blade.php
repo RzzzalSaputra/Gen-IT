@@ -48,8 +48,14 @@
             </div>
         </div>
         
-        <div class="mt-8 pt-6 border-t border-gray-800 flex justify-center">
-            <p class="text-sm text-gray-400">&copy; {{ date('Y') }} Gen-IT. Hak Cipta Dilindungi.</p>
+        <div class="mt-8 pt-6 border-t border-gray-800 grid grid-cols-3 items-center">
+            <div class="col-span-1">
+                <p class="text-[0.6rem] text-gray-800">Septian Dwi Saputra<br>Rizal Wahyu Saputra</p>
+            </div>
+            <div class="col-span-1 text-center">
+                <p class="text-sm text-gray-400">&copy; {{ date('Y') }} Gen-IT. Hak Cipta Dilindungi.</p>
+            </div>
+            <div class="col-span-1"></div>
         </div>
     </div>
 </footer>
