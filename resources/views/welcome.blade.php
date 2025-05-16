@@ -10,7 +10,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         .hero-background {
-            background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('{{ Storage::url('background/background-welcome.jpg') }}');
+            background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('{{ asset('background/background-welcome.jpg') }}');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
