@@ -8,7 +8,7 @@
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
-                Back to Jobs
+                Kembali ke Lowongan
             </a>
         </div>
     </x-slot>
@@ -79,7 +79,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                 </svg>
-                                {{ $job->read_counter ?? 0 }} views
+                                {{ $job->read_counter ?? 0 }} dilihat
                             </div>
                             <div class="flex items-center">
                                 <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -89,14 +89,14 @@
                                 @if($job->company && $job->company->city && $job->company->province)
                                     {{ $job->company->city }}, {{ $job->company->province }}
                                 @else
-                                    Remote/Various Locations
+                                    Remote/Berbagai Lokasi
                                 @endif
                             </div>
                             <div class="flex items-center">
                                 <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
-                                Posted: {{ $job->created_at->format('M d, Y') }}
+                                Diposting: {{ $job->created_at->format('M d, Y') }}
                             </div>
                         </div>
                     </div>
@@ -112,7 +112,7 @@
                             <!-- Job Description -->
                             <div class="mb-12">
                                 <h2 class="text-2xl md:text-3xl text-blue-300 border-b border-blue-600/20 pb-2 mb-6 font-bold">
-                                    Job Description
+                                    Deskripsi Pekerjaan
                                 </h2>
                                 <div class="prose lg:prose-xl dark:prose-invert text-gray-100 max-w-none">
                                     {!! $job->description !!}
@@ -123,7 +123,7 @@
                             @if($job->requirment)
                             <div class="mb-12">
                                 <h2 class="text-2xl md:text-3xl text-blue-300 border-b border-blue-600/20 pb-2 mb-6 font-bold">
-                                    Requirements
+                                    Persyaratan
                                 </h2>
                                 <div class="prose lg:prose-xl dark:prose-invert text-gray-100 max-w-none">
                                     {!! $job->requirment !!}
@@ -135,7 +135,7 @@
                             @if($job->company)
                             <div class="mb-12">
                                 <h2 class="text-2xl md:text-3xl text-blue-300 border-b border-blue-600/20 pb-2 mb-6 font-bold">
-                                    Company Information
+                                    Informasi Perusahaan
                                 </h2>
                                 <div class="bg-gray-900/30 rounded-xl p-6 border border-gray-700/50">
                                     <div class="flex items-start">
@@ -153,7 +153,7 @@
                                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                 </svg>
-                                                View Company Profile
+                                                Lihat Profil Perusahaan
                                             </a>
                                         </div>
                                     </div>
@@ -164,14 +164,14 @@
                             <div class="mt-16 pt-8 border-t border-gray-700/50">
                                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                                     <div>
-                                        <span class="text-sm font-medium text-gray-400">Last updated:</span>
+                                        <span class="text-sm font-medium text-gray-400">Terakhir diperbarui:</span>
                                         <span class="text-gray-300">{{ $job->updated_at->format('M d, Y, h:i A') }}</span>
                                     </div>
                                     <a href="{{ route('jobs.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-sm text-white transition-colors duration-200">
                                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                                         </svg>
-                                        Back to Job Listings
+                                        Kembali ke Daftar Lowongan
                                     </a>
                                 </div>
                             </div>
@@ -188,7 +188,7 @@
                                 <svg class="w-5 h-5 mr-2 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                Job Information
+                                Informasi Pekerjaan
                             </h3>
                             
                             <ul class="space-y-3">
@@ -201,7 +201,7 @@
                                         </svg>
                                     </div>
                                     <div class="min-w-0 flex-1">
-                                        <p class="text-sm font-medium text-gray-200">Location</p>
+                                        <p class="text-sm font-medium text-gray-200">Lokasi</p>
                                         <p class="text-xs text-gray-500">{{ $job->company->city }}, {{ $job->company->province }}</p>
                                     </div>
                                 </li>
@@ -215,7 +215,7 @@
                                         </svg>
                                     </div>
                                     <div class="min-w-0 flex-1">
-                                        <p class="text-sm font-medium text-blue-300">Work Type</p>
+                                        <p class="text-sm font-medium text-blue-300">Jenis Pekerjaan</p>
                                         <p class="text-xs text-gray-500">{{ $job->workType->value }}</p>
                                     </div>
                                 </li>
@@ -229,7 +229,7 @@
                                         </svg>
                                     </div>
                                     <div class="min-w-0 flex-1">
-                                        <p class="text-sm font-medium text-blue-300">Job Type</p>
+                                        <p class="text-sm font-medium text-blue-300">Tipe Pekerjaan</p>
                                         <p class="text-xs text-gray-500">{{ $job->jobType->value }}</p>
                                     </div>
                                 </li>
@@ -243,7 +243,7 @@
                                         </svg>
                                     </div>
                                     <div class="min-w-0 flex-1">
-                                        <p class="text-sm font-medium text-purple-300">Experience Level</p>
+                                        <p class="text-sm font-medium text-purple-300">Tingkat Pengalaman</p>
                                         <p class="text-xs text-gray-500">{{ $job->experienceLevel->value }}</p>
                                     </div>
                                 </li>
@@ -256,7 +256,7 @@
                                         </svg>
                                     </div>
                                     <div class="min-w-0 flex-1">
-                                        <p class="text-sm font-medium text-green-300">Salary Range</p>
+                                        <p class="text-sm font-medium text-green-300">Kisaran Gaji</p>
                                         <p class="text-xs text-gray-500">{{ number_format($job->salary_range, 0) }} IDR</p>
                                     </div>
                                 </li>
@@ -267,7 +267,7 @@
                                         <svg class="w-5 h-5 mr-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                         </svg>
-                                        <span class="font-medium text-white">Apply Now</span>
+                                        <span class="font-medium text-white">Lamar Sekarang</span>
                                     </a>
                                 </li>
                                 @endif
@@ -282,7 +282,7 @@
                                 <svg class="w-5 h-5 mr-2 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                 </svg>
-                                Similar Jobs
+                                Lowongan Serupa
                             </h3>
                             <div class="space-y-4">
                                 @foreach(\App\Models\Job::where('id', '!=', $job->id)
@@ -307,7 +307,7 @@
                                             @endif
                                             <div class="flex-1 min-w-0">
                                                 <p class="text-sm font-medium text-gray-200 group-hover:text-blue-300 transition-colors duration-200">{{ $relatedJob->title }}</p>
-                                                <p class="text-xs text-gray-500 mt-1">{{ $relatedJob->company ? $relatedJob->company->name : 'Unknown Company' }}</p>
+                                                <p class="text-xs text-gray-500 mt-1">{{ $relatedJob->company ? $relatedJob->company->name : 'Perusahaan Tidak Diketahui' }}</p>
                                             </div>
                                         </div>
                                     </a>

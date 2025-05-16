@@ -8,7 +8,7 @@
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
-                Back to School
+                Kembali ke Sekolah
             </a>
         </div>
     </x-slot>
@@ -50,7 +50,7 @@
                             <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                             </svg>
-                            {{ $study->school ? $study->school->name : 'Unknown School' }}
+                            {{ $study->school ? $study->school->name : 'Sekolah Tidak Diketahui' }}
                         </a>
                     </div>
                     
@@ -62,13 +62,13 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                             </svg>
-                            {{ $study->read_counter ?? 0 }} views
+                            {{ $study->read_counter ?? 0 }} dilihat
                         </div>
                         <div class="flex items-center">
                             <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
-                            Last updated: {{ $study->updated_at->format('M d, Y') }}
+                            Terakhir diperbarui: {{ $study->updated_at->format('M d, Y') }}
                         </div>
                     </div>
                 </div>
@@ -83,7 +83,7 @@
                             <!-- Study Description -->
                             <div class="mb-12">
                                 <h2 class="text-2xl md:text-3xl text-purple-300 border-b border-purple-600/20 pb-2 mb-6 font-bold">
-                                    About This Program
+                                    Tentang Program Ini
                                 </h2>
                                 <div class="prose lg:prose-xl dark:prose-invert text-gray-100 max-w-none">
                                     {!! $study->description !!}
@@ -94,7 +94,7 @@
                             @if($study->school)
                             <div class="mb-12">
                                 <h2 class="text-2xl md:text-3xl text-purple-300 border-b border-purple-600/20 pb-2 mb-6 font-bold">
-                                    Institution Information
+                                    Informasi Institusi
                                 </h2>
                                 <div class="bg-gray-900/30 rounded-xl p-6 border border-gray-700/50">
                                     <div class="flex items-start">
@@ -110,7 +110,7 @@
                                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                 </svg>
-                                                View School Details
+                                                Lihat Detail Sekolah
                                             </a>
                                         </div>
                                     </div>
@@ -121,14 +121,14 @@
                             <div class="mt-16 pt-8 border-t border-gray-700/50">
                                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                                     <div>
-                                        <span class="text-sm font-medium text-gray-400">Last updated:</span>
+                                        <span class="text-sm font-medium text-gray-400">Terakhir diperbarui:</span>
                                         <span class="text-gray-300">{{ $study->updated_at->format('M d, Y, h:i A') }}</span>
                                     </div>
                                     <a href="{{ route('schools.show', $study->school_id) }}" class="inline-flex items-center px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-sm text-white transition-colors duration-200">
                                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                                         </svg>
-                                        Back to School
+                                        Kembali ke Sekolah
                                     </a>
                                 </div>
                             </div>
@@ -145,7 +145,7 @@
                                 <svg class="w-5 h-5 mr-2 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                Program Information
+                                Informasi Program
                             </h3>
                             
                             <ul class="space-y-3">
@@ -156,7 +156,7 @@
                                         </svg>
                                     </div>
                                     <div class="min-w-0 flex-1">
-                                        <p class="text-sm font-medium text-gray-200">Duration</p>
+                                        <p class="text-sm font-medium text-gray-200">Durasi</p>
                                         <p class="text-xs text-gray-500">{{ $study->duration }}</p>
                                     </div>
                                 </li>
@@ -170,7 +170,7 @@
                                         </svg>
                                     </div>
                                     <div class="min-w-0 flex-1">
-                                        <p class="text-sm font-medium text-gray-200">Education Level</p>
+                                        <p class="text-sm font-medium text-gray-200">Tingkat Pendidikan</p>
                                         <p class="text-xs text-gray-500">{{ $study->levelOption->value }}</p>
                                     </div>
                                 </li>
@@ -185,8 +185,8 @@
                                             </svg>
                                         </div>
                                         <div class="min-w-0 flex-1">
-                                            <p class="text-sm font-medium text-gray-200 group-hover:text-green-300 transition-colors duration-200">Official Program Link</p>
-                                            <p class="text-xs text-gray-500 break-all">Visit program website</p>
+                                            <p class="text-sm font-medium text-gray-200 group-hover:text-green-300 transition-colors duration-200">Tautan Resmi Program</p>
+                                            <p class="text-xs text-gray-500 break-all">Kunjungi situs program</p>
                                         </div>
                                     </a>
                                 </li>
@@ -202,7 +202,7 @@
                                 <svg class="w-5 h-5 mr-2 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                 </svg>
-                                Similar Programs
+                                Program Serupa
                             </h3>
                             <div class="space-y-4">
                                 @foreach(\App\Models\Study::where('id', '!=', $study->id)

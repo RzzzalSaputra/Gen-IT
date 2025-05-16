@@ -53,7 +53,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                             </svg>
-                            {{ $school->read_counter ?? 0 }} views
+                            {{ $school->read_counter ?? 0 }} dilihat
                         </div>
                         <div class="flex items-center">
                             <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -135,7 +135,7 @@
                             <div class="mt-16 pt-8 border-t border-gray-700/50">
                                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                                     <div>
-                                        <span class="text-sm font-medium text-gray-400">Last updated:</span>
+                                        <span class="text-sm font-medium text-gray-400">Terakhir Dilihat:</span>
                                         <span class="text-gray-300">{{ $school->updated_at->format('M d, Y, h:i A') }}</span>
                                     </div>
                                     <a href="{{ route('schools.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-sm text-white transition-colors duration-200">
