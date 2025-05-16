@@ -70,7 +70,6 @@ class SchoolResource extends Resource
 
                 Forms\Components\TextInput::make('gmap')
                     ->label('Google Maps Link')
-                    ->url()
                     ->nullable(),
 
                 Forms\Components\TextInput::make('province')

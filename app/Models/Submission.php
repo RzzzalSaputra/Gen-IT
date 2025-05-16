@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Storage;
 
 class Submission extends Model
 {
@@ -30,6 +31,21 @@ class Submission extends Model
         'updated_at' => 'datetime',
         'approve_at' => 'datetime', // Add this line to ensure approve_at is a Carbon instance
     ];
+
+    protected static function booted()
+    {
+        static::deleting(function ($model) {
+            // Delete img if exists
+            if ($model->img && Storage::disk('public')->exists($model->img)) {
+                Storage::disk('public')->delete($model->img);
+            }
+            
+            // Delete file if exists
+            if ($model->file && Storage::disk('public')->exists($model->file)) {
+                Storage::disk('public')->delete($model->file);
+            }
+        });
+    }
 
     // Relasi ke tabel Option (type)
     public function typeOption()

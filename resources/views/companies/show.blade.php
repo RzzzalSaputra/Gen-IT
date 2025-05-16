@@ -129,14 +129,7 @@
                                 
                                 @if($company->gmap)
                                 <div class="h-96 w-full rounded-xl overflow-hidden border border-gray-700/50 shadow-lg">
-                                    <iframe 
-                                        src="{{ $company->gmap }}" 
-                                        class="w-full h-full"
-                                        style="border:0;" 
-                                        allowfullscreen="" 
-                                        loading="lazy" 
-                                        referrerpolicy="no-referrer-when-downgrade">
-                                    </iframe>
+                                    {!! $company->gmap !!}
                                 </div>
                                 @endif
                             </div>
