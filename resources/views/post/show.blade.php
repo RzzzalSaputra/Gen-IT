@@ -100,7 +100,7 @@
                             <div class="flex justify-center mt-2">
                                 <a href="{{ $post->video_url }}" target="_blank" class="inline-flex items-center px-2 py-1 bg-purple-600/80 hover:bg-purple-700 rounded text-white text-xs font-medium transition-all duration-200">
                                     <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 003-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                     </svg>
                                     Open in New Tab
                                 </a>
@@ -122,8 +122,10 @@
                                     </div>
                                     <div class="flex-1">
                                         <h4 class="text-lg font-medium text-white mb-2">Document</h4>
-                                        <p class="text-sm text-gray-400 mb-4">Attached file for this post</p>
-                                        <a href="{{ $post->file }}" download class="inline-flex items-center px-4 py-2 bg-blue-600/80 hover:bg-blue-700 rounded-lg text-white text-sm font-medium transition-all duration-200">
+                                        <p class="text-sm text-gray-400 mb-4">{{ basename($post->file) }}</p>
+                                        <a href="{{ Storage::url($post->file) }}" 
+                                           download="{{ basename($post->file) }}" 
+                                           class="inline-flex items-center px-4 py-2 bg-blue-600/80 hover:bg-blue-700 rounded-lg text-white text-sm font-medium transition-all duration-200">
                                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                             </svg>
