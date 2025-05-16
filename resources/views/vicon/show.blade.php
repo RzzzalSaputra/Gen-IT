@@ -77,9 +77,7 @@
                                     Informasi Konferensi
                                 </h3>
                                 <div class="text-gray-300">
-                                    <p class="mb-2">Gunakan tombol di bawah ini untuk bergabung dengan Zoom atau mengunduh materi terkait.</p>
-                                    <p class="text-gray-400 text-sm">Dibuat oleh: {{ $vicon->created_at->locale('id')->translatedFormat('d M Y') }}</p>
-                                </div>
+                                    <p class="mb-2">Gunakan tombol di bawah ini untuk bergabung dengan Zoom atau mengunduh materi terkait.</p>                                </div>
                             </div>
                         </div>
                     </div>

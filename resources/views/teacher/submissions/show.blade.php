@@ -74,11 +74,11 @@
                                 <p class="font-medium text-gray-800 dark:text-white">
                                     @if($isLate)
                                         <span class="text-red-600 dark:text-red-400">
-                                            Terlambat ({{ $submissionDate->diffForHumans($dueDate, true) }} setelah tenggat)
+                                            Terlambat ({{ str_replace(['minutes', 'hours', 'minute', 'hour'], ['menit', 'jam', 'menit', 'jam'], $submissionDate->diffForHumans($dueDate, true)) }} setelah tenggat)
                                         </span>
                                     @else
                                         <span class="text-green-600 dark:text-green-400">
-                                            Tepat waktu ({{ $submissionDate->diffForHumans($dueDate, true) }} sebelum tenggat)
+                                            Tepat waktu ({{ str_replace(['minutes', 'hours', 'minute', 'hour'], ['menit', 'jam', 'menit', 'jam'], $submissionDate->diffForHumans($dueDate, true)) }} sebelum tenggat)
                                         </span>
                                     @endif
                                 </p>
@@ -150,7 +150,7 @@
                                         </svg>
                                     @elseif($isPdf)
                                         <svg class="w-8 h-8 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414a1 1 0 01-1.293-.707V19a2 2 0 01-2 2z" />
                                         </svg>
                                     @else
                                         <svg class="w-8 h-8 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
