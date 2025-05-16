@@ -71,4 +71,13 @@ class Company extends Model
             $company->deleteImage();
         });
     }
+
+    protected static function booted()
+    {
+        static::deleting(function ($model) {
+            if ($model->img && Storage::disk('public')->exists($model->img)) {
+                Storage::disk('public')->delete($model->img);
+            }
+        });
+    }
 }
