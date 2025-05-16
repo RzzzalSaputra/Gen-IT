@@ -12,7 +12,7 @@
 
     <div class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 pt-16 sm:pt-24">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <h1 class="text-4xl font-bold text-white mb-8 text-center">Video Conferences</h1>
+            <h1 class="text-4xl font-bold text-white mb-8 text-center">Konferensi Video</h1>
             
             <div class="bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-700/50 overflow-hidden shadow-xl">
                 <div class="p-6">
@@ -21,8 +21,8 @@
                             <svg class="w-16 h-16 mx-auto text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                             </svg>
-                            <h3 class="text-xl font-semibold mb-2 text-gray-200">No Video Conferences Found</h3>
-                            <p class="text-gray-400">Video conferences will appear here once they are added to the system.</p>
+                            <h3 class="text-xl font-semibold mb-2 text-gray-200">Tidak Ditemukan Konferensi Video</h3>
+                            <p class="text-gray-400">Konferensi video akan muncul di sini setelah ditambahkan ke sistem.</p>
                         </div>
                     @else
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -119,7 +119,7 @@
                             </div>
                         </h1>
                         <p class="text-lg sm:text-lg md:text-xl text-white max-w-2xl">
-                            Generasi Teknologi Informasi Kab. Katingan.
+                            Generasi Teknologi Informasi Kabupaten Katingan.
                         </p>
                     </div>
                 </div>

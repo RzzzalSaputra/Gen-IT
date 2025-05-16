@@ -2,10 +2,10 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-2xl text-gray-800 dark:text-gray-200 leading-tight">
-                {{ __('Learning Materials') }}
+                {{ __('Materi Pembelajaran') }}
             </h2>
             <div class="text-sm text-gray-500 dark:text-gray-400">
-                {{ $materials->total() }} {{ Str::plural('resource', $materials->total()) }} available
+                {{ $materials->total() }} {{ Str::plural('materi', $materials->total()) }} tersedia
             </div>
         </div>
     </x-slot>
@@ -21,7 +21,7 @@
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
-                            Text Materials
+                            Materi Teks
                         </a>
                     </li>
                     <li>
@@ -30,7 +30,7 @@
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                             </svg>
-                            Downloads
+                            Unduhan
                         </a>
                     </li>
                     <li>
@@ -40,7 +40,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            Video Content
+                            Konten Video
                         </a>
                     </li>
                 </ul>
@@ -76,8 +76,8 @@
                             <svg class="w-16 h-16 mx-auto text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
-                            <h3 class="text-xl font-semibold mb-2 text-gray-200">No Materials Found</h3>
-                            <p class="text-gray-400">Materials will appear here once they are added to the system.</p>
+                            <h3 class="text-xl font-semibold mb-2 text-gray-200">Tidak ada Materi yang ditemukan</h3>
+                            <p class="text-gray-400">Materi akan muncul di sini setelah ditambahkan ke sistem.</p>
                         </div>
                     @else
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -163,7 +163,7 @@
                                         <div class="h-48 flex items-center justify-center bg-gradient-to-br from-purple-600/20 to-pink-600/20 p-6 relative overflow-hidden">
                                             <div class="absolute top-3 right-3">
                                                 <span class="px-2 py-1 text-xs font-medium text-purple-300 bg-purple-900/30 backdrop-blur-sm rounded-lg border border-purple-500/20">
-                                                    {{ $fileExtension ?? 'FILE' }}
+                                                    {{ $fileExtension ?? 'BERKAS' }}
                                                 </span>
                                             </div>
                                             <div class="text-center transform group-hover:scale-105 transition-transform duration-300">
@@ -216,13 +216,13 @@
                                                     <svg class="w-4 h-4 mar-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                                     </svg>
-                                                    File
+                                                    Berkas
                                                 </div>
                                                 <div class="inline-flex items-center px-2 py-1 bg-emerald-900/30 backdrop-blur-sm rounded-lg text-xs text-emerald-300 border border-emerald-500/30">
                                                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
                                                     </svg>
-                                                    {{ $material->download_counter ?? 0 }} downloads
+                                                    {{ $material->download_counter ?? 0 }} diunduh
                                                 </div>
                                             @endif
                                             
@@ -248,7 +248,7 @@
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                     </svg>
-                                                    Video Content
+                                                    Konten Video
                                                 </div>
                                             @endif
                                         </div>
@@ -274,7 +274,7 @@
                                                         <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                                         </svg>
-                                                        Download
+                                                        Unduh
                                                     </a>
                                                 @endif
                                                 
@@ -296,7 +296,7 @@
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                         </svg>
-                                                        Watch Video
+                                                        Tonton Video
                                                     </a>
                                                 @endif
                                             </div>
@@ -342,7 +342,7 @@
                         if (fileExtension === 'pdf') {
                             modalContent += `
                                 <div class="mt-8 border-t border-gray-700 pt-6">
-                                    <h4 class="text-lg font-semibold mb-4 text-gray-200">Attached Document</h4>
+                                    <h4 class="text-lg font-semibold mb-4 text-gray-200">Dokumen Terlampir</h4>
                                     <div class="bg-gray-900 rounded-xl overflow-hidden">
                                         <iframe src="${file}" class="w-full h-[600px] border-0"></iframe>
                                     </div>
@@ -353,7 +353,7 @@
                                             <svg class="w-4 h-4 mr-2 transform group-hover:translate-y-0.5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                             </svg>
-                                            Download Document
+                                            Unduh Dokumen
                                         </a>
                                     </div>
                                 </div>
@@ -361,7 +361,7 @@
                         } else if (fileExtension === 'doc' || fileExtension === 'docx') {
                             modalContent += `
                                 <div class="mt-8 border-t border-gray-700 pt-6">
-                                    <h4 class="text-lg font-semibold mb-4 text-gray-200">Microsoft Word Document</h4>
+                                    <h4 class="text-lg font-semibold mb-4 text-gray-200">Dokumen Microsoft Word</h4>
                                     <div class="bg-gray-900 rounded-xl p-8 flex flex-col items-center justify-center">
                                         <svg class="w-24 h-24 text-blue-500 mb-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M20 6.5V17.5C20 19.9853 17.9853 22 15.5 22H8.5C6.01472 22 4 19.9853 4 17.5V6.5C4 4.01472 6.01472 2 8.5 2H15.5C17.9853 2 20 4.01472 20 6.5Z" stroke="currentColor" stroke-width="1.5"/>
@@ -369,14 +369,14 @@
                                             <path d="M14.5 10L17 12L14.5 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                                             <path d="M12 9L12 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                                         </svg>
-                                        <p class="text-gray-300 mb-6">Word document preview not available directly in browser.</p>
+                                        <p class="text-gray-300 mb-6">Pratinjau dokumen Word tidak tersedia langsung di browser.</p>
                                         <a href="${file}" 
                                            download 
                                            class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200 group">
                                             <svg class="w-4 h-4 mr-2 transform group-hover:translate-y-0.5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                             </svg>
-                                            Download Word Document
+                                            Unduh Dokumen Word
                                         </a>
                                     </div>
                                 </div>
@@ -384,7 +384,7 @@
                         } else {
                             modalContent += `
                                 <div class="mt-8 border-t border-gray-700 pt-6">
-                                    <h4 class="text-lg font-semibold mb-4 text-gray-200">Attached File (${fileType})</h4>
+                                    <h4 class="text-lg font-semibold mb-4 text-gray-200">Berkas Terlampir (${fileType})</h4>
                                     <div class="bg-gray-900 rounded-xl p-4 flex items-center justify-between">
                                         <div class="flex items-center">
                                             <svg class="w-8 h-8 text-gray-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -398,7 +398,7 @@
                                             <svg class="w-4 h-4 mr-2 transform group-hover:translate-y-0.5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                             </svg>
-                                            Download
+                                            Unduh
                                         </a>
                                     </div>
                                 </div>
@@ -462,13 +462,13 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                <h3 class="text-xl font-medium mb-2 text-gray-300">Video URL</h3>
-                                <p class="text-gray-400 mb-6">The video cannot be embedded directly.</p>
+                                <h3 class="text-xl font-medium mb-2 text-gray-300">URL Video</h3>
+                                <p class="text-gray-400 mb-6">Video tidak dapat disematkan secara langsung.</p>
                                 <a href="${videoUrl}" target="_blank" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-all duration-200">
                                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                     </svg>
-                                    Open Video Link
+                                    Buka Tautan Video
                                 </a>
                             </div>
                         `;

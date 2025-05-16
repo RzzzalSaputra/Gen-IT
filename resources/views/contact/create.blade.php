@@ -2,13 +2,13 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-2xl text-gray-800 dark:text-gray-200 leading-tight">
-                {{ __('New Message') }}
+                {{ __('Pesan Baru') }}
             </h2>
             <a href="{{ route('contacts.index') }}" class="text-sm text-blue-500 hover:text-blue-400 transition-colors duration-200 flex items-center">
                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                 </svg>
-                Back to Messages
+                Kembali ke Pesan
             </a>
         </div>
     </x-slot>
@@ -21,7 +21,7 @@
             <div class="bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-700/50 overflow-hidden shadow-xl">
                 <div class="p-6">
                     <h3 class="text-xl font-bold text-gray-100 mb-6">
-                        Send Message to Admin
+                        Kirim Pesan ke Admin
                     </h3>
                     
                     @if(session('success'))
@@ -31,8 +31,8 @@
                         <script>
                             document.addEventListener('DOMContentLoaded', function() {
                                 Swal.fire({
-                                    title: 'Success!',
-                                    text: 'Your message has been sent successfully. We will respond within 24-48 hours.',
+                                    title: 'Berhasil!',
+                                    text: 'Pesan Anda telah berhasil dikirim. Kami akan menanggapi dalam waktu 24-48 jam.',
                                     icon: 'success',
                                     confirmButtonText: 'OK',
                                     confirmButtonColor: '#3b82f6',
@@ -56,13 +56,13 @@
                     <form id="contactForm" action="{{ route('contacts.store') }}" method="POST">
                         @csrf
                         <div class="mb-6">
-                            <label for="message" class="block text-sm font-medium text-gray-300 mb-2">Your Message</label>
+                            <label for="message" class="block text-sm font-medium text-gray-300 mb-2">Pesan Anda</label>
                             <textarea
                             id="message"
                             name="message"
                             rows="8"
                             class="w-full px-4 py-3 bg-gray-800/50 backdrop-blur-sm border rounded-xl text-gray-200 placeholder-gray-400 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-200 @error('message') border-red-500/50 @else border-gray-700/50 @enderror"
-                            placeholder="Write your message to the admin here..."
+                            placeholder="Tulis pesan Anda untuk admin di sini..."
                             required
                         >{{ old('message') }}</textarea>
                             
@@ -76,7 +76,7 @@
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
                                 </svg>
-                                Send Message
+                                Kirim Pesan
                             </button>
                         </div>
                     </form>
@@ -91,10 +91,10 @@
                         </svg>
                     </div>
                     <div class="ml-3">
-                        <h4 class="text-gray-300 font-medium text-sm">About Contacting Admin</h4>
+                        <h4 class="text-gray-300 font-medium text-sm">Tentang Menghubungi Admin</h4>
                         <p class="text-gray-400 text-xs mt-1">
-                            Your message will be sent to the admin team and you will receive a response within 24-48 hours.
-                            You can view all your messages and responses in the "Contact Us" section.
+                            Pesan Anda akan dikirim ke tim admin dan Anda akan menerima tanggapan dalam waktu 24-48 jam.
+                            Anda dapat melihat semua pesan dan tanggapan di bagian "Hubungi Kami".
                         </p>
                     </div>
                 </div>
@@ -115,8 +115,8 @@
                 
                 if (!messageField.value.trim()) {
                     Swal.fire({
-                        title: 'Empty Message',
-                        text: 'Please write a message before submitting.',
+                        title: 'Pesan Kosong',
+                        text: 'Mohon tulis pesan sebelum mengirim.',
                         icon: 'warning',
                         confirmButtonText: 'OK',
                         confirmButtonColor: '#3b82f6',
@@ -127,12 +127,12 @@
                 }
                 
                 Swal.fire({
-                    title: 'Send Message?',
-                    text: 'Are you sure you want to send this message to the admin?',
+                    title: 'Kirim Pesan?',
+                    text: 'Apakah Anda yakin ingin mengirim pesan ini ke admin?',
                     icon: 'question',
                     showCancelButton: true,
-                    confirmButtonText: 'Yes, send it!',
-                    cancelButtonText: 'Cancel',
+                    confirmButtonText: 'Ya, kirim!',
+                    cancelButtonText: 'Batal',
                     confirmButtonColor: '#3b82f6',
                     cancelButtonColor: '#6b7280',
                     background: '#1f2937',
@@ -141,8 +141,8 @@
                     if (result.isConfirmed) {
                         // Show loading state
                         Swal.fire({
-                            title: 'Sending...',
-                            text: 'Please wait while we send your message.',
+                            title: 'Mengirim...',
+                            text: 'Mohon tunggu sementara kami mengirim pesan Anda.',
                             allowOutsideClick: false,
                             didOpen: () => {
                                 Swal.showLoading();

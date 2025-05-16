@@ -2,10 +2,10 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-2xl text-gray-800 dark:text-gray-200 leading-tight">
-                {{ __('Gallery') }}
+                {{ __('Galeri') }}
             </h2>
             <div class="text-sm text-gray-500 dark:text-gray-400">
-                {{ $galleries->total() }} {{ Str::plural('item', $galleries->total()) }} available
+                {{ $galleries->total() }} {{ Str::plural('item', $galleries->total()) }} tersedia
             </div>
         </div>
     </x-slot>
@@ -33,7 +33,7 @@
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
-                            Images
+                            Gambar
                         </a>
                     </li>
                     <li>
@@ -43,7 +43,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            Videos
+                            Video
                         </a>
                     </li>
                 </ul>
@@ -56,8 +56,8 @@
                             <svg class="w-16 h-16 mx-auto text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
-                            <h3 class="text-xl font-semibold mb-2 text-gray-200">No Gallery Items Found</h3>
-                            <p class="text-gray-400">Gallery items will appear here once they are added to the system.</p>
+                            <h3 class="text-xl font-semibold mb-2 text-gray-200">Tidak Ada Item Galeri Ditemukan</h3>
+                            <p class="text-gray-400">Item galeri akan muncul di sini setelah ditambahkan ke sistem.</p>
                         </div>
                     @else
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -144,7 +144,7 @@
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                     </svg>
-                                                    Watch Video
+                                                    Tonton Video
                                                 </a>
                                             @endif
                                         </div>
