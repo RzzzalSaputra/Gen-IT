@@ -217,7 +217,7 @@
                                         <div class="flex items-start">
                                             @if($relatedStudy->img && $relatedStudy->img != '/storage/studies/images/default.jpg')
                                                 <div class="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 mr-3">
-                                                    <img src="{{ $relatedStudy->img }}" alt="{{ $relatedStudy->name }}" class="w-full h-full object-cover">
+                                                    <img src="{{ Storage::url('studies/images/' . basename($relatedStudy->img)) }}" alt="{{ $relatedStudy->name }}" class="w-full h-full object-cover">
                                                 </div>
                                             @else
                                                 <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-800/30 to-purple-800/30 flex-shrink-0 mr-3 flex items-center justify-center border border-blue-700/30">

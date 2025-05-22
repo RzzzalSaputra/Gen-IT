@@ -296,7 +296,7 @@
                                         <div class="flex items-start">
                                             @if($relatedJob->company && $relatedJob->company->logo)
                                                 <div class="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 mr-3">
-                                                    <img src="{{ $relatedJob->company->logo }}" alt="{{ $relatedJob->company->name }}" class="w-full h-full object-cover">
+                                                    <img src="{{ Storage::url('companies/images/' . basename($relatedJob->company->logo)) }}" alt="{{ $relatedJob->company->name }}" class="w-full h-full object-cover">
                                                 </div>
                                             @else
                                                 <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-800/30 to-indigo-800/30 flex-shrink-0 mr-3 flex items-center justify-center border border-blue-700/30">
