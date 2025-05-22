@@ -21,7 +21,7 @@
                     @if($study->img && $study->img != '/storage/studies/images/default.jpg')
                         <div class="-mt-10 -mx-10 mb-10">
                             <div class="relative h-64 md:h-80 overflow-hidden">
-                                <img src="{{ $study->img }}" alt="{{ $study->name }}" 
+                                <img src="{{ Storage::url('studies/images/' . basename($study->img)) }}" alt="{{ $study->name }}" 
                                     class="w-full h-full object-cover">
                                 <div class="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-80"></div>
                             </div>
@@ -100,7 +100,7 @@
                                     <div class="flex items-start">
                                         @if($study->school->img)
                                             <div class="w-24 h-24 rounded-xl overflow-hidden flex-shrink-0 mr-6">
-                                                <img src="{{ $study->school->img }}" alt="{{ $study->school->name }}" class="w-full h-full object-cover">
+                                                <img src="{{ Storage::url('schools/images/' . basename($study->school->img)) }}" alt="{{ $study->school->name }}" class="w-full h-full object-cover">
                                             </div>
                                         @endif
                                         <div>
