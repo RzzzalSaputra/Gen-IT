@@ -9,7 +9,7 @@
                 <span class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-indigo-300 tracking-wide">Gen-IT</span>
             </div>
             
-            <h2 class="text-xl font-medium text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400 mb-6 text-center">{{ __('Create Your Account') }}</h2>
+            <h2 class="text-xl font-medium text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400 mb-6 text-center">{{ __('Buat Akun Anda') }}</h2>
             
             <form id="registerForm" method="POST" action="{{ route('register') }}">
                 @csrf
@@ -20,21 +20,21 @@
                         <!-- Username -->
                         <div class="transform transition-all duration-300 hover:translate-x-1">
                             <x-input-label for="user_name" :value="__('Username')" class="text-gray-300 mb-1 text-sm" />
-                            <x-text-input id="user_name" class="block w-full bg-gray-800/50 border-gray-700/30 rounded-xl text-gray-100 focus:border-blue-500 focus:ring focus:ring-blue-500/50 transition-all py-2.5 px-4 shadow-inner" type="text" name="user_name" :value="old('user_name')" required autofocus autocomplete="username" placeholder="Enter username" />
+                            <x-text-input id="user_name" class="block w-full bg-gray-800/50 border-gray-700/30 rounded-xl text-gray-100 focus:border-blue-500 focus:ring focus:ring-blue-500/50 transition-all py-2.5 px-4 shadow-inner" type="text" name="user_name" :value="old('user_name')" required autofocus autocomplete="username" placeholder="Masukkan username" />
                             <x-input-error :messages="$errors->get('user_name')" class="mt-1" />
                         </div>
 
                         <!-- First Name -->
                         <div class="transform transition-all duration-300 hover:translate-x-1">
                             <x-input-label for="first_name" :value="__('Nama Depan')" class="text-gray-300 mb-1 text-sm" />
-                            <x-text-input id="first_name" class="block w-full bg-gray-800/50 border-gray-700/30 rounded-xl text-gray-100 focus:border-blue-500 focus:ring focus:ring-blue-500/50 transition-all py-2.5 px-4 shadow-inner" type="text" name="first_name" :value="old('first_name')" autocomplete="given-name" placeholder="Enter first name" />
+                            <x-text-input id="first_name" class="block w-full bg-gray-800/50 border-gray-700/30 rounded-xl text-gray-100 focus:border-blue-500 focus:ring focus:ring-blue-500/50 transition-all py-2.5 px-4 shadow-inner" type="text" name="first_name" :value="old('first_name')" autocomplete="given-name" placeholder="Masukkan nama depan" />
                             <x-input-error :messages="$errors->get('first_name')" class="mt-1" />
                         </div>
 
                         <!-- Last Name -->
                         <div class="transform transition-all duration-300 hover:translate-x-1">
                             <x-input-label for="last_name" :value="__('Nama Belakang')" class="text-gray-300 mb-1 text-sm" />
-                            <x-text-input id="last_name" class="block w-full bg-gray-800/50 border-gray-700/30 rounded-xl text-gray-100 focus:border-blue-500 focus:ring focus:ring-blue-500/50 transition-all py-2.5 px-4 shadow-inner" type="text" name="last_name" :value="old('last_name')" autocomplete="family-name" placeholder="Enter last name" />
+                            <x-text-input id="last_name" class="block w-full bg-gray-800/50 border-gray-700/30 rounded-xl text-gray-100 focus:border-blue-500 focus:ring focus:ring-blue-500/50 transition-all py-2.5 px-4 shadow-inner" type="text" name="last_name" :value="old('last_name')" autocomplete="family-name" placeholder="Masukkan nama belakang" />
                             <x-input-error :messages="$errors->get('last_name')" class="mt-1" />
                         </div>
 
@@ -64,7 +64,7 @@
                         <!-- Email Address -->
                         <div class="transform transition-all duration-300 hover:translate-x-1">
                             <x-input-label for="email" :value="__('Email')" class="text-gray-300 mb-1 text-sm" />
-                            <x-text-input id="email" class="block w-full bg-gray-800/50 border-gray-700/30 rounded-xl text-gray-100 focus:border-blue-500 focus:ring focus:ring-blue-500/50 transition-all py-2.5 px-4 shadow-inner" type="email" name="email" :value="old('email')" required autocomplete="email" placeholder="your.email@example.com" />
+                            <x-text-input id="email" class="block w-full bg-gray-800/50 border-gray-700/30 rounded-xl text-gray-100 focus:border-blue-500 focus:ring focus:ring-blue-500/50 transition-all py-2.5 px-4 shadow-inner" type="email" name="email" :value="old('email')" required autocomplete="email" placeholder="email.anda@contoh.com" />
                             <x-input-error :messages="$errors->get('email')" class="mt-1" />
                         </div>
 
@@ -77,14 +77,14 @@
 
                         <!-- Password -->
                         <div class="transform transition-all duration-300 hover:translate-x-1">
-                            <x-input-label for="password" :value="__('Password')" class="text-gray-300 mb-1 text-sm" />
+                            <x-input-label for="password" :value="__('Kata Sandi')" class="text-gray-300 mb-1 text-sm" />
                             <x-text-input id="password" class="block w-full bg-gray-800/50 border-gray-700/30 rounded-xl text-gray-100 focus:border-blue-500 focus:ring focus:ring-blue-500/50 transition-all py-2.5 px-4 shadow-inner" type="password" name="password" required autocomplete="new-password" placeholder="••••••••" />
                             <x-input-error :messages="$errors->get('password')" class="mt-1" />
                         </div>
 
                         <!-- Confirm Password -->
                         <div class="transform transition-all duration-300 hover:translate-x-1">
-                            <x-input-label for="password_confirmation" :value="__('Confirm Password')" class="text-gray-300 mb-1 text-sm" />
+                            <x-input-label for="password_confirmation" :value="__('Konfirmasi Kata Sandi')" class="text-gray-300 mb-1 text-sm" />
                             <x-text-input id="password_confirmation" class="block w-full bg-gray-800/50 border-gray-700/30 rounded-xl text-gray-100 focus:border-blue-500 focus:ring focus:ring-blue-500/50 transition-all py-2.5 px-4 shadow-inner" type="password" name="password_confirmation" required autocomplete="new-password" placeholder="••••••••" />
                             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-1" />
                         </div>
@@ -93,11 +93,11 @@
 
                 <div class="flex items-center justify-between mt-6">
                     <a class="text-sm text-blue-400 hover:text-blue-300 font-medium transition-colors hover:underline transform hover:translate-x-1 transition-transform duration-300" href="{{ route('login') }}">
-                        {{ __('Already registered?') }}
+                        {{ __('Sudah terdaftar?') }}
                     </a>
 
                     <x-primary-button id="registerBtn" class="ml-4 px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 focus:ring-4 focus:ring-blue-300/50 text-white font-medium rounded-xl transition-all shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40 transform hover:scale-105 duration-300">
-                        {{ __('Register') }}
+                        {{ __('Daftar') }}
                     </x-primary-button>
                 </div>
             </form>
@@ -149,7 +149,7 @@
                     Swal.fire({
                         icon: 'error',
                         title: 'Oops...',
-                        text: 'Please fill in all required fields!',
+                        text: 'Mohon isi semua kolom yang diperlukan!',
                         background: '#1f2937',
                         color: '#f3f4f6',
                         confirmButtonColor: '#3b82f6',
@@ -165,8 +165,8 @@
                 
                 // Show confirmation dialog
                 Swal.fire({
-                    title: 'Confirm Registration',
-                    text: 'Apakah data anda sudah benar ?',
+                    title: 'Konfirmasi Pendaftaran',
+                    text: 'Apakah data anda sudah benar?',
                     icon: 'question',
                     showCancelButton: true,
                     confirmButtonText: 'Ya, Daftar Kan!',
@@ -197,8 +197,8 @@
                         
                         // Show processing message
                         Swal.fire({
-                            title: 'Processing...',
-                            text: 'Membuat akun ',
+                            title: 'Memproses...',
+                            text: 'Membuat akun anda',
                             icon: 'info',
                             allowOutsideClick: false,
                             showConfirmButton: false,
