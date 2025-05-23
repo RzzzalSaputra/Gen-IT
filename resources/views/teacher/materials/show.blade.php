@@ -199,6 +199,46 @@ document.addEventListener('DOMContentLoaded', function() {
             openModal(modalId);
         });
     });
+
+    // Add event listeners for modal close buttons
+    const closeButtons = document.querySelectorAll('[data-modal-close]');
+    closeButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const modalId = button.closest('.modal').id;
+            closeModal(modalId);
+        });
+    });
+    
+    // Handle clicks on the modal backdrop 
+    const modals = document.querySelectorAll('.modal');
+    modals.forEach(modal => {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal(modal.id);
+            }
+        });
+    });
+
+    // Add form submission handling
+    const editForms = document.querySelectorAll('form[id^="editMaterialForm"]');
+    editForms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            console.log('Form submission detected', form.id);
+            // Form will submit normally - this just logs that it's happening
+        });
+    });
+
+    // If you have a save button that needs to trigger the form, add this:
+    const saveButtons = document.querySelectorAll('.save-material-btn');
+    saveButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const formId = this.getAttribute('data-form-id');
+            if (formId) {
+                document.getElementById(formId).submit();
+            }
+        });
+    });
 });
 
 // Functions to open and close modals
@@ -206,6 +246,7 @@ function openModal(modalId) {
     const modal = document.getElementById(modalId);
     if (modal) {
         modal.classList.remove('hidden');
+        document.body.classList.add('overflow-hidden');
     }
 }
 
@@ -213,6 +254,7 @@ function closeModal(modalId) {
     const modal = document.getElementById(modalId);
     if (modal) {
         modal.classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
     }
 }
 
@@ -232,6 +274,12 @@ function closeImagePreview() {
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         closeImagePreview();
+        
+        // Also close any open modal
+        const openModals = document.querySelectorAll('.modal:not(.hidden)');
+        openModals.forEach(modal => {
+            closeModal(modal.id);
+        });
     }
 });
 </script>
@@ -248,3 +296,7 @@ document.addEventListener('keydown', function(e) {
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@endpush
