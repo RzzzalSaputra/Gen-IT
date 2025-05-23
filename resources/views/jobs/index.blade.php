@@ -40,13 +40,13 @@
 
             <!-- Search form with preserved filters -->
             <div class="mb-8">
-                <form action="{{ route('jobs.index') }}" method="GET" class="flex items-center gap-3">
+                <form action="{{ route('jobs.index') }}" method="GET" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                     <!-- Preserve existing type filter when using the search form -->
                     @if(request()->has('type'))
                         <input type="hidden" name="type" value="{{ request('type') }}">
                     @endif
                     
-                    <div class="relative flex-1">
+                    <div class="relative flex-1 mb-3 sm:mb-0">
                         <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
                             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -59,55 +59,57 @@
                             placeholder="Cari daftar pekerjaan ...">
                     </div>
                     
-                    <div class="relative">
-                        <select name="province" class="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-gray-200 pl-4 pr-10 py-3 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 appearance-none">
-                            <option value="">Semua Provinsi</option>
-                            @foreach($provinces as $province)
-                                <option value="{{ $province }}" {{ request('province') == $province ? 'selected' : '' }}>
-                                    {{ $province }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3">
-                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                            </svg>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3 sm:mb-0">
+                        <div class="relative">
+                            <select name="province" class="w-full bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-gray-200 pl-4 pr-10 py-3 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 appearance-none">
+                                <option value="">Semua Provinsi</option>
+                                @foreach($provinces as $province)
+                                    <option value="{{ $province }}" {{ request('province') == $province ? 'selected' : '' }}>
+                                        {{ $province }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
                         </div>
-                    </div>
+                        
+                        <div class="relative">
+                            <select name="city" class="w-full bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-gray-200 pl-4 pr-10 py-3 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 appearance-none">
+                                <option value="">Semua Kota</option>
+                                @foreach($cities as $city)
+                                    <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>
+                                        {{ $city }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
+                        </div>
                     
-                    <div class="relative">
-                        <select name="city" class="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-gray-200 pl-4 pr-10 py-3 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 appearance-none">
-                            <option value="">Semua Kota</option>
-                            @foreach($cities as $city)
-                                <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>
-                                    {{ $city }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3">
-                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                            </svg>
+                        <div class="relative">
+                            <select name="experience" class="w-full bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-gray-200 pl-4 pr-10 py-3 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 appearance-none">
+                                <option value="">Semua Pengalaman</option>
+                                @foreach($experienceLevels as $level)
+                                    <option value="{{ $level->id }}" {{ request('experience') == $level->id ? 'selected' : '' }}>
+                                        {{ $level->value }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="relative">
-                    <select name="experience" class="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-gray-200 pl-4 pr-10 py-3 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 appearance-none">
-                        <option value="">Semua Pengalaman</option>
-                        @foreach($experienceLevels as $level)
-                            <option value="{{ $level->id }}" {{ request('experience') == $level->id ? 'selected' : '' }}>
-                                {{ $level->value }}
-                            </option>
-                        @endforeach
-                    </select>
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3">
-                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </div>
-                </div>
-
-                    <button type="submit" class="inline-flex items-center px-6 py-3 bg-blue-600 rounded-xl border border-blue-500 text-white font-medium hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-blue-500 transition-all duration-200">
+                    <button type="submit" class="inline-flex items-center justify-center px-6 py-3 bg-blue-600 rounded-xl border border-blue-500 text-white font-medium hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-blue-500 transition-all duration-200">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
@@ -206,14 +208,6 @@
     </div>
 
     <style>
-        /* Fixed widths for the dropdowns */
-        select[name="province"], 
-        select[name="city"],
-        select[name="experience"] {
-            width: 220px; /* You can adjust this value to fit your design */
-            text-overflow: ellipsis;
-        }
-        
         /* Handle text overflow in dropdowns */
         select option {
             overflow: hidden;
