@@ -715,6 +715,71 @@ class TeacherController extends Controller
     }
 
     /**
+     * Download a material file.
+     *
+     * @param  int  $classroom_id
+     * @param  int  $id
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     */
+    public function downloadMaterial($classroom_id, $id)
+    {
+        try {
+            if (!$this->isTeacherInClassroom($classroom_id)) {
+                return redirect()->route('teacher.dashboard')
+                    ->with('error', 'You do not have permission to download materials from this classroom.');
+            }
+            
+            $classroom = Classroom::findOrFail($classroom_id);
+            
+            // Get the material
+            $material = $classroom->materials()->findOrFail($id);
+            
+            // Debug information
+            \Log::info('Attempting to download material file', [
+                'material_id' => $id,
+                'file_path' => $material->file,
+                'storage_path' => storage_path('app/' . $material->file),
+                'file_exists' => file_exists(storage_path('app/' . $material->file)),
+                'storage_disk_path' => \Storage::disk('public')->exists($material->file)
+            ]);
+            
+            // Check if file path is set
+            if (!$material->file) {
+                return back()->with('error', 'No file attached to this material.');
+            }
+            
+            // Try both storage paths
+            if (file_exists(storage_path('app/' . $material->file))) {
+                // Direct storage path
+                return response()->download(storage_path('app/' . $material->file), basename($material->file));
+            } elseif (file_exists(storage_path('app/public/' . $material->file))) {
+                // Public storage path
+                return response()->download(storage_path('app/public/' . $material->file), basename($material->file));
+            } elseif (\Storage::exists($material->file)) {
+                // Using Storage facade
+                return \Storage::download($material->file, basename($material->file));
+            } else {
+                // Create detailed error message
+                \Log::error('Material file not found', [
+                    'material_id' => $id,
+                    'file_path' => $material->file
+                ]);
+                
+                return back()->with('error', 'Material file not found. The file may have been moved or deleted.');
+            }
+        } catch (\Exception $e) {
+            \Log::error('Exception in downloadMaterial', [
+                'message' => $e->getMessage(),
+                'classroom_id' => $classroom_id,
+                'material_id' => $id,
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return back()->withErrors(['msg' => 'Error downloading file: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
      * Display the specified submission.
      *
      * @param int $classroom_id
