@@ -194,7 +194,7 @@ class StudyController extends Controller
             'description' => 'required|string',
             'duration' => 'required|string|max:255',
             'link' => 'nullable|string',
-            'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:20480',
             'level' => 'required|exists:options,id',
         ]);
 
@@ -329,7 +329,7 @@ class StudyController extends Controller
             'description' => 'nullable|string',
             'duration' => 'nullable|string|max:255',
             'link' => 'nullable|string',
-            'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:20480',
             'level' => 'nullable|exists:options,id',
         ]);
 

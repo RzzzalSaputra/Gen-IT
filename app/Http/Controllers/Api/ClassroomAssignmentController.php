@@ -215,7 +215,7 @@ class ClassroomAssignmentController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'due_date' => 'required|date|after:now',
-            'file' => 'nullable|file|max:10240', // 10MB max
+            'file' => 'nullable|file|max:20480', // 20MB max
         ]);
 
         if ($validator->fails()) {
@@ -416,7 +416,7 @@ class ClassroomAssignmentController extends Controller
             'title' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'due_date' => 'nullable|date',
-            'file' => 'nullable|file|max:10240', // 10MB max
+            'file' => 'nullable|file|max:20480', // 20MB max
         ]);
 
         if ($validator->fails()) {

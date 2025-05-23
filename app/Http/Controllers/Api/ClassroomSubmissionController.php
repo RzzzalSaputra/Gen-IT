@@ -240,7 +240,7 @@ class ClassroomSubmissionController extends Controller
         // Validate the request
         $validator = Validator::make($request->all(), [
             'content' => 'required|string',
-            'file' => 'nullable|file|max:10240', // 10MB max - now optional
+            'file' => 'nullable|file|max:20480', // 10MB max - now optional
         ]);
 
         if ($validator->fails()) {
@@ -654,7 +654,7 @@ class ClassroomSubmissionController extends Controller
         // Validate the request
         $validator = Validator::make($request->all(), [
             'content' => 'nullable|string',
-            'file' => 'nullable|file|max:10240', // 10MB max - optional
+            'file' => 'nullable|file|max:20480', // 10MB max - optional
         ]);
 
         if ($validator->fails()) {

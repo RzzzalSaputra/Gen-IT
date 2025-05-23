@@ -229,7 +229,7 @@ class CompanyController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255|unique:companies',
             'description' => 'required|string',
-            'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:20480',
             'gmap' => 'nullable|string',
             'province' => 'required|string|max:255',
             'city' => 'required|string|max:255',
@@ -371,7 +371,7 @@ class CompanyController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'nullable|string|max:255|unique:companies,name,'.$id,
             'description' => 'nullable|string',
-            'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:20480',
             'gmap' => 'nullable|string',
             'province' => 'nullable|string|max:100',
             'city' => 'nullable|string|max:100',

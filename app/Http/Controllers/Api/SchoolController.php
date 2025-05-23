@@ -255,7 +255,7 @@ class SchoolController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'description' => 'required|string',
-            'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Changed back to nullable
+            'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:20480', // Changed back to nullable
             'type' => 'required|exists:options,id',
             'gmap' => 'nullable|string',
             'province' => 'required|string|max:255',
@@ -402,7 +402,7 @@ class SchoolController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'nullable|string|max:255',
             'description' => 'nullable|string',
-            'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:20480',
             'type' => 'nullable|exists:options,id',
             'gmap' => 'nullable|string',
             'province' => 'nullable|string|max:100',

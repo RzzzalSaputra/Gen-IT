@@ -197,7 +197,7 @@ class ViconController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
             'desc' => 'required|string',
-            'img' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'img' => 'required|image|mimes:jpeg,png,jpg,gif|max:20480',
             'time' => 'required|date',
             'link' => 'required|url',
             'download' => 'nullable|url',
@@ -345,7 +345,7 @@ class ViconController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'nullable|string|max:255',
             'desc' => 'nullable|string',
-            'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:20480',
             'time' => 'nullable|date',
             'link' => 'nullable|url',
             'download' => 'nullable|url'

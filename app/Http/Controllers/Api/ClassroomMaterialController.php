@@ -205,9 +205,9 @@ class ClassroomMaterialController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
             'content' => 'required|string',
-            'file' => 'nullable|file|max:10240', // 10MB max
+            'file' => 'nullable|file|max:20480', // 20MB max
             'link' => 'nullable|string|url',
-            'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:20480',
             'type' => 'required|exists:options,id',
         ]);
 
@@ -423,9 +423,9 @@ class ClassroomMaterialController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'nullable|string|max:255',
             'content' => 'nullable|string',
-            'file' => 'nullable|file|max:10240', // 10MB max
+            'file' => 'nullable|file|max:20480', // 20MB max
             'link' => 'nullable|string|url',
-            'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:20480',
             'type' => 'nullable|exists:options,id',
             'remove_file' => 'nullable|boolean',
             'remove_img' => 'nullable|boolean',
