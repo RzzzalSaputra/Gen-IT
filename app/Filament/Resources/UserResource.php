@@ -41,12 +41,12 @@ class UserResource extends Resource
                 Forms\Components\TextInput::make('password')
                     ->label('Kata Sandi')
                     ->password()
-                    ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->dehydrated(fn ($state) => filled($state))
+                    ->required(fn (string $context): bool => $context === 'create'),
                 Forms\Components\TextInput::make('phone')
                     ->label('Nomor Telepon')
                     ->tel()
-                    ->required()
                     ->numeric(),
                 Forms\Components\TextInput::make('first_name')
                     ->label('Nama Depan')

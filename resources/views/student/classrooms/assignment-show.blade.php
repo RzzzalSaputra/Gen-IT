@@ -309,7 +309,7 @@
                                 <form method="POST" action="{{ route('student.classrooms.assignments.submissions.store', ['classroom_id' => $classroom->id, 'assignment_id' => $assignment->id]) }}" enctype="multipart/form-data" class="space-y-4">
                                     @csrf
                                     <div>
-                                        <label for="content" class="block text-sm font-medium text-gray-300 mb-1">Submission Notes</label>
+                                        <label for="content" class="block text-sm font-medium text-gray-300 mb-1">Masukan Jawaban</label>
                                         <textarea id="content" name="content" rows="4" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg p-3 text-gray-200 focus:ring-blue-500 focus:border-blue-500"></textarea>
                                     </div>
                                     
