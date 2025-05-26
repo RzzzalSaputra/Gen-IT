@@ -59,7 +59,7 @@
                             </div>
                             <div class="flex justify-between items-center mb-2">
                                 <span class="text-sm text-gray-300">Nilai Terakhir</span>
-                                <span class="text-lg font-medium text-white">{{ $lastGrade ?? 'N/A' }}</span>
+                                <span class="text-lg font-medium text-white">{{ $lastGrade ?? '0' }}</span>
                             </div>
                             <div class="w-full bg-gray-700/50 rounded-full h-2.5 mt-2">
                                 <div class="bg-emerald-500 h-2.5 rounded-full" style="width: {{ $assignmentCompletionRate ?? 0 }}%"></div>

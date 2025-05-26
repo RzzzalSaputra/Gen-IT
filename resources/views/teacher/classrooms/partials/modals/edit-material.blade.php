@@ -34,7 +34,9 @@
                     
                     <div class="mb-4">
                         <label for="editMaterialContent{{ $material->id }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Konten</label>
-                        <textarea class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" id="editMaterialContent{{ $material->id }}" name="content" rows="5" required>{{ $material->content }}</textarea>
+                        <!-- Replace the textarea with a div for Quill -->
+                        <div id="editMaterialContentEditor{{ $material->id }}" class="bg-white dark:bg-gray-700 rounded-md border border-gray-300 dark:border-gray-600"></div>
+                        <input type="hidden" name="content" id="editMaterialContent{{ $material->id }}" value="{{ $material->content }}">
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -162,6 +164,141 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function initializeMaterialEdit() {
+        // Load Quill if not already loaded
+        if (typeof Quill === 'undefined') {
+            // Add Quill CSS
+            const quillCSS = document.createElement('link');
+            quillCSS.rel = 'stylesheet';
+            quillCSS.href = 'https://cdn.quilljs.com/1.3.7/quill.snow.css';
+            document.head.appendChild(quillCSS);
+            
+            // Add Quill JS
+            const quillScript = document.createElement('script');
+            quillScript.src = 'https://cdn.quilljs.com/1.3.7/quill.min.js';
+            quillScript.onload = initQuill;
+            document.head.appendChild(quillScript);
+        } else {
+            initQuill();
+        }
+
+        function initQuill() {
+            const materialId = {{ $material->id }};
+            const contentValue = document.getElementById(`editMaterialContent${materialId}`).value;
+            
+            // Simplified toolbar configuration like Google Classroom
+            const toolbarOptions = [
+                ['bold', 'italic', 'underline'],                 // basic formatting
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],    // lists
+                ['link'],                                        // link
+                [{ 'align': [] }],                               // text alignment
+                ['clean']                                        // remove formatting
+            ];
+            
+            // Initialize Quill editor
+            const editorContainer = document.getElementById(`editMaterialContentEditor${materialId}`);
+            if (editorContainer) {
+                const quill = new Quill(`#editMaterialContentEditor${materialId}`, {
+                    modules: {
+                        toolbar: toolbarOptions
+                    },
+                    theme: 'snow',
+                    placeholder: 'Tambahkan deskripsi atau instruksi...'
+                });
+                
+                // Set initial content
+                quill.root.innerHTML = contentValue;
+                
+                // Apply styling
+                applyQuillStyling();
+                
+                // Make sure to get content when form is submitted
+                const editMaterialForm = document.getElementById(`editMaterialForm${materialId}`);
+                if (editMaterialForm) {
+                    editMaterialForm.addEventListener('submit', function(e) {
+                        // Save Quill content to hidden field before submission
+                        const content = quill.root.innerHTML;
+                        document.getElementById(`editMaterialContent${materialId}`).value = content;
+                    });
+                }
+            }
+        }
+
+        function applyQuillStyling() {
+            const style = document.createElement('style');
+            
+            // Strong dark mode styling with high contrast
+            style.textContent = `
+                /* Editor container */
+                .ql-container.ql-snow {
+                    border: 1px solid #4B5563;
+                    border-top: 0;
+                    border-radius: 0 0 4px 4px;
+                    font-family: inherit;
+                    background-color: #1F2937 !important;
+                }
+                
+                /* Editor area with bright white text */
+                .ql-editor {
+                    min-height: 150px;
+                    font-size: 15px;
+                    line-height: 1.5;
+                    padding: 12px 15px;
+                    color: #FFFFFF !important;
+                    background-color: #1F2937 !important;
+                }
+                
+                /* Toolbar styling */
+                .ql-toolbar.ql-snow {
+                    border: 1px solid #4B5563;
+                    border-radius: 4px 4px 0 0;
+                    padding: 8px;
+                    background-color: #374151 !important;
+                }
+                
+                /* Toolbar button colors - bright white */
+                .ql-snow .ql-stroke {
+                    stroke: #FFFFFF !important;
+                }
+                
+                .ql-snow .ql-fill {
+                    fill: #FFFFFF !important;
+                }
+                
+                .ql-snow .ql-picker {
+                    color: #FFFFFF !important;
+                }
+                
+                /* Force white text for all content */
+                .ql-editor p, .ql-editor ol, .ql-editor ul, .ql-editor pre, 
+                .ql-editor blockquote, .ql-editor h1, .ql-editor h2, .ql-editor h3, 
+                .ql-editor h4, .ql-editor h5, .ql-editor h6 {
+                    color: #FFFFFF !important;
+                }
+                
+                .ql-editor a {
+                    color: #93C5FD !important;
+                }
+                
+                /* Placeholder text */
+                .ql-editor.ql-blank::before {
+                    font-style: italic;
+                    color: #9CA3AF !important;
+                }
+                
+                /* Fixed dropdown menu styling */
+                .ql-snow .ql-picker-options {
+                    background-color: #374151 !important;
+                    border-color: #4B5563 !important;
+                }
+                
+                .ql-snow .ql-picker-item {
+                    color: #FFFFFF !important;
+                }
+            `;
+            
+            document.head.appendChild(style);
+        }
+        
         const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB in bytes
         const materialId = {{ $material->id }};
         
@@ -276,6 +413,16 @@ document.addEventListener('DOMContentLoaded', function() {
         // Form submission
         editMaterialForm.addEventListener('submit', function(e) {
             e.preventDefault();
+            
+            // Replace this line:
+            // const quillContent = document.getElementById(`editMaterialContent${materialId}`).value;
+            // document.querySelector(`#editMaterialContent${materialId}`).value = quillContent;
+            
+            // With this:
+            const quill = Quill.find(document.getElementById(`editMaterialContentEditor${materialId}`));
+            if (quill) {
+                document.getElementById(`editMaterialContent${materialId}`).value = quill.root.innerHTML;
+            }
             
             // Check if there are files selected and they are within size limits
             const fileValid = !editMaterialFileInput.files[0] || editMaterialFileInput.files[0].size <= MAX_FILE_SIZE;

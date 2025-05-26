@@ -623,7 +623,7 @@ class ClassroomSubmissionController extends Controller
         // Find the classroom
         $classroom = Classroom::find($classroomId);
         if (!$classroom) {
-            return back()->with('error', 'Classroom not found.');
+            return back()->with('error', 'Kelas tidak ditemukan.');
         }
 
         // Find the assignment
@@ -632,7 +632,7 @@ class ClassroomSubmissionController extends Controller
             ->first();
         
         if (!$assignment) {
-            return back()->with('error', 'Assignment not found.');
+            return back()->with('error', 'Tugas tidak ditemukan.');
         }
 
         // Verify user is a student in this classroom
@@ -640,7 +640,7 @@ class ClassroomSubmissionController extends Controller
         $isStudent = $classroom->members()->where('user_id', $userId)->exists();
         
         if (!$isStudent && $classroom->create_by != $userId) {
-            return back()->with('error', 'You are not authorized to submit to this assignment.');
+            return back()->with('error', 'Anda tidak berwenang untuk mengirimkan tugas ini.');
         }
 
         // Check if assignment is past due date
@@ -648,7 +648,7 @@ class ClassroomSubmissionController extends Controller
         $dueDate = Carbon::parse($assignment->due_date);
         
         if ($now->isAfter($dueDate)) {
-            return back()->with('error', 'This assignment is past the due date.');
+            return back()->with('error', 'Tugas ini sudah melewati batas waktu pengumpulan.');
         }
 
         // Validate the request
@@ -675,9 +675,9 @@ class ClassroomSubmissionController extends Controller
                 $submission = new ClassroomSubmission();
                 $submission->assignment_id = $assignmentId;
                 $submission->user_id = $userId;
-                $successMessage = 'Assignment submitted successfully!';
+                $successMessage = 'Tugas berhasil dikirim!';
             } else {
-                $successMessage = 'Your submission has been updated!';
+                $successMessage = 'Tugas Anda telah diperbarui!';
             }
             
             // Update content
@@ -689,7 +689,7 @@ class ClassroomSubmissionController extends Controller
             if ($request->has('remove_file') && $request->remove_file == "1" && !$isNew && $submission->file) {
                 Storage::disk('public')->delete($submission->file);
                 $submission->file = null;
-                $successMessage = 'Your submission has been updated and file was removed!';
+                $successMessage = 'Tugas Anda telah diperbarui dan berkas telah dihapus!';
             }
             // Handle file upload (only if not removing)
             else if ($request->hasFile('file')) {
@@ -737,7 +737,7 @@ class ClassroomSubmissionController extends Controller
                 'assignment_id' => $assignmentId
             ]);
             
-            return back()->with('error', 'There was a problem with your submission. Please try again.');
+            return back()->with('error', 'Ada masalah dengan pengiriman Anda. Silakan coba lagi.');
         }
     }
 
@@ -764,7 +764,7 @@ class ClassroomSubmissionController extends Controller
         $userId = Auth::id();
         if ($submission->user_id != $userId) {
             return redirect()->route('student.classrooms.index')
-                ->with('error', 'You can only view your own submissions.');
+                ->with('error', 'Anda hanya dapat melihat kiriman tugas Anda sendiri.');
         }
         
         // Download the file
@@ -774,7 +774,7 @@ class ClassroomSubmissionController extends Controller
             return response()->download($path, $fileName);
         }
         
-        return redirect()->back()->with('error', 'File not found.');
+        return redirect()->back()->with('error', 'Berkas tidak ditemukan.');
     }
 
     /**
@@ -792,7 +792,7 @@ class ClassroomSubmissionController extends Controller
         // Find the classroom
         $classroom = Classroom::find($classroomId);
         if (!$classroom) {
-            return back()->with('error', 'Classroom not found.');
+            return back()->with('error', 'Kelas tidak ditemukan.');
         }
 
         // Find the submission
@@ -801,7 +801,7 @@ class ClassroomSubmissionController extends Controller
             ->first();
         
         if (!$submission) {
-            return back()->with('error', 'Submission not found.');
+            return back()->with('error', 'Kiriman tugas tidak ditemukan.');
         }
 
         // Verify user is authorized to download this submission
@@ -811,12 +811,12 @@ class ClassroomSubmissionController extends Controller
                      $classroom->teachers()->where('user_id', $userId)->exists();
         
         if (!$isOwner && !$isTeacher) {
-            return back()->with('error', 'You are not authorized to download this submission.');
+            return back()->with('error', 'Anda tidak berwenang untuk mengunduh kiriman tugas ini.');
         }
 
         // Check if file exists
         if (!$submission->file || !Storage::disk('public')->exists($submission->file)) {
-            return back()->with('error', 'Submission file not found.');
+            return back()->with('error', 'Berkas kiriman tugas tidak ditemukan.');
         }
 
         return Storage::disk('public')->download($submission->file);

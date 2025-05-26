@@ -20,7 +20,7 @@
                                 <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
-                                Guru: {{ $classroom->creator->name ?? 'Unknown' }}
+                                Guru: {{ $classroom->creator ? $classroom->creator->first_name . ' ' . $classroom->creator->last_name : 'Unknown' }}
                             </div>
                             <div class="inline-flex items-center px-2 sm:px-3 py-1 bg-indigo-900/30 backdrop-blur-sm rounded-lg text-xs sm:text-sm text-indigo-300 border border-indigo-500/30">
                                 <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -47,7 +47,7 @@
                             <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                             </svg>
-                            Kembali Ke List Kelas
+                            Kembali Ke Daftar Kelas
                         </a>
                     </div>
                 </div>
@@ -126,7 +126,7 @@
                                             if ($isTextOnly) {
                                                 $iconClass = 'text-blue-300';
                                                 $icon = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>';
-                                                $typeLabel = 'Reading Material';
+                                                $typeLabel = 'Materi teks';
                                                 $bgColor = 'bg-gradient-to-br from-blue-900/40 to-blue-800/20';
                                                 $borderColor = 'border-blue-600/40';
                                                 $hoverBgColor = 'group-hover:from-blue-900/60 group-hover:to-blue-800/40';
@@ -134,7 +134,7 @@
                                             } elseif ($isDownloadable) {
                                                 $iconClass = 'text-green-300';
                                                 $icon = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"></path>';
-                                                $typeLabel = 'Study Material';
+                                                $typeLabel = 'Materi File';
                                                 $bgColor = 'bg-gradient-to-br from-green-900/40 to-emerald-800/20';
                                                 $borderColor = 'border-green-600/40';
                                                 $hoverBgColor = 'group-hover:from-green-900/60 group-hover:to-emerald-800/40';
@@ -142,7 +142,7 @@
                                             } elseif ($isVideo) {
                                                 $iconClass = 'text-red-300';
                                                 $icon = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>';
-                                                $typeLabel = 'Video Material';
+                                                $typeLabel = 'Materi';
                                                 $bgColor = 'bg-gradient-to-br from-red-900/40 to-rose-800/20';
                                                 $borderColor = 'border-red-600/40';
                                                 $hoverBgColor = 'group-hover:from-red-900/60 group-hover:to-rose-800/40';
@@ -179,9 +179,9 @@
                                                         {{ Str::limit(strip_tags($material->content), 120) }}
                                                     </p>
                                                     <div class="text-xs text-gray-400">
-                                                        Posted: {{ $material->create_at ? $material->create_at->format('M d, Y') : 'Unknown date' }}
+                                                        Diposting: {{ $material->create_at ? $material->create_at->format('M d, Y') : 'Unknown date' }}
                                                         @if($material->creator)
-                                                            by {{ $material->creator->name }}
+                                                            , Oleh {{ $material->creator->name }}
                                                         @endif
                                                     </div>
                                                     <div class="flex justify-end mt-2 sm:mt-3">

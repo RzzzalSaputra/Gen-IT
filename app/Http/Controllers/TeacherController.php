@@ -105,18 +105,20 @@ class TeacherController extends Controller
     {
         $teacher_id = Auth::id();
         
-        // Get classrooms created by the teacher
-        $createdClassrooms = Classroom::where('create_by', $teacher_id)
+        // Get classrooms created by the teacher (not deleted)
+        $createdClassrooms = Classroom::active()
+            ->where('create_by', $teacher_id)
             ->orderBy('create_at', 'desc')
             ->get();
         
-        // Get classrooms where the teacher is a member with 'teacher' role
-        $joinedClassrooms = Classroom::whereHas('members', function($query) use ($teacher_id) {
-            $query->where('user_id', $teacher_id)
-                  ->where('role', 'teacher');
-        })
-        ->orderBy('create_at', 'desc')
-        ->get();
+        // Get classrooms where the teacher is a member (not deleted)
+        $joinedClassrooms = Classroom::active()
+            ->whereHas('members', function($query) use ($teacher_id) {
+                $query->where('user_id', $teacher_id)
+                      ->where('role', 'teacher');
+            })
+            ->orderBy('create_at', 'desc')
+            ->get();
         
         // Merge the collections, remove duplicates, and ensure sorting is maintained
         $classrooms = $createdClassrooms->concat($joinedClassrooms)
@@ -137,7 +139,7 @@ class TeacherController extends Controller
         
         if ($response->getStatusCode() === 201) {
             return redirect()->route('teacher.classrooms.index')
-                             ->with('success', 'Classroom created successfully');
+                             ->with('success', 'Ruang kelas berhasil dibuat');
         }
         
         return back()->withErrors(['msg' => 'Failed to create classroom']);
@@ -213,11 +215,24 @@ class TeacherController extends Controller
             abort(403, 'Unauthorized action. Only teachers can delete this classroom.');
         }
         
-        $classroom = Classroom::findOrFail($id);
-        // Deletion logic...
-        
-        return redirect()->route('teacher.classrooms.index')
-                         ->with('success', 'Classroom deleted successfully');
+        try {
+            $classroom = Classroom::findOrFail($id);
+            
+            // Only creator can delete the classroom
+            if (Auth::id() != $classroom->create_by) {
+                return redirect()->route('teacher.classrooms.index')
+                    ->with('error', 'Only the creator can delete this classroom.');
+            }
+            
+            // Perform soft delete
+            $classroom->update(['delete_at' => now()]);
+            
+            return redirect()->route('teacher.classrooms.index')
+                    ->with('success', 'Ruang kelas berhasil dihapus');
+        } catch (\Exception $e) {
+            Log::error('Error deleting classroom: ' . $e->getMessage());
+            return back()->withErrors(['msg' => 'Failed to delete classroom: ' . $e->getMessage()]);
+        }
     }
     
     // Add other methods for assignments, materials, submissions, etc...
@@ -298,7 +313,7 @@ class TeacherController extends Controller
             'joined_at' => now(),
         ]);
         
-        return back()->with('success', 'Member added successfully.')
+        return back()->with('success', 'Anggota berhasil ditambahkan.')
             ->with('active_tab', 'members');
     }
 
@@ -338,7 +353,7 @@ class TeacherController extends Controller
         // Remove the member
         $classroom->members()->where('id', $id)->delete();
         
-        return back()->with('success', 'Member removed successfully.');
+        return back()->with('success', 'Anggota berhasil dihapus.');
     }
 
     /**
@@ -360,7 +375,7 @@ class TeacherController extends Controller
             $material->save();
             
             return redirect()->route('teacher.classrooms.show', $classroom_id)
-                    ->with('success', 'Material deleted successfully')
+                    ->with('success', 'Materi berhasil dihapus')
                     ->with('active_tab', 'materials');
         } catch (\Exception $e) {
             Log::error('Error deleting material', [
@@ -499,7 +514,7 @@ class TeacherController extends Controller
             if ($response->getStatusCode() === 201) {
                 // Use the fragment method to add a URL hash
                 return redirect()->route('teacher.classrooms.show', $classroom_id)
-                    ->with('success', 'Assignment added successfully')
+                    ->with('success', 'Tugas berhasil ditambahkan')
                     ->fragment('assignments');
             }
             
@@ -600,7 +615,7 @@ class TeacherController extends Controller
             $assignment->save();
             
             return redirect()->route('teacher.classrooms.show', $classroom_id)
-                    ->with('success', 'Assignment deleted successfully')
+                    ->with('success', 'Tugas berhasil dihapus')
                     ->fragment('assignments');
         } catch (\Exception $e) {
             Log::error('Error deleting assignment', [

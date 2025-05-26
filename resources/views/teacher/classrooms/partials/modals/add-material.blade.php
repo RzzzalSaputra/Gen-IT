@@ -15,7 +15,7 @@
                 </button>
             </div>
             
-            <form id="addMaterialForm" action="{{ route('teacher.materials.store', $classroom->id) }}" method="POST" enctype="multipart/form-data" class="sm:overflow-visible max-h-[90vh] overflow-y-auto">
+            <form id="addMaterialForm" action="{{ route('teacher.materials.store', $classroom->id) }}" method="POST" enctype="multipart/form-data" class="max-h-[80vh] overflow-y-auto scrollbar-hidden">
                 @csrf
                 <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                     <div class="mb-4 sm:mb-2 border-b border-gray-200 dark:border-gray-700 pb-2">
@@ -41,12 +41,14 @@
                         @endphp
                         <input type="hidden" name="type" value="{{ $optionId }}">
                         
-                        <div class="mb-4 sm:mb-3 sm:w-full">
+                        <!-- Replace the textarea with a div for Quill with fixed height -->
+                        <div class="mb-6 sm:mb-5 sm:w-full">
                             <label for="materialContent" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Konten</label>
-                            <textarea class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:h-24" id="materialContent" name="content" rows="4" required></textarea>
+                            <div id="materialContentEditor" class="bg-white dark:bg-gray-700 rounded-md border border-gray-300 dark:border-gray-600"></div>
+                            <input type="hidden" name="content" id="materialContent">
                         </div>
                         
-                        <div class="mb-3 sm:w-1/2">
+                        <div class="mb-4 sm:w-1/2">
                             <label for="materialFile" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Lampiran (Opsional)</label>
                             <input type="file" name="file" id="materialFile"
                                 class="mt-1 block w-full text-sm text-gray-700 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 dark:file:bg-blue-900 dark:file:text-blue-300 hover:file:bg-blue-100 dark:hover:file:bg-blue-800">
@@ -63,7 +65,7 @@
                             </div>
                         </div>
                         
-                        <div class="mb-3 sm:w-1/2">
+                        <div class="mb-4 sm:w-1/2">
                             <label for="materialImage" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Gambar (Opsional)</label>
                             <input type="file" name="img" id="materialImage" accept="image/*"
                                 class="mt-1 block w-full text-sm text-gray-700 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 dark:file:bg-blue-900 dark:file:text-blue-300 hover:file:bg-blue-100 dark:hover:file:bg-blue-800">
@@ -80,7 +82,7 @@
                             </div>
                         </div>
                     
-                        <div class="mb-3 sm:w-full">
+                        <div class="mb-4 sm:w-full">
                             <label for="materialLink" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tautan Eksternal (Opsional)</label>
                             <input type="url" name="link" id="materialLink" placeholder="https://example.com" 
                                 class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
@@ -88,7 +90,7 @@
                     </div>
                 </div>
                 
-                <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 flex flex-col sm:flex-row-reverse gap-2 sm:gap-0">
+                <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 flex flex-col sm:flex-row-reverse gap-2 sm:gap-0 sticky bottom-0">
                     <button type="submit" id="addMaterialSubmitBtn" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
                         Tambah Materi
                     </button>
@@ -103,6 +105,230 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Replace your existing scrollbar styling with this subtle dark theme
+    const scrollbarStyle = document.createElement('style');
+    scrollbarStyle.textContent = `
+        /* Subtle dark scrollbar for all scrollable elements */
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(31, 41, 55, 0.6);  /* dark:bg-gray-800 with opacity */
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(75, 85, 99, 0.8);  /* dark:bg-gray-600 with opacity */
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(107, 114, 128, 0.9);  /* dark:bg-gray-500 with opacity */
+        }
+        
+        /* For Firefox */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(75, 85, 99, 0.8) rgba(31, 41, 55, 0.6);
+        }
+        
+        /* Keep main form scrollbar consistent */
+        #addMaterialForm {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(75, 85, 99, 0.8) rgba(31, 41, 55, 0.6);
+        }
+    `;
+    document.head.appendChild(scrollbarStyle);
+
+    // Load Quill if not already loaded
+    if (typeof Quill === 'undefined') {
+        // Add Quill CSS
+        const quillCSS = document.createElement('link');
+        quillCSS.rel = 'stylesheet';
+        quillCSS.href = 'https://cdn.quilljs.com/1.3.7/quill.snow.css';
+        document.head.appendChild(quillCSS);
+        
+        // Add Quill JS
+        const quillScript = document.createElement('script');
+        quillScript.src = 'https://cdn.quilljs.com/1.3.7/quill.min.js';
+        quillScript.onload = initializeRichTextEditor;
+        document.head.appendChild(quillScript);
+    } else {
+        initializeRichTextEditor();
+    }
+
+    let materialQuill;
+    
+    function initializeRichTextEditor() {
+        // Initialize Quill editor with simplified toolbar options (Google Classroom style)
+        const toolbarOptions = [
+            ['bold', 'italic', 'underline'],                 // basic formatting
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],    // lists
+            ['link'],                                        // link
+            [{ 'align': [] }],                               // text alignment
+            ['clean']                                        // remove formatting
+        ];
+        
+        // Only initialize if the container exists
+        const editorContainer = document.getElementById('materialContentEditor');
+        if (editorContainer) {
+            materialQuill = new Quill('#materialContentEditor', {
+                modules: {
+                    toolbar: toolbarOptions
+                },
+                theme: 'snow',
+                placeholder: 'Tambahkan deskripsi atau instruksi...'
+            });
+            
+            // Apply styling (including dark mode if needed)
+            applyQuillStyling();
+        }
+    }
+
+    function applyQuillStyling() {
+        const style = document.createElement('style');
+
+        // High contrast styling with dark background and white text
+        style.textContent = `
+            /* Editor container - reduce overall height */
+            .ql-container.ql-snow {
+                border: 1px solid #4B5563;
+                border-top: 0;
+                border-radius: 0 0 4px 4px;
+                font-family: inherit;
+                background-color: #1F2937 !important;
+                min-height: auto !important;
+                max-height: 170px !important; /* Slightly smaller height */
+            }
+            
+            /* Editor area with bright white text and REDUCED FIXED HEIGHT */
+            .ql-editor {
+                height: 160px !important; /* Reduced from 150px */
+                max-height: 140px !important;
+                min-height: 140px !important;
+                font-size: 15px;
+                line-height: 1.5;
+                padding: 12px 15px;
+                color: #FFFFFF !important;
+                background-color: #1F2937 !important;
+                overflow-y: auto !important;
+            }
+            
+            /* Custom scrollbar for Quill editor - subtle dark theme */
+            .ql-editor::-webkit-scrollbar {
+                width: 4px;
+                height: 4px;
+            }
+            
+            .ql-editor::-webkit-scrollbar-track {
+                background: rgba(31, 41, 55, 0.6);
+                border-radius: 10px;
+            }
+            
+            .ql-editor::-webkit-scrollbar-thumb {
+                background: rgba(75, 85, 99, 0.8);
+                border-radius: 10px;
+            }
+            
+            .ql-editor::-webkit-scrollbar-thumb:hover {
+                background: rgba(107, 114, 128, 0.9);
+            }
+            
+            /* Toolbar styling - make it more compact */
+            .ql-toolbar.ql-snow {
+                border: 1px solid #4B5563;
+                border-radius: 4px 4px 0 0;
+                padding: 6px !important; /* Slightly reduced padding */
+                background-color: #374151 !important;
+            }
+            
+            /* Toolbar button colors - bright white */
+            .ql-snow .ql-stroke {
+                stroke: #FFFFFF !important;
+            }
+            
+            .ql-snow .ql-fill {
+                fill: #FFFFFF !important;
+            }
+            
+            .ql-snow .ql-picker {
+                color: #FFFFFF !important;
+            }
+            
+            /* Force white text for all content */
+            .ql-editor p, .ql-editor ol, .ql-editor ul, .ql-editor pre, 
+            .ql-editor blockquote, .ql-editor h1, .ql-editor h2, .ql-editor h3, 
+            .ql-editor h4, .ql-editor h5, .ql-editor {
+                color: #FFFFFF !important;
+            }
+            
+            .ql-editor a {
+                color: #93C5FD !important;
+            }
+            
+            /* Placeholder text */
+            .ql-editor.ql-blank::before {
+                font-style: italic;
+                color: #9CA3AF !important;
+            }
+            
+            /* Dropdown menu styling */
+            .ql-snow .ql-picker-options {
+                background-color: #374151 !important;
+                border-color: #4B5563 !important;
+            }
+            
+            .ql-snow .ql-picker-item {
+                color: #FFFFFF !important;
+            }
+            
+            /* Increase spacing after the editor */
+            #materialContentEditor {
+                margin-bottom: 20px !important;
+            }
+        `;
+
+        document.head.appendChild(style);
+    }
+    
+    // Handle modal close and open events
+    const closeModalBtn = document.querySelector('[onclick="closeModal(\'addMaterialModal\')"]');
+    const openModalTriggers = document.querySelectorAll('[onclick*="addMaterialModal.classList.remove(\'hidden\')"]');
+    
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener('click', function() {
+            // Reset Quill content when modal is closed
+            if (materialQuill) {
+                materialQuill.setText('');
+            }
+        });
+    }
+    
+    if (openModalTriggers.length > 0) {
+        openModalTriggers.forEach(trigger => {
+            trigger.addEventListener('click', function() {
+                // Ensure Quill is re-initialized when modal is opened
+                setTimeout(function() {
+                    if (!materialQuill) {
+                        materialQuill = new Quill('#materialContentEditor', {
+                            modules: {
+                                toolbar: toolbarOptions
+                            },
+                            theme: 'snow',
+                            placeholder: 'Tambahkan deskripsi atau instruksi...'
+                        });
+                        
+                        if (document.documentElement.classList.contains('dark')) {
+                            applyQuillStyling();
+                        }
+                    }
+                }, 100);
+            });
+        });
+    }
+    
     const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB in bytes
     const materialFileInput = document.getElementById('materialFile');
     const materialImageInput = document.getElementById('materialImage');
@@ -234,6 +460,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Form submission
     addMaterialForm.addEventListener('submit', function(e) {
         e.preventDefault();
+        
+        // Add this line to get content from Quill editor before submission
+        if (materialQuill) {
+            document.getElementById('materialContent').value = materialQuill.root.innerHTML;
+        }
         
         // Check if there are files selected and they are within size limits
         const fileValid = !materialFileInput.files[0] || materialFileInput.files[0].size <= MAX_FILE_SIZE;

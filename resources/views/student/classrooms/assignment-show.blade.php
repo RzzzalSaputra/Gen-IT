@@ -20,9 +20,15 @@
                     <div class="flex flex-wrap gap-2 mb-6">
                         <!-- Assignment Status Badge -->
                         @php
+                            // Set Carbon locale to Indonesian
+                            \Carbon\Carbon::setLocale('id');
+                            
                             $now = \Carbon\Carbon::now();
                             $dueDate = \Carbon\Carbon::parse($assignment->due_date);
                             $isOverdue = $now->isAfter($dueDate);
+                            
+                            // Create Indonesian due time text
+                            $dueTimeText = "" . $dueDate->diffForHumans();
                             
                             // Ensure we're getting the correct submission - fixed retrieval logic
                             if (isset($assignment->classroom_submission)) {
@@ -52,7 +58,7 @@
                                 $statusIcon = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />';
                             } else {
                                 $statusClass = "bg-yellow-900/30 text-yellow-300 border-yellow-500/30";
-                                $statusText = "Due " . $dueDate->diffForHumans();
+                                $statusText = "Tenggat " . $dueDate->diffForHumans();
                                 $statusIcon = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />';
                             }
                         @endphp
@@ -61,7 +67,7 @@
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 {!! $statusIcon !!}
                             </svg>
-                            {{ $statusText }}
+                            {{ $dueTimeText }}
                         </div>
                         
                         <div class="inline-flex items-center px-3 py-1 bg-gray-700/50 backdrop-blur-sm rounded-lg text-sm text-gray-300 border border-gray-600/30">
@@ -95,7 +101,7 @@
                             <svg class="w-5 h-5 mr-2 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
                             </svg>
-                            Assignment Materials
+                            File Lampiran
                         </h2>
                         <div class="flex items-center p-4 bg-gray-900/50 rounded-lg hover:bg-gray-900/70 transition-colors">
                             <div class="bg-purple-900/40 p-3 rounded-lg mr-4">
@@ -105,10 +111,10 @@
                             </div>
                             <div class="flex-1">
                                 <h4 class="text-white font-medium">{{ basename($assignment->file) }}</h4>
-                                <p class="text-sm text-gray-400">Assignment instructions or resources</p>
+                                <p class="text-sm text-gray-400">Instruksi tugas atau sumber</p>
                             </div>
                             <a href="{{ route('student.classrooms.assignments.download', ['classroom_id' => $classroom->id, 'id' => $assignment->id]) }}" class="bg-purple-700 hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 text-sm font-medium">
-                                Download
+                                Unduh
                             </a>
                         </div>
                     </div>
@@ -148,7 +154,7 @@
                                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                             </svg>
-                                            Edit Submission
+                                            Edit Tugas
                                         </div>
                                     </button>
                                     @elseif($isOverdue && \Carbon\Carbon::parse($submission->submitted_at)->isAfter($dueDate))
@@ -201,7 +207,7 @@
                                                 <a href="{{ route('student.classrooms.assignments.submissions.download', ['classroom_id' => $classroom->id, 'assignment_id' => $assignment->id, 'id' => $submission->id]) }}" 
                                                    class="text-blue-400 bg-blue-900/30 hover:bg-blue-800/40 px-3 py-2 rounded-lg flex items-center justify-center w-full sm:w-auto">
                                                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m3-4v12" />
                                                     </svg>
                                                     Download
                                                 </a>
@@ -210,7 +216,7 @@
                                                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                                     </svg>
-                                                    Remove
+                                                    Hapus
                                                 </button>
                                                 @endif
                                             </div>
@@ -321,7 +327,7 @@
                                                     <svg class="w-8 h-8 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                                                     </svg>
-                                                    <p class="mb-2 text-sm text-gray-400">Click to upload or drag and drop</p>
+                                                    <p class="mb-2 text-sm text-gray-400">Klik untuk mengunggah atau seret dan lepas</p>
                                                 </div>
                                                 <input id="file" name="file" type="file" class="hidden" />
                                             </label>
@@ -336,7 +342,7 @@
                                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                                             </svg>
-                                            Submit Assignment
+                                            Kirim Tugas
                                         </button>
                                     </div>
                                 </form>

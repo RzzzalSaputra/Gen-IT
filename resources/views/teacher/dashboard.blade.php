@@ -59,9 +59,9 @@
         <div class="p-4 sm:p-6">
             @if(count($classrooms) === 0)
                 <div class="text-center py-4 border-4 border-gray-900 dark:border-gray-600 p-4">
-                    <p class="text-gray-700 dark:text-gray-300 font-bold">You haven't created any classrooms yet.</p>
+                    <p class="text-gray-700 dark:text-gray-300 font-bold">Anda belum membuat ruang kelas apa pun.</p>
                     <button onclick="openCreateModal()" class="mt-4 inline-flex items-center px-4 py-2 bg-blue-600 border-3 border-gray-900 rounded-none font-bold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] hover:-translate-y-1 transition-transform">
-                        Create Your First Classroom
+                        Buat Ruang Kelas Pertama Anda
                     </button>
                 </div>
             @else
@@ -71,7 +71,7 @@
                             <a href="{{ route('teacher.classrooms.show', $classroom->id) }}" class="flex justify-between items-start">
                                 <div>
                                     <h4 class="font-black text-gray-900 dark:text-white">{{ $classroom->name }}</h4>
-                                    <p class="text-sm font-bold text-gray-700 dark:text-gray-300 mt-1">{{ $classroom->members()->where('role', 'student')->count() }} students</p>
+                                    <p class="text-sm font-bold text-gray-700 dark:text-gray-300 mt-1">{{ $classroom->members()->where('role', 'student')->count() }} Siswa</p>
                                 </div>
                                 @if($classroom->pending_submissions_count > 0)
                                     <span class="px-2 py-1 inline-flex items-center justify-center text-xs leading-5 font-black rounded-none bg-yellow-300 text-black border-2 border-black dark:border-gray-600 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.7)]">
@@ -98,11 +98,11 @@
     <!-- Recent Submissions -->
     <div class="bg-white dark:bg-gray-800 overflow-hidden border-4 border-gray-900 dark:border-gray-600 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.7)] rounded-none">
         <div class="px-4 py-5 sm:px-6 border-b-4 border-gray-900 dark:border-gray-600">
-            <h3 class="text-lg font-black text-gray-900 dark:text-white">Recent Submissions</h3>
+            <h3 class="text-lg font-black text-gray-900 dark:text-white">Penyerahan Tugas Terbaru</h3>
         </div>
         <div class="p-4 sm:p-6">
             @if(count($recentSubmissions) === 0)
-                <p class="text-gray-700 dark:text-gray-300 font-bold text-center py-4 border-4 border-gray-900 dark:border-gray-600 p-4">No recent submissions.</p>
+                <p class="text-gray-700 dark:text-gray-300 font-bold text-center py-4 border-4 border-gray-900 dark:border-gray-600 p-4">Tidak ada Penyerahan Terbaru.</p>
             @else
                 <div class="space-y-3 sm:space-y-4 max-h-72 sm:max-h-80 overflow-y-auto pr-1 sm:pr-2 scrollbar-hide">
                     @foreach($recentSubmissions as $submission)
@@ -124,7 +124,7 @@
                                         {{ $submission->graded ? 'Dinilai' : 'Belum Dinilai' }}
                                     </span>
                                     <span class="text-xs font-bold text-gray-700 dark:text-gray-300">
-                                        {{ $submission->submitted_at ? $submission->submitted_at->diffForHumans() : 'N/A' }}
+                                        {{ $submission->submitted_at ? $submission->submitted_at->locale('id')->diffForHumans() : 'N/A' }}
                                     </span>
                                 </div>
                             </div>

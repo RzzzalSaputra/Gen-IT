@@ -5,7 +5,7 @@
         <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
         
         <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
-            <form action="{{ route('teacher.assignments.update', [$classroom->id, $assignment->id]) }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('teacher.assignments.update', [$classroom->id, $assignment->id]) }}" method="POST" enctype="multipart/form-data" id="editAssignmentForm{{ $assignment->id }}">
                 @csrf
                 @method('PUT')
                 <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
@@ -26,8 +26,9 @@
                     
                     <div class="mb-4">
                         <label for="editAssignmentDescription{{ $assignment->id }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Deskripsi</label>
-                        <textarea name="description" id="editAssignmentDescription{{ $assignment->id }}" rows="5" required
-                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">{{ $assignment->description }}</textarea>
+                        <!-- Replace textarea with Quill editor div -->
+                        <div id="editAssignmentDescriptionEditor{{ $assignment->id }}" class="bg-white dark:bg-gray-700 rounded-md border border-gray-300 dark:border-gray-600"></div>
+                        <input type="hidden" name="description" id="editAssignmentDescription{{ $assignment->id }}" value="{{ $assignment->description }}">
                     </div>
                     
                     <div class="mb-4">
@@ -66,3 +67,161 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    initializeEditAssignmentEditor{{ $assignment->id }}();
+    
+    function initializeEditAssignmentEditor{{ $assignment->id }}() {
+        // Load Quill if not already loaded
+        if (typeof Quill === 'undefined') {
+            // Check if we're already loading Quill
+            if (document.querySelector('script[src*="quill.min.js"]')) {
+                // Quill is loading, wait for it
+                setTimeout(() => initializeEditAssignmentEditor{{ $assignment->id }}(), 100);
+                return;
+            }
+            
+            // Add Quill CSS if not already added
+            if (!document.querySelector('link[href*="quill.snow.css"]')) {
+                const quillCSS = document.createElement('link');
+                quillCSS.rel = 'stylesheet';
+                quillCSS.href = 'https://cdn.quilljs.com/1.3.7/quill.snow.css';
+                document.head.appendChild(quillCSS);
+            }
+            
+            // Add Quill JS
+            const quillScript = document.createElement('script');
+            quillScript.src = 'https://cdn.quilljs.com/1.3.7/quill.min.js';
+            quillScript.onload = () => setupQuill{{ $assignment->id }}();
+            document.head.appendChild(quillScript);
+        } else {
+            setupQuill{{ $assignment->id }}();
+        }
+    }
+    
+    function setupQuill{{ $assignment->id }}() {
+        const assignmentId = {{ $assignment->id }};
+        const contentValue = document.getElementById(`editAssignmentDescription${assignmentId}`).value;
+        
+        // Simplified toolbar configuration
+        const toolbarOptions = [
+            ['bold', 'italic', 'underline'],                 // basic formatting
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],    // lists
+            ['link'],                                        // link
+            [{ 'align': [] }],                               // text alignment
+            ['clean']                                        // remove formatting
+        ];
+        
+        // Initialize Quill editor
+        const editorContainer = document.getElementById(`editAssignmentDescriptionEditor${assignmentId}`);
+        if (editorContainer) {
+            const quill = new Quill(`#editAssignmentDescriptionEditor${assignmentId}`, {
+                modules: {
+                    toolbar: toolbarOptions
+                },
+                theme: 'snow',
+                placeholder: 'Add description or instructions...'
+            });
+            
+            // Set initial content
+            quill.root.innerHTML = contentValue;
+            
+            // Apply styling
+            applyQuillStyling{{ $assignment->id }}();
+            
+            // Make sure to get content when form is submitted
+            const editAssignmentForm = document.getElementById(`editAssignmentForm${assignmentId}`);
+            if (editAssignmentForm) {
+                editAssignmentForm.addEventListener('submit', function(e) {
+                    // Save Quill content to hidden field before submission
+                    const content = quill.root.innerHTML;
+                    document.getElementById(`editAssignmentDescription${assignmentId}`).value = content;
+                });
+            }
+        }
+    }
+    
+    function applyQuillStyling{{ $assignment->id }}() {
+        // Check if we already added this styling
+        if (document.getElementById('quill-dark-style-{{ $assignment->id }}')) {
+            return;
+        }
+        
+        const style = document.createElement('style');
+        style.id = 'quill-dark-style-{{ $assignment->id }}';
+        
+        // Strong dark mode styling with high contrast
+        style.textContent = `
+            /* Editor container */
+            .ql-container.ql-snow {
+                border: 1px solid #4B5563;
+                border-top: 0;
+                border-radius: 0 0 4px 4px;
+                font-family: inherit;
+                background-color: #1F2937 !important;
+            }
+            
+            /* Editor area with bright white text */
+            .ql-editor {
+                min-height: 150px;
+                font-size: 15px;
+                line-height: 1.5;
+                padding: 12px 15px;
+                color: #FFFFFF !important;
+                background-color: #1F2937 !important;
+            }
+            
+            /* Toolbar styling */
+            .ql-toolbar.ql-snow {
+                border: 1px solid #4B5563;
+                border-radius: 4px 4px 0 0;
+                padding: 8px;
+                background-color: #374151 !important;
+            }
+            
+            /* Toolbar button colors - bright white */
+            .ql-snow .ql-stroke {
+                stroke: #FFFFFF !important;
+            }
+            
+            .ql-snow .ql-fill {
+                fill: #FFFFFF !important;
+            }
+            
+            .ql-snow .ql-picker {
+                color: #FFFFFF !important;
+            }
+            
+            /* Force white text for all content */
+            .ql-editor p, .ql-editor ol, .ql-editor ul, .ql-editor pre, 
+            .ql-editor blockquote, .ql-editor h1, .ql-editor h2, .ql-editor h3, 
+            .ql-editor h4, .ql-editor h5, .ql-editor h6 {
+                color: #FFFFFF !important;
+            }
+            
+            .ql-editor a {
+                color: #93C5FD !important;
+            }
+            
+            /* Placeholder text */
+            .ql-editor.ql-blank::before {
+                font-style: italic;
+                color: #9CA3AF !important;
+            }
+            
+            /* Fixed dropdown menu styling */
+            .ql-snow .ql-picker-options {
+                background-color: #374151 !important;
+                border-color: #4B5563 !important;
+            }
+            
+            .ql-snow .ql-picker-item {
+                color: #FFFFFF !important;
+            }
+        `;
+        
+        document.head.appendChild(style);
+    }
+});
+</script>
