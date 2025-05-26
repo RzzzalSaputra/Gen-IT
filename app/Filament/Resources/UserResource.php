@@ -37,7 +37,8 @@ class UserResource extends Resource
                     ->label('Email')
                     ->email()
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->unique(table: 'users', column: 'email', ignoreRecord: true),
                 Forms\Components\TextInput::make('password')
                     ->label('Kata Sandi')
                     ->password()
@@ -47,7 +48,23 @@ class UserResource extends Resource
                 Forms\Components\TextInput::make('phone')
                     ->label('Nomor Telepon')
                     ->tel()
-                    ->numeric(),
+                    ->required(fn(string $context): bool => $context === 'create')
+                    ->regex('/^[0-9]+$/')
+                    ->rules(['min:10', 'max:13'])
+                    ->prefixIcon('heroicon-m-phone')
+                    ->helperText('Masukkan nomor tanpa +62 atau 0 di depan. Contoh: 81234567890')
+                    ->formatStateUsing(function ($state) {
+                        if (!$state) return '';
+                        return ltrim(ltrim($state, '+62'), '0');
+                    })
+                    ->dehydrateStateUsing(function ($state) {
+                        if (!$state) return null;
+                        $number = preg_replace('/[^0-9]/', '', $state);
+                        if (str_starts_with($number, '62')) {
+                            $number = substr($number, 2);
+                        }
+                        return '+62' . ltrim($number, '0');
+                    }),
                 Forms\Components\TextInput::make('first_name')
                     ->label('Nama Depan')
                     ->required()
