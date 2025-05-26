@@ -34,7 +34,7 @@ class UserResource extends Resource
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('email')
-                    ->label('Surel')
+                    ->label('Email')
                     ->email()
                     ->required()
                     ->maxLength(255),
@@ -78,7 +78,7 @@ class UserResource extends Resource
                     ->label('Nama Pengguna')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
-                    ->label('Surel')
+                    ->label('Email')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('first_name')
                     ->label('Nama Depan')
@@ -101,9 +101,7 @@ class UserResource extends Resource
                             ->title('Pengguna Berhasil Dihapus')
                             ->success()
                             ->body('(≧◡≦) ♡ Bye-bye pengguna, semoga ketemu lagi!')
-                            ->danger()
                             ->icon('heroicon-o-trash')
-                            ->iconPosition('left')
                             ->iconColor('danger')
                     ),
             ])

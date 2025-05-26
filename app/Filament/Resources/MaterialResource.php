@@ -34,24 +34,12 @@ class MaterialResource extends Resource
                 Forms\Components\TextInput::make('title')
                     ->label('Judul')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->afterStateUpdated(function (callable $set, $state) {
+                        $set('slug', Str::slug($state));
+                    }),
 
-                Forms\Components\TextInput::make('slug')
-                    ->label('Slug')
-                    ->unique(Material::class, 'slug', ignoreRecord: true)
-                    ->required()
-                    ->suffixAction(
-                        Forms\Components\Actions\Action::make('generate_slug')
-                            ->label('Buat Otomatis')
-                            ->color('primary')
-                            ->icon('heroicon-o-arrow-path')
-                            ->action(function (callable $set, callable $get) {
-                                $title = $get('title');
-                                if ($title) {
-                                    $set('slug', Str::slug($title));
-                                }
-                            })
-                    ),
+                Forms\Components\Hidden::make('slug'),
 
                 Forms\Components\Select::make('layout')
                     ->label('Tata Letak')

@@ -37,27 +37,12 @@ class ArticleResource extends Resource
                             ->required()
                             ->maxLength(255)
                             ->helperText('Wajib diisi ya~ Judulnya buat artikelnya (⌒‿⌒). Maksimal 255 karakter.')
-                            ->columnSpanFull(),
-
-                        Forms\Components\TextInput::make('slug')
-                            ->label('Slug')
-                            ->unique(Article::class, 'slug', ignoreRecord: true)
-                            ->required()
-                            ->maxLength(255)
                             ->columnSpanFull()
-                            ->helperText('Slug itu alamat artikelnya, jadi harus unik~ Tekan "Generate" biar otomatis muncul dari judulnya! (｡•̀ᴗ-)✧. Maksimal 255 karakter.')
-                    ->suffixAction(
-                                Forms\Components\Actions\Action::make('generate_slug')
-                                    ->label('Generate')
-                                    ->color('primary')
-                                    ->icon('heroicon-o-arrow-path')
-                                    ->action(function (callable $set, callable $get) {
-                                        $title = $get('title');
-                                        if ($title) {
-                                            $set('slug', Str::slug($title));
-                                        }
-                                    })
-                            ),
+                            ->afterStateUpdated(function (callable $set, $state) {
+                                $set('slug', Str::slug($state));
+                            }),
+
+                        Forms\Components\Hidden::make('slug'),
                     ]),
 
                 Forms\Components\RichEditor::make('content')
