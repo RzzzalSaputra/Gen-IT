@@ -77,7 +77,7 @@
                                     </div>
                                     <div class="ml-4">
                                         <div class="text-sm font-medium text-gray-900 dark:text-white">
-                                            {{ $submission->user->name ?? 'Siswa' }}
+                                            {{ ($submission->user->first_name ?? '') . ' ' . ($submission->user->last_name ?? '') ?: 'Siswa' }}
                                         </div>
                                         <div class="text-sm text-gray-500 dark:text-gray-400">
                                             {{ $submission->user->email ?? 'Tidak ada email' }}
@@ -87,8 +87,9 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm text-gray-900 dark:text-white">{{ date('d M Y, H:i', strtotime($submission->created_at)) }}</div>
+                                <!-- For the date display in the submitted assignments section -->
                                 @php
-                                    $submissionDate = \Carbon\Carbon::parse($submission->created_at);
+                                    $submissionDate = \Carbon\Carbon::parse($submission->created_at)->locale('id');
                                     $dueDate = \Carbon\Carbon::parse($assignment->due_date);
                                     $isLate = $submissionDate->isAfter($dueDate);
                                 @endphp
@@ -160,7 +161,7 @@
                                     </div>
                                     <div class="ml-4">
                                         <div class="text-sm font-medium text-gray-900 dark:text-white">
-                                            {{ $member->user->name ?? 'Siswa' }}
+                                            {{ ($member->user->first_name ?? '') . ' ' . ($member->user->last_name ?? '') ?: 'Siswa' }}
                                         </div>
                                         <div class="text-sm text-gray-500 dark:text-gray-400">
                                             {{ $member->user->email ?? 'Tidak ada email' }}

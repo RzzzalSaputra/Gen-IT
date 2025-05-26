@@ -272,7 +272,7 @@
         {{ $statusText }}
     </span>
     <span class="ml-2 text-xs text-gray-500 dark:text-gray-400">
-        {{ $assignment->submissions()->count() }} submissions
+        {{ $assignment->submissions()->count() }} Pengumpulan
     </span>
 </div>
                         
